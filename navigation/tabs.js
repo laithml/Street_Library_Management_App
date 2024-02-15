@@ -1,11 +1,9 @@
 import React from "react";
-import {
-    Image
-} from 'react-native';
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../screens/Home";
 import { COLORS } from "../constants";
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const Tab = createBottomTabNavigator();
 
