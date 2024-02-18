@@ -1,32 +1,29 @@
 import React from "react";
-
+import {
+    Image
+} from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "../screens/Home";
+import HomeScreen from "../screens/HomeScreen";
 import { COLORS } from "../constants";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MapScreen from "../screens/MapScreen";
 
 const Tab = createBottomTabNavigator();
 
-const tabOptions = {
-    showLabel: false,
-    style: {
-        height: "10%",
-        backgroundColor: COLORS.black
-    }
-}
+
 
 const Tabs = () => {
     return (
         <Tab.Navigator
-            screenOptions={({ route }) => ({
+            screenOptions={({route}) => ({
                 headerShown: false,
-                tabBarShowLabel: false,
+                tabBarShowLabel: true,
                 tabBarStyle: {
                     height: "10%",
-                    backgroundColor: COLORS.black
+                    backgroundColor: COLORS.backgroundColor2
                 },
-                tabBarIcon: ({ focused }) => {
-                    const tintColor = focused ? COLORS.white : COLORS.gray;
+                tabBarIcon: ({focused}) => {
+                    const tintColor = focused ? COLORS.black : COLORS.textColor;
                     let iconName;
 
                     switch (route.name) {
@@ -44,28 +41,29 @@ const Tabs = () => {
                             break;
                     }
 
-                    return <FontAwesome name={iconName} size={25} color={tintColor} />;
-                }
+                    return <FontAwesome name={iconName} size={25} color={tintColor}/>;
+                },
+                tabBarLabelStyle: {color: COLORS.black, fontSize: 12, fontFamily: "Roboto-Regular"},
             })}
         >
             <Tab.Screen
                 name="Home"
-                component={Home}
+                component={HomeScreen}
             />
             <Tab.Screen
                 name="Search"
-                component={Home}
+                component={HomeScreen}
             />
             <Tab.Screen
                 name="Map"
-                component={Home}
+                component={MapScreen}
             />
             <Tab.Screen
                 name="Setting"
-                component={Home}
+                component={HomeScreen}
             />
         </Tab.Navigator>
-    )
+    );
 }
 
 export default Tabs;

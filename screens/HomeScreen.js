@@ -11,12 +11,12 @@ import {
 
 import { COLORS, FONTS, SIZES, icons, images } from '../constants';
 
-const Home = ({ navigation }) => {
+const HomeScreen = ({ navigation }) => {
 
 
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.black }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.backgroundColor }}>
             {/* Header Section */}
             <View style={{ height: 200 }}>
             </View>
@@ -39,4 +39,4 @@ const Home = ({ navigation }) => {
     )
 }
 
-export default Home;
+export default HomeScreen;
