@@ -1,28 +1,89 @@
 import React, {useEffect, useState} from 'react';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
-import {SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {
+    Alert, FlatList,
+    Linking,
+    Platform,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import {COLORS, SIZES} from "../constants";
 import {db} from "../Config/Firebase"
 import {getDocs, collection, doc, setDoc} from "firebase/firestore";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import * as Location from 'expo-location';
-import {useNavigation} from "@react-navigation/native";
+import LibraryDetail from "../components/LibraryDetail";
 
 
 const MapScreen = ({navigation}) => {
 
     const [points, setPoints] = React.useState([]);
     const [searchQuery, setSearchQuery] = React.useState('');
-
     const [currentRegion, setCurrentRegion] = useState(null);
+    const [selectedLibrary, setSelectedLibrary] = useState(null);
+    const mapRef = React.useRef(null);
+    const dismissLibraryDetail = () => {
+        setSelectedLibrary(null);
+        setSearchQuery('');
+    };
+
+    const animateToRegion = (item) => {
+        const adjustedLatitude = item.latitude -(currentRegion.latitudeDelta * 0.3);
+
+        const region = {
+            latitude: adjustedLatitude,
+            longitude: item.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+        };
+        mapRef.current?.animateToRegion(region, 350);
+    }
+
+    const handleGetDirections = () => {
+        if (selectedLibrary) {
+            const {latitude, longitude} = selectedLibrary;
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+            Linking.openURL(url);
+        }
+    };
 
     useEffect(() => {
+
+
         const fetchCurrentLocation = async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                console.error('Permission to access location was denied');
-                return;
-            }
+            const checkPermissionsAndRedirectIfNeeded = async () => {
+                const {status} = await Location.getForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    // Permission is not granted
+                    Alert.alert(
+                        "Location Permission",
+                        "We need access to your location to show nearby libraries. Please enable location permissions in settings.",
+                        [
+                            {
+                                text: "Don't Allow",
+                                onPress: () => console.log('Permission denied, alert closed'),
+                                style: 'cancel',
+                            },
+                            {
+                                text: 'Open Settings',
+                                onPress: () => {
+                                    // Open app settings
+                                    if (Platform.OS === 'ios') {
+                                        Linking.openURL('app-settings:');
+                                    } else {
+                                        Linking.openSettings();
+                                    }
+                                },
+                            },
+                        ]
+                    );
+                }
+            };
+            await checkPermissionsAndRedirectIfNeeded();
 
             let location = await Location.getCurrentPositionAsync({});
             const isInIsrael = (latitude, longitude) => {
@@ -56,21 +117,45 @@ const MapScreen = ({navigation}) => {
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: COLORS.backgroundColor}}>
             <View style={styles.headerContainer}>
-                <View style={styles.searchSection}>
-                    <FontAwesome name="search" size={25} color={COLORS.textColor}/>
-                    <TextInput
-                        style={styles.searchText}
-                        placeholder="Search"
-                        placeholderTextColor={COLORS.textColor}
-                        onChangeText={text => setSearchQuery(text)}
-                        value={searchQuery}
-                    />
+                <View style={styles.searchContainer}>
+                    <View style={styles.searchSection}>
+                        <FontAwesome name="search" size={25} color={COLORS.textColor}/>
+                        <TextInput
+                            style={styles.searchText}
+                            placeholder="Search for libraries..."
+                            placeholderTextColor={COLORS.textColor}
+                            onChangeText={text => setSearchQuery(text)}
+                            value={searchQuery}
+                        />
+                    </View>
+
+                    {searchQuery !== '' && (
+                        <View style={styles.resultsContainer}>
+                            <FlatList
+                                data={points.filter(library => library?.name?.toLowerCase().includes(searchQuery.toLowerCase()))}
+                                keyExtractor={item => item.id}
+                                renderItem={({item}) => (
+                                    <TouchableOpacity
+                                        style={styles.item}
+                                        onPress={() => {
+                                            setSelectedLibrary(item);
+                                            setSearchQuery(item.name);
+                                            animateToRegion(item)
+
+                                        }}>
+                                        <Text style={styles.itemText}>{item.name}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
+                    )}
                 </View>
-                <TouchableOpacity style={styles.addLibraryButton} onPress={()=> navigation.navigate('AddLibrary')} >
+
+                <TouchableOpacity style={styles.addLibraryButton} onPress={() => navigation.navigate('AddLibrary')}>
                     <View style={styles.searchIcon}>
                         <FontAwesome name="plus" size={25}/>
                     </View>
-                    <Text style={styles.addButtonText} >
+                    <Text style={styles.addButtonText}>
                         Add New Library
                     </Text>
                     <View style={styles.addButtonContainer}>
@@ -78,7 +163,10 @@ const MapScreen = ({navigation}) => {
                     </View>
                 </TouchableOpacity>
             </View>
-            <MapView style={styles.map} provider={PROVIDER_GOOGLE}
+            <MapView
+                ref={mapRef}
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}
                      initialRegion={currentRegion}
             >
                 {points.map((point) => (
@@ -88,17 +176,23 @@ const MapScreen = ({navigation}) => {
                             latitude: point.latitude,
                             longitude: point.longitude,
                         }}
-                        title={point.name}
-                        description={point.description}
+                        pinColor={selectedLibrary && point.id === selectedLibrary.id ? "red" : "green"}
+
+                        onPress={() => {
+                            setSelectedLibrary(point);
+                            setSearchQuery(point.name);
+                            animateToRegion(point);
+                        }}
                     >
-                        {/*/!* Optional: If you want to customize the marker's appearance *!/*/}
-                        {/*<View style={styles.customMarker}>*/}
-                        {/*    <Image source={{ uri: point.imageUrl }} style={styles.markerImage} />*/}
-                        {/*</View>*/}
                     </Marker>
                 ))}
-
             </MapView>
+            {selectedLibrary && (
+                <View style={styles.libraryDetailContainer}>
+                    <LibraryDetail library={selectedLibrary}   onDismiss={dismissLibraryDetail} onGetDirections={handleGetDirections}/>
+                </View>
+            )}
+
         </SafeAreaView>
     )
 }
@@ -117,7 +211,7 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     headerContainer: {
-        height: 100,
+        height: 200,
         margin: 10,
         marginBottom: 20
     },
@@ -165,4 +259,28 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         fontFamily: "Roboto-Regular"
     },
+    libraryDetailContainer: {
+        position: 'absolute',
+        bottom: 20,
+        right: 5,
+        left: 5,
+        padding: 10,
+    },
+    searchContainer: {
+        backgroundColor: COLORS.primary,
+        borderRadius: SIZES.radius,
+        padding: 10,
+    },
+    resultsContainer: {
+        maxHeight: 80,
+    },
+    item: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.gray,
+    },
+    itemText: {
+        color: COLORS.textColor,
+    },
+
 });

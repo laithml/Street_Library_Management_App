@@ -11,9 +11,8 @@ import {
 
 import { COLORS, FONTS, SIZES, icons, images } from '../constants';
 
+
 const HomeScreen = ({ navigation }) => {
-
-
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.backgroundColor }}>
