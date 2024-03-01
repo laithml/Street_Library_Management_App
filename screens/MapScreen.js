@@ -26,6 +26,7 @@ const MapScreen = ({navigation}) => {
     const [currentRegion, setCurrentRegion] = useState(null);
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const mapRef = React.useRef(null);
+
     const dismissLibraryDetail = () => {
         setSelectedLibrary(null);
         setSearchQuery('');
@@ -122,7 +123,7 @@ const MapScreen = ({navigation}) => {
                         <FontAwesome name="search" size={25} color={COLORS.textColor}/>
                         <TextInput
                             style={styles.searchText}
-                            placeholder="Search for libraries..."
+                            placeholder="Search for library..."
                             placeholderTextColor={COLORS.textColor}
                             onChangeText={text => setSearchQuery(text)}
                             value={searchQuery}

@@ -9,7 +9,7 @@ import {collection, addDoc} from "firebase/firestore";
 import {db} from "../Config/Firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../Config/Firebase";
-import * as ImagePicker from 'expo-image-picker';
+import {pickImageFromLibrary, requestPermissionsAsync, takePhotoWithCamera} from "../Utils/ImagePickerUtils";
 
 const AddLibraryScreen = ({navigation}) => {
     const [location, setLocation] = useState(null);
@@ -18,40 +18,20 @@ const AddLibraryScreen = ({navigation}) => {
     const [images, setImages] = useState([]);
 
     useEffect(() => {
-        (async () => {
-            await Location.requestForegroundPermissionsAsync();
-            const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
-            const { status: libraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (cameraStatus !== 'granted' || libraryStatus !== 'granted') {
-                alert('Sorry, we need camera roll permissions to make this work!');
-            }
-        })();
+     requestPermissionsAsync();
     }, []);
 
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setImages([...images, result.assets[0].uri]);
+        const uri = await pickImageFromLibrary();
+        if (uri) {
+            setImages([...images, uri]);
         }
     };
 
     const takePhoto = async () => {
-        let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-        console.log(result.assets[0].uri); // Check the URI
-
-        if (!result.canceled) {
-            setImages([...images, result.assets[0].uri]);
+        const uri = await takePhotoWithCamera();
+        if (uri) {
+            setImages([...images, uri]);
         }
     };
 

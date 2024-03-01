@@ -7,6 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import { COLORS } from "../constants";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MapScreen from "../screens/MapScreen";
+import AddNewBook from "../screens/AddNewBook";
 
 const Tab = createBottomTabNavigator();
 
@@ -48,7 +49,7 @@ const Tabs = () => {
         >
             <Tab.Screen
                 name="Home"
-                component={HomeScreen}
+                component={AddNewBook}
             />
             <Tab.Screen
                 name="Search"
