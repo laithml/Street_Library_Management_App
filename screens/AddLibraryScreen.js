@@ -1,24 +1,44 @@
 import React, {useEffect, useState} from 'react';
-import {View, TextInput, StyleSheet, TouchableOpacity, Text, ScrollView, SafeAreaView,Image} from 'react-native';
+import {
+    View,
+    TextInput,
+    StyleSheet,
+    TouchableOpacity,
+    Text,
+    ScrollView,
+    SafeAreaView,
+    Image,
+    FlatList
+} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {COLORS} from "../constants";
 import {GOOGLE_API_KEY} from "../constants/env";
 import * as Location from "expo-location";
-import {collection, addDoc} from "firebase/firestore";
+import {collection, addDoc, doc, updateDoc} from "firebase/firestore";
 import {db} from "../Config/Firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../Config/Firebase";
-import {pickImageFromLibrary, requestPermissionsAsync, takePhotoWithCamera} from "../Utils/ImagePickerUtils";
+import {ref, uploadBytesResumable, getDownloadURL} from "firebase/storage";
+import {storage} from "../Config/Firebase";
+import {
+    pickImageFromLibrary,
+    requestPermissionsAsync,
+    takePhotoWithCamera,
+    uploadImagesAndGetURLs
+} from "../Utils/ImagePickerUtils";
+import Styles_screens from "../constants/Styles";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import LoadingAnimation from "../components/LoadingAnimation";
+
 
 const AddLibraryScreen = ({navigation}) => {
     const [location, setLocation] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [images, setImages] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-     requestPermissionsAsync();
+        requestPermissionsAsync();
     }, []);
 
     const pickImage = async () => {
@@ -34,6 +54,9 @@ const AddLibraryScreen = ({navigation}) => {
             setImages([...images, uri]);
         }
     };
+    const handleRemoveImage = (uri) => {
+        setImages(images.filter(image => image !== uri));
+    };
 
     const handleSubmit = async () => {
         try {
@@ -42,36 +65,35 @@ const AddLibraryScreen = ({navigation}) => {
                 return;
             }
 
+            setIsLoading(true);
             // Example: Upload each image to Firebase Storage and get their URLs
-            const imageUrls = await Promise.all(images.map(async (uri) => {
-                const response = await fetch(uri);
-                const blob = await response.blob();
-                const fileName = uri.split('/').pop();
-                const imageRef = ref(storage, `libraries/${new Date().toISOString()}-${fileName}`);
-                await uploadBytes(imageRef, blob);
-                return getDownloadURL(imageRef);
-            }));
-
-
-            // Add the new library document with image URLs
+            const imageUrls = await uploadImagesAndGetURLs(images, 'libraries');
             const docRef = await addDoc(collection(db, "LibrariesData"), {
                 name: title,
-                id: Math.random().toString(36).substr(2, 9),
                 description,
                 latitude: location.latitude,
                 longitude: location.longitude,
                 imgSrcs: imageUrls,
             });
+
+            // Update the same document with its ID
+            await updateDoc(doc(db, "LibrariesData", docRef.id), {
+                id: docRef.id
+            });
+
             console.log("Document written with ID: ", docRef.id);
             navigation.navigate('Map');
+            alert('Library added successfully');
 
         } catch (e) {
             console.error("Error adding document: ", e);
         }
+        setIsLoading(false);
     };
 
     useEffect(() => {
         const fetchLocation = async () => {
+            setIsLoading(true);
             let currLocation = await Location.getCurrentPositionAsync({});
             setLocation({
                 latitude: currLocation.coords.latitude,
@@ -79,21 +101,31 @@ const AddLibraryScreen = ({navigation}) => {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             });
+            setIsLoading(false);
         };
 
         fetchLocation();
     }, []);
 
 
+    if (isLoading) {
+        return <LoadingAnimation/>;
+    }
+
     return (
         <ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps='handled'>
             <SafeAreaView style={styles.container}>
+
                 <View style={styles.inputContainer}>
+                    <Text style={Styles_screens.inputTitle}>Library Title</Text>
                     <TextInput style={styles.input} placeholder="Library Title" placeholderTextColor={COLORS.textColor}
                                onChangeText={text => setTitle(text)}/>
+                    <Text style={Styles_screens.inputTitle}>Description</Text>
                     <TextInput style={[styles.input, styles.descriptionInput]} placeholder="Description"
                                placeholderTextColor={COLORS.textColor} onChangeText={text => setDescription(text)}
                                multiline/>
+
+                    <Text style={Styles_screens.inputTitle}>Location</Text>
                     <GooglePlacesAutocomplete
                         placeholder='Enter location'
                         fetchDetails={true}
@@ -129,21 +161,41 @@ const AddLibraryScreen = ({navigation}) => {
                         <Marker coordinate={location}/>
                     </MapView>
                 )}
-                <View>
-                    {images.map((uri, index) => (
-                        <Image key={index} source={{ uri }} style={{ width: 100, height: 100 }} />
-                    ))}
-
+                <View style={Styles_screens.imageUploadSection}>
+                    <FlatList
+                        horizontal
+                        data={images}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({item, index}) => (
+                            <View style={Styles_screens.imageItemContainer}>
+                                <Image key={index} source={{uri: item}} style={Styles_screens.image}/>
+                                <TouchableOpacity
+                                    style={Styles_screens.removeImageButton}
+                                    onPress={() => handleRemoveImage(item)}
+                                >
+                                    <FontAwesome name="times" size={24}/>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        ListHeaderComponent={() => (
+                            <TouchableOpacity onPress={pickImage} style={Styles_screens.addImageButton}>
+                                <FontAwesome name="plus" size={24} color="#000"/>
+                            </TouchableOpacity>
+                        )}
+                    />
                 </View>
             </SafeAreaView>
+                <View style={[Styles_screens.buttonsContainerRow, {position: '',margin:10}]}>
+                    <TouchableOpacity style={Styles_screens.buttonR} onPress={pickImage}>
+                        <Text style={styles.buttonText}>Upload Photo</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={Styles_screens.buttonR} onPress={takePhoto}>
+                        <Text style={styles.buttonText}>Take Photo</Text>
+                    </TouchableOpacity>
+                </View>
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.button} onPress={pickImage}>
-                    <Text style={styles.buttonText}>Upload Photo</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={takePhoto}>
-                    <Text style={styles.buttonText}>Take Photo</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                     <Text style={styles.submitButtonText}>Add Library</Text>
                 </TouchableOpacity>
             </View>
@@ -179,7 +231,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     descriptionInput: {
-        height: 100,
+        height: 80,
     },
     buttonsContainer: {
         width: '100%',

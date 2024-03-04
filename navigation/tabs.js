@@ -7,7 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import { COLORS } from "../constants";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MapScreen from "../screens/MapScreen";
-import AddNewBook from "../screens/AddNewBook";
+import BookInfoScreen from "../screens/AddBookScreens/BookInfoScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -28,11 +28,11 @@ const Tabs = () => {
                     let iconName;
 
                     switch (route.name) {
-                        case "Home":
+                        case "OverView":
                             iconName = "home";
                             break;
-                        case "Search":
-                            iconName = "search";
+                        case "Add":
+                            iconName = "plus";
                             break;
                         case "Map":
                             iconName = "map";
@@ -48,12 +48,12 @@ const Tabs = () => {
             })}
         >
             <Tab.Screen
-                name="Home"
-                component={AddNewBook}
+                name="OverView"
+                component={HomeScreen}
             />
             <Tab.Screen
-                name="Search"
-                component={HomeScreen}
+                name="Add"
+                component={BookInfoScreen}
             />
             <Tab.Screen
                 name="Map"

@@ -17,6 +17,7 @@ import {getDocs, collection, doc, setDoc} from "firebase/firestore";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import * as Location from 'expo-location';
 import LibraryDetail from "../components/LibraryDetail";
+import LoadingAnimation from "../components/LoadingAnimation";
 
 
 const MapScreen = ({navigation}) => {
@@ -26,6 +27,8 @@ const MapScreen = ({navigation}) => {
     const [currentRegion, setCurrentRegion] = useState(null);
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const mapRef = React.useRef(null);
+    const [isLoading, setIsLoading] = useState(true);
+
 
     const dismissLibraryDetail = () => {
         setSelectedLibrary(null);
@@ -57,6 +60,7 @@ const MapScreen = ({navigation}) => {
 
         const fetchCurrentLocation = async () => {
             const checkPermissionsAndRedirectIfNeeded = async () => {
+                setIsLoading(true);
                 const {status} = await Location.getForegroundPermissionsAsync();
                 if (status !== 'granted') {
                     // Permission is not granted
@@ -97,6 +101,7 @@ const MapScreen = ({navigation}) => {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             });
+            setIsLoading(false);
         };
 
         fetchCurrentLocation();
@@ -105,16 +110,21 @@ const MapScreen = ({navigation}) => {
 
     useEffect(() => {
         const fetchPoints = async () => {
-            const querySnapshot = await getDocs(collection(db, 'LibrariesData')); // Adjust 'LibrariesData' to your collection name
+            setIsLoading(true); // Start loading
+            const querySnapshot = await getDocs(collection(db, 'LibrariesData'));
             let tempPoints = [];
             querySnapshot.forEach((doc) => {
                 tempPoints.push(doc.data());
             });
             setPoints(tempPoints);
-        }
+            setIsLoading(false); // End loading
+        };
         fetchPoints();
     }, []);
 
+    if (isLoading) {
+        return <LoadingAnimation />;
+    }
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: COLORS.backgroundColor}}>
             <View style={styles.headerContainer}>
