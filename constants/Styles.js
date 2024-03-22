@@ -1,12 +1,15 @@
 import {StyleSheet} from "react-native";
 import {COLORS, SIZES} from "./theme";
+import {Platform,StatusBar} from "react-native";
+
 
 const Styles_screens = StyleSheet.create({
     container: {
         flex: 1,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
         alignItems: 'center',
         backgroundColor: COLORS.backgroundColor,
-        marginBottom: 80,
+        marginBottom: 10,
     },
     inputContainer: {
         width: '90%',
@@ -32,17 +35,15 @@ const Styles_screens = StyleSheet.create({
         height: 100,
     },
     buttonsContainer: {
-        position: 'absolute',
         width: '100%',
         alignItems: 'center',
-        bottom: 0,
-        marginBottom: 10,
+        marginBottom: SIZES.padding,
     },
     buttonsContainerRow: {
-        position: 'absolute',
-        bottom: 0,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        width: '90%',
+        marginBottom: 10,
     },
     button: {
         width: '80%',
@@ -50,8 +51,9 @@ const Styles_screens = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: SIZES.radius,
-        marginBottom: 20,
+        marginBottom: 16,
         height: 50,
+        marginTop: 10,
     },
     buttonR: {
         backgroundColor: COLORS.primary,
@@ -59,11 +61,12 @@ const Styles_screens = StyleSheet.create({
         alignItems: 'center',
         borderRadius: SIZES.radius,
         height: 50,
-        width:"45%",
+        width: "45%",
     },
     buttonText: {
         color: COLORS.black,
-        fontSize: SIZES.body3,
+        fontSize: SIZES.body2,
+        fontWeight: 'bold',
     },
     submitButton: {
         width: '90%',
@@ -77,7 +80,7 @@ const Styles_screens = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: SIZES.radius,
-        width:"45%",
+        width: "45%",
         height: 50,
     },
     submitButtonText: {
@@ -85,7 +88,6 @@ const Styles_screens = StyleSheet.create({
         fontSize: SIZES.body3,
     },
     map: {
-        width: '90%',
         height: 250,
         marginTop: 10,
     },
@@ -131,7 +133,7 @@ const Styles_screens = StyleSheet.create({
     categoryContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        padding: 10,
+        padding: 18,
     },
     categoryButton: {
         padding: 10,
@@ -146,6 +148,7 @@ const Styles_screens = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'center',
         padding: 10,
+        marginBottom: 18
     },
     genreButton: {
         margin: 5,
@@ -163,7 +166,7 @@ const Styles_screens = StyleSheet.create({
     imageUploadSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding:20
+        marginTop: 20,
     },
 
     addImageButton: {
@@ -184,14 +187,14 @@ const Styles_screens = StyleSheet.create({
     },
     imageItemContainer: {
         position: 'relative',
-        marginRight: 10, // Add some spacing between images
+        marginRight: 10,
     },
 
     removeImageButton: {
         position: 'absolute',
         top: 5,
         right: 5,
-        backgroundColor: 'rgba(255, 255, 255, 0.5)', // Semi-transparent white
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
         padding: 5,
         borderRadius: SIZES.radius,
         zIndex: 10,
@@ -216,6 +219,39 @@ const Styles_screens = StyleSheet.create({
         marginBottom: 5,
         paddingLeft: 5,
     },
+    buttonNoBorder: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: SIZES.padding,
+        marginBottom: 20,
+    }, header: {
+        fontSize: SIZES.h1,
+        fontWeight: 'bold',
+        alignSelf: "center",
+        justifyContent: "center",
+        marginTop: 20,
+        marginBottom: 20
+    },header2: {
+        fontSize: SIZES.body3,
+        fontWeight: "regular",
+        marginBottom: 20}
+    ,icon: {
+        position: 'absolute',
+        right: 20,
+        top: 12,
+    },
+    inputWrapper: {
+        width: '100%',
+        position: 'relative',
+    },error: {
+        color: 'red',
+        fontSize: SIZES.body3,
+        marginBottom: 10,
+    },errorField: {
+        borderColor: 'red',
+        borderWidth: 1,
+    },
+
 
 
 });

@@ -13,7 +13,7 @@ import {
 import Styles_screens from "../../constants/Styles";
 import React, {useEffect, useState} from "react";
 import {addDoc, collection, doc, getDocs, getDoc, updateDoc, Timestamp} from "firebase/firestore";
-import {db, storage} from "../../Config/Firebase";
+import {db} from "../../Config/Firebase";
 import {
     pickImageFromLibrary,
     requestPermissionsAsync,
@@ -21,7 +21,6 @@ import {
     uploadImagesAndGetURLs
 } from "../../Utils/ImagePickerUtils";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {getDownloadURL, ref, uploadBytes} from "firebase/storage";
 import LoadingAnimation from "../../components/LoadingAnimation";
 
 
@@ -35,7 +34,7 @@ const UploadImagesScreen = ({navigation, route}) => {
         rating,
         selectedCondition,
         selectedCategory,
-        selectedGenre,
+        selectedGenres,
     } = route.params;
 
 
@@ -118,7 +117,7 @@ const UploadImagesScreen = ({navigation, route}) => {
             rating: parseInt(rating),
             condition: selectedCondition,
             category: selectedCategory,
-            genre: selectedGenre,
+            genre: selectedGenres,
             location: selectedLibId,
             images: imageUrls,
             addedAt: Timestamp.now(),
@@ -253,9 +252,9 @@ const UploadImagesScreen = ({navigation, route}) => {
                     )}
                 />
             </View>
-            {errors.selectedLib && <Text style={{color: 'red'}}>{errors.selectedLib}</Text>}
+            {errors.selectedLib && <Text style={  Styles_screens.error}>{errors.selectedLib}</Text>}
 
-            {errors.images && <Text style={{color: 'red'}}>{errors.images}</Text>}
+            {errors.images && <Text style={  Styles_screens.error}>{errors.images}</Text>}
 
             {/* Footer Section */}
             <View style={[Styles_screens.buttonsContainerRow]}>

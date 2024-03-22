@@ -10,6 +10,9 @@ import BookExperienceScreen from "./screens/AddBookScreens/BookExperienceScreen"
 import UploadImagesScreen from "./screens/AddBookScreens/UploadImagesScreen";
 import LoadingAnimation from "./components/LoadingAnimation";
 import * as SplashScreen from 'expo-splash-screen';
+import SignUp from "./screens/SignUp&In/SignUp";
+import SignIn from "./screens/SignUp&In/SignIn";
+import ForgotPassword from "./screens/SignUp&In/ForgotPassword";
 SplashScreen.preventAutoHideAsync().catch(() => { /* Ignoring failure silently */ });
 // Force LTR layout
 I18nManager.forceRTL(false);
@@ -28,9 +31,12 @@ const theme = {
         border: "transparent"
     }
 }
-
+// let bool= true;
 const Stack = createStackNavigator();
-
+// if (bool){
+//     uploadCategory();
+//     bool = false;
+// }
 const App = () => {
     const [appIsReady, setAppIsReady] = useState(false);
 
@@ -42,8 +48,7 @@ const App = () => {
 
     useEffect(() => {
         async function prepare() {
-            // Simulate an additional async operation here if necessary
-            // e.g., loading resources, data fetching, auth checks, etc.
+
 
             await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate delay
 
@@ -65,7 +70,7 @@ const App = () => {
                 screenOptions={{
                     headerShown: false
                 }}
-                initialRouteName={'Home'}
+                initialRouteName={'SignIn'}
             >
                 {/* Tabs */}
                 <Stack.Screen name="Home" component={Tabs}/>
@@ -73,6 +78,9 @@ const App = () => {
                 <Stack.Screen name="BookInfo" component={BookInfoScreen}/>
                 <Stack.Screen name="BookExperience" component={BookExperienceScreen}/>
                 <Stack.Screen name="UploadImages" component={UploadImagesScreen}/>
+                <Stack.Screen name="SignUp" component={SignUp}/>
+                <Stack.Screen name="SignIn" component={SignIn}/>
+                <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
 
             </Stack.Navigator>
         </NavigationContainer>
