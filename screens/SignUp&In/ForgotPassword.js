@@ -2,7 +2,7 @@ import Styles_screens from "../../constants/Styles";
 import {KeyboardAvoidingView, SafeAreaView, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {COLORS} from "../../constants";
 import React, {useState} from "react";
-import dbHandler from "../../DB_handler/db_actions";
+import {resetPassword} from "../../DB_handler/db_actions";
 import LoadingAnimation from "../../components/LoadingAnimation";
 
 
@@ -23,7 +23,7 @@ const ForgotPassword = ({navigation}) => {
             return;
         }
         setLoading(true);
-        await dbHandler.resetPassword(email);
+        await resetPassword(email);
         setLoading(false);
         navigation.navigate("SignIn");
     }

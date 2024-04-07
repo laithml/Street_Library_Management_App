@@ -9,7 +9,6 @@ const Styles_screens = StyleSheet.create({
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
         alignItems: 'center',
         backgroundColor: COLORS.backgroundColor,
-        marginBottom: 10,
     },
     inputContainer: {
         width: '90%',
@@ -17,19 +16,19 @@ const Styles_screens = StyleSheet.create({
     },
     input: {
         width: '100%',
-        backgroundColor: COLORS.primary,
-        borderRadius: SIZES.radius,
+        backgroundColor: COLORS.backgroundColor2,
+        borderColor: 'rgba(0, 0, 0, 0.1)', // Subtle border
+        borderWidth: 1,
+        borderRadius: SIZES.inputRadius,
         height: 50,
         paddingHorizontal: 20,
         marginBottom: 20,
         fontSize: SIZES.h3,
-    },
-    googleTextInput: {
-        height: 50,
-        color: COLORS.textColor,
-        fontSize: SIZES.h3,
-        backgroundColor: COLORS.primary,
-        borderRadius: SIZES.radius,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 2,
     },
     descriptionInput: {
         height: 100,
@@ -251,7 +250,53 @@ const Styles_screens = StyleSheet.create({
         borderColor: 'red',
         borderWidth: 1,
     },
-
+    scrollView: {
+        width: '100%',
+    },
+    section: {
+        marginTop: SIZES.margin,
+        marginBottom: SIZES.margin,
+        backgroundColor: COLORS.backgroundColor2,
+        borderRadius: SIZES.radius,
+        padding: SIZES.padding,
+        marginHorizontal: SIZES.margin,
+        shadowColor: COLORS.black,
+        shadowOffset: {
+            width: 2,
+            height: 2,
+        },
+        shadowOpacity: 0.4,
+        shadowRadius: 10,
+        elevation: 3,
+    },
+    sectionTitle: {
+        fontSize: SIZES.h2,
+        fontWeight: 'bold',
+        color: COLORS.black,
+        marginBottom: SIZES.margin,
+    },
+    card: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: SIZES.padding,
+        paddingHorizontal: SIZES.padding,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.primary,
+    },
+    cardTextContainer: {
+        flex: 1,
+        marginLeft: SIZES.margin,
+    },
+    cardText: {
+        fontSize: SIZES.h3,
+        color: COLORS.black,
+    },
+    cardInfo: {
+        fontSize: SIZES.body4,
+        color: COLORS.gray,
+    }, iconContainer: {
+        marginRight: 16, // This is the space between the icon and the text
+    },
 
 
 });

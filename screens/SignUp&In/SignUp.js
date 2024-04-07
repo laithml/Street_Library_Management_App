@@ -13,15 +13,14 @@ import {COLORS} from "../../constants";
 import React, {useRef, useState} from "react";
 import CategoriesSelection from "../../components/CategoriesSelection";
 import LoadingAnimation from "../../components/LoadingAnimation";
-import dbHandler from "../../DB_handler/db_actions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import {createUser} from "../../DB_handler/db_actions";
 
 
 const SignUp = ({navigation}) => {
 
 
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+    const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [verifyPass, setVerifyPass] = useState('');
@@ -31,7 +30,6 @@ const SignUp = ({navigation}) => {
     const [verfiyPassVisible, setVerifyPassVisible] = useState(true);
     const [loading, setLoading] = useState(false);
 
-    const lastNameRef = useRef(null);
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
     const verifyPasswordRef = useRef(null);
@@ -49,13 +47,9 @@ const SignUp = ({navigation}) => {
         let isValid = true;
         let newErrors = {};
 
-        if (!firstName.trim()) {
+        if (!userName.trim()) {
             isValid = false;
-            newErrors.firstName = 'First name is required';
-        }
-        if (!lastName.trim()) {
-            isValid = false;
-            newErrors.lastName = 'Last name is required';
+            newErrors.firstName = 'Full name is required';
         }
         if (!isValidEmail(email)) {
             isValid = false;
@@ -98,14 +92,13 @@ const SignUp = ({navigation}) => {
     const handleSignUp = async () => {
         if (validateInput()) {
             const User = {
-                firstName,
-                lastName,
+                name: userName,
                 email,
                 password,
                 genre
             };
             setLoading(true);
-            const create = await dbHandler.createUser(User);
+            const create = await createUser(User);
             setLoading(false);
             if (create.error === "auth/email-already-in-use") {
                 Alert.alert("Error", "User with this email already exists");
@@ -131,35 +124,19 @@ const SignUp = ({navigation}) => {
                 <ScrollView style={{flex: 1, marginBottom: 10, padding: 18}}>
                     <Text style={Styles_screens.header}>Welcome to Street Library</Text>
                     <View style={[Styles_screens.inputContainer, {width: 'auto'}]}>
-                        <Text style={Styles_screens.inputTitle}>First Name</Text>
+                        <Text style={Styles_screens.inputTitle}>Full Name</Text>
                         {errors.firstName && <Text style={Styles_screens.error}>{errors.firstName}</Text>}
                         <TextInput
                             placeholderTextColor={COLORS.textColor}
                             style={[Styles_screens.input, errors.firstName && Styles_screens.errorField]}
                             placeholder="First Name"
                             returnKeyType="next"
-                            onSubmitEditing={() => lastNameRef.current.focus()}
-                            onChangeText={(text) => {
-                                setFirstName(text);
-                                setErrors(prev => ({...prev, firstName: null}));
-                            }}
-                            value={firstName}
-                        />
-                        <Text style={Styles_screens.inputTitle}>Last Name</Text>
-                        {errors.lastName && <Text style={Styles_screens.error}>{errors.lastName}</Text>}
-
-                        <TextInput
-                            placeholderTextColor={COLORS.textColor}
-                            style={[Styles_screens.input, errors.lastName && Styles_screens.errorField]}
-                            placeholder="Last Name"
-                            ref={lastNameRef}
-                            returnKeyType="next"
                             onSubmitEditing={() => emailRef.current.focus()}
                             onChangeText={(text) => {
-                                setLastName(text);
-                                setErrors(prev => ({...prev, lastName: null}));
+                                setUserName(text);
+                                setErrors(prev => ({...prev, firstName: null}));
                             }}
-                            value={lastName}
+                            value={userName}
                         />
 
                         <Text style={Styles_screens.inputTitle}>Email</Text>

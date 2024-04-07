@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import {COLORS, SIZES} from "../constants";
 import {db} from "../Config/Firebase"
-import {getDocs, collection, doc, setDoc} from "firebase/firestore";
+import {getDocs, collection,} from "firebase/firestore";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import * as Location from 'expo-location';
 import LibraryDetail from "../components/LibraryDetail";
@@ -74,7 +74,7 @@ const MapScreen = ({navigation}) => {
                                 style: 'cancel',
                             },
                             {
-                                text: 'Open Settings',
+                                text: 'Open Profile',
                                 onPress: () => {
                                     // Open app settings
                                     if (Platform.OS === 'ios') {

@@ -1,6 +1,6 @@
 import Styles_screens from "../../constants/Styles";
 import {Alert, KeyboardAvoidingView, SafeAreaView, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {COLORS} from "../../constants";
+import {COLORS, SIZES} from "../../constants";
 import React, {useRef, useState} from "react";
 
 
@@ -75,7 +75,7 @@ const BookInfoScreen = ( {navigation}) => {
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === 'ios' ? 'padding' : SIZES.height}
         >
         <SafeAreaView style={Styles_screens.container}>
             <View style={Styles_screens.headerContainer}>
@@ -123,20 +123,6 @@ const BookInfoScreen = ( {navigation}) => {
                     multiline
                 />
 
-                <Text style={Styles_screens.inputTitle}>Language</Text>
-                {errors.language && <Text style={  Styles_screens.error}>{errors.language}</Text>}
-
-                <TextInput
-                    placeholderTextColor={COLORS.textColor}
-                    style={[Styles_screens.input,errors.language &&   Styles_screens.errorField]}
-                    placeholder="Language"
-                    ref={languageRef}
-                    returnKeyType={"next"}
-                    onSubmitEditing={() => numPagesRef.current.focus()}
-                    onChangeText={(text) => { setLanguage(text); setErrors(prev => ({...prev, language: null})); }}
-                    value={language}
-                />
-
                 <Text style={Styles_screens.inputTitle}>Number of Pages</Text>
                 {errors.numPages && <Text style={  Styles_screens.error}>{errors.numPages}</Text>}
 
@@ -146,9 +132,26 @@ const BookInfoScreen = ( {navigation}) => {
                     placeholder="Number of Pages"
                     keyboardType="numeric"
                     ref={numPagesRef}
+                    onSubmitEditing={() => languageRef.current.focus()}
                     onChangeText={(text) => { setNumPages(text); setErrors(prev => ({...prev, numPages: null})); }}
                     value={numPages}
                 />
+
+                <Text style={Styles_screens.inputTitle}>Language</Text>
+                {errors.language && <Text style={  Styles_screens.error}>{errors.language}</Text>}
+
+                <TextInput
+                    placeholderTextColor={COLORS.textColor}
+                    style={[Styles_screens.input,errors.language &&   Styles_screens.errorField]}
+                    placeholder="Language"
+                    ref={languageRef}
+                    returnKeyType={"next"}
+                    onSubmitEditing={handleNextPress}
+                    onChangeText={(text) => { setLanguage(text); setErrors(prev => ({...prev, language: null})); }}
+                    value={language}
+                />
+
+
             </View>
             <View style={Styles_screens.buttonsContainer}>
                 <TouchableOpacity style={Styles_screens.submitButton} onPress={handleNextPress} >

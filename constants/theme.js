@@ -8,6 +8,10 @@ export const COLORS = {
     backgroundColor:"#f4f4f5",
     backgroundColor2:"#f0f0ee",
 
+
+
+    // light colors
+
     // colors
     black: "#1E1B26",
     white: "#FFFFFF",
@@ -32,8 +36,10 @@ export const SIZES = {
     base: 8,
     font: 14,
     radius: 12,
+    inputRadius: 25,
     padding: 24,
     padding2: 36,
+    margin: 18,
 
     // font sizes
     largeTitle: 50,

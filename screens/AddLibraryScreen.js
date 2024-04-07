@@ -170,8 +170,7 @@ const AddLibraryScreen = ({navigation}) => {
                                 language: 'en',
                             }}
                             styles={{
-                                textInputContainer: Styles_screens.input,
-                                textInput: Styles_screens.googleTextInput,
+                                textInput: Styles_screens.input,
 
                             }}
                             textInputProps={{

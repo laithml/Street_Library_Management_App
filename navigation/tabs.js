@@ -1,13 +1,11 @@
 import React from "react";
-import {
-    Image
-} from 'react-native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/HomeScreen";
+import HomeScreen from "../screens/HomeScreens/HomeScreen";
 import { COLORS } from "../constants";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MapScreen from "../screens/MapScreen";
 import BookInfoScreen from "../screens/AddBookScreens/BookInfoScreen";
+import Profile from "../screens/ProfileScreens/Profile";
 
 const Tab = createBottomTabNavigator();
 
@@ -18,17 +16,17 @@ const Tabs = () => {
         <Tab.Navigator
             screenOptions={({route}) => ({
                 headerShown: false,
-                tabBarShowLabel: true,
+                tabBarShowLabel: false,
                 tabBarStyle: {
                     height: "10%",
-                    backgroundColor: COLORS.backgroundColor2
+                    backgroundColor: COLORS.backgroundColor
                 },
                 tabBarIcon: ({focused}) => {
                     const tintColor = focused ? COLORS.black : COLORS.textColor;
                     let iconName;
 
                     switch (route.name) {
-                        case "OverView":
+                        case "Home":
                             iconName = "home";
                             break;
                         case "Add":
@@ -37,8 +35,8 @@ const Tabs = () => {
                         case "Map":
                             iconName = "map";
                             break;
-                        case "Setting":
-                            iconName = "gear";
+                        case "Profile":
+                            iconName = "user";
                             break;
                     }
 
@@ -48,7 +46,7 @@ const Tabs = () => {
             })}
         >
             <Tab.Screen
-                name="OverView"
+                name="Home"
                 component={HomeScreen}
             />
             <Tab.Screen
@@ -60,8 +58,8 @@ const Tabs = () => {
                 component={MapScreen}
             />
             <Tab.Screen
-                name="Setting"
-                component={HomeScreen}
+                name="Profile"
+                component={Profile}
             />
         </Tab.Navigator>
     );

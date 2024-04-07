@@ -13,6 +13,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import SignUp from "./screens/SignUp&In/SignUp";
 import SignIn from "./screens/SignUp&In/SignIn";
 import ForgotPassword from "./screens/SignUp&In/ForgotPassword";
+import {UserProvider} from "./Context/UserContext";
+import BookDetails from "./screens/HomeScreens/BookDetails";
 SplashScreen.preventAutoHideAsync().catch(() => { /* Ignoring failure silently */ });
 // Force LTR layout
 I18nManager.forceRTL(false);
@@ -33,10 +35,7 @@ const theme = {
 }
 // let bool= true;
 const Stack = createStackNavigator();
-// if (bool){
-//     uploadCategory();
-//     bool = false;
-// }
+
 const App = () => {
     const [appIsReady, setAppIsReady] = useState(false);
 
@@ -50,7 +49,7 @@ const App = () => {
         async function prepare() {
 
 
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
             if (fontsLoaded) {
                 setAppIsReady(true);
@@ -65,6 +64,8 @@ const App = () => {
         return <LoadingAnimation />;
     }
     return (
+        <UserProvider>
+
         <NavigationContainer theme={theme}>
             <Stack.Navigator
                 screenOptions={{
@@ -73,7 +74,7 @@ const App = () => {
                 initialRouteName={'SignIn'}
             >
                 {/* Tabs */}
-                <Stack.Screen name="Home" component={Tabs}/>
+                <Stack.Screen name="Tab" component={Tabs}/>
                 <Stack.Screen name="AddLibrary" component={AddLibraryScreen}/>
                 <Stack.Screen name="BookInfo" component={BookInfoScreen}/>
                 <Stack.Screen name="BookExperience" component={BookExperienceScreen}/>
@@ -81,9 +82,10 @@ const App = () => {
                 <Stack.Screen name="SignUp" component={SignUp}/>
                 <Stack.Screen name="SignIn" component={SignIn}/>
                 <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
-
+                <Stack.Screen name="BookDetails" component={BookDetails}/>
             </Stack.Navigator>
         </NavigationContainer>
+        </UserProvider>
     )
 }
 

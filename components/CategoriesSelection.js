@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, TouchableOpacity, View } from "react-native";
 import Styles_screens from "../constants/Styles";
-import dbHandler from "../DB_handler/db_actions";
+import {getCategories} from "../DB_handler/db_actions";
 
 const CategoriesSelection = ({ onGenreChange, selectedGenres }) => {
     const [activeCategory, setActiveCategory] = useState('Fiction'); // Track active category
@@ -10,7 +10,7 @@ const CategoriesSelection = ({ onGenreChange, selectedGenres }) => {
     useEffect(() => {
         const fetchGenres = async () => {
             try {
-                const fetchedGenres = await dbHandler.getCategories(); // This should fetch genres with their Fiction status
+                const fetchedGenres = await getCategories(); // This should fetch genres with their Fiction status
                 const FictionGenres = fetchedGenres.filter(genre => genre.Fiction);
                 const NonFictionGenres = fetchedGenres.filter(genre => !genre.Fiction);
                 setGenres({ Fiction: FictionGenres, NonFiction: NonFictionGenres });

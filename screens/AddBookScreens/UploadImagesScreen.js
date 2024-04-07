@@ -149,7 +149,7 @@ const UploadImagesScreen = ({navigation, route}) => {
             });
 
             console.log("Document written with ID: ", bookRef.id);
-            navigation.navigate('OverView');
+            navigation.navigate('Home');
             Alert.alert("Book Submitted", "Your book has been successfully submitted!");
         } catch (error) {
             console.error("Error adding document: ", error);

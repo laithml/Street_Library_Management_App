@@ -9,7 +9,7 @@ import CategoriesSelection from "../../components/CategoriesSelection";
 const BookExperienceScreen = ({navigation, route}) => {
     const {title, author, description, numPages, language} = route.params;
 
-    const [selectedGenres, setSelectedGenres] = useState([]);
+    const [genre, setGenre] = useState([]);
     const [selectedCondition, setSelectedCondition] = useState('');
     const [rating, setRating] = useState(0);
     const [visible, setVisible] = useState(false);
@@ -36,7 +36,7 @@ const BookExperienceScreen = ({navigation, route}) => {
             newErrors.selectedCondition = 'Book condition is required';
         }
 
-        if (selectedGenres.length === 0) {
+        if (genre.length === 0) {
             isValid = false;
             newErrors.selectedGenre = 'Genre selection is required';
         }
@@ -46,7 +46,7 @@ const BookExperienceScreen = ({navigation, route}) => {
     };
     const handleNextPress = () => {
 
-            console.log(selectedGenres)
+            console.log(genre)
         if (validateInput()) {
             navigation.navigate('UploadImages', {
                 title,
@@ -57,7 +57,7 @@ const BookExperienceScreen = ({navigation, route}) => {
                 rating,
                 selectedCondition,
                 selectedCategory,
-                selectedGenres,
+                selectedGenres: genre,
             });
         } else {
             Alert.alert('Input Error', 'Please correct the errors before proceeding.');
@@ -122,12 +122,9 @@ const BookExperienceScreen = ({navigation, route}) => {
 
                 <Text style={Styles_screens.inputTitle}>Book Category:</Text>
                 <CategoriesSelection
-                    onGenreChange={setSelectedGenres}
-                    onCategoryChange={setSelectedCategory}
-                    selectedCategory={selectedCategory}
-                    selectedGenres={selectedGenres}
+                    onGenreChange={setGenre}
+                    selectedGenres={genre}
                 />
-
             </View>
             {errors.selectedCondition && <Text style={{color: 'red'}}>{errors.selectedCondition}</Text>}
             {errors.selectedGenre && <Text style={{color: 'red', textAlign: 'center'}}>{errors.selectedGenre}</Text>}
