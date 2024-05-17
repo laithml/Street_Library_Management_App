@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {
-    Alert, FlatList,
+    Alert,
+    FlatList,
     Linking,
     Platform,
     SafeAreaView,
@@ -12,23 +13,28 @@ import {
     View
 } from 'react-native';
 import {COLORS, SIZES} from "../constants";
-import {db} from "../Config/Firebase"
-import {getDocs, collection,} from "firebase/firestore";
+import {db} from "../Config/Firebase";
+import {getDocs, collection} from "firebase/firestore";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import * as Location from 'expo-location';
 import LibraryDetail from "../components/LibraryDetail";
 import LoadingAnimation from "../components/LoadingAnimation";
-
+import {useLocation} from "../Context/LocationContext";
 
 const MapScreen = ({navigation}) => {
-
-    const [points, setPoints] = React.useState([]);
-    const [searchQuery, setSearchQuery] = React.useState('');
-    const [currentRegion, setCurrentRegion] = useState(null);
+    const [points, setPoints] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const mapRef = React.useRef(null);
     const [isLoading, setIsLoading] = useState(true);
 
+
+    const [currentRegion, setCurrentRegion] = useState({
+        latitude: 31.7683,  // default to Jerusalem
+        longitude: 35.2137,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
+    const {location, errorMsg} = useLocation();
 
     const dismissLibraryDetail = () => {
         setSelectedLibrary(null);
@@ -36,16 +42,17 @@ const MapScreen = ({navigation}) => {
     };
 
     const animateToRegion = (item) => {
-        const adjustedLatitude = item.latitude -(currentRegion.latitudeDelta * 0.3);
-
-        const region = {
-            latitude: adjustedLatitude,
-            longitude: item.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-        };
-        mapRef.current?.animateToRegion(region, 350);
-    }
+        if (location) {
+            const adjustedLatitude = item.latitude - (0.0922 * 0.3);
+            const region = {
+                latitude: adjustedLatitude,
+                longitude: item.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            };
+            mapRef.current?.animateToRegion(region, 350);
+        }
+    };
 
     const handleGetDirections = () => {
         if (selectedLibrary) {
@@ -56,56 +63,21 @@ const MapScreen = ({navigation}) => {
     };
 
     useEffect(() => {
-
-
-        const fetchCurrentLocation = async () => {
-            const checkPermissionsAndRedirectIfNeeded = async () => {
-                setIsLoading(true);
-                const {status} = await Location.getForegroundPermissionsAsync();
-                if (status !== 'granted') {
-                    // Permission is not granted
-                    Alert.alert(
-                        "Location Permission",
-                        "We need access to your location to show nearby libraries. Please enable location permissions in settings.",
-                        [
-                            {
-                                text: "Don't Allow",
-                                onPress: () => console.log('Permission denied, alert closed'),
-                                style: 'cancel',
-                            },
-                            {
-                                text: 'Open Profile',
-                                onPress: () => {
-                                    // Open app settings
-                                    if (Platform.OS === 'ios') {
-                                        Linking.openURL('app-settings:');
-                                    } else {
-                                        Linking.openSettings();
-                                    }
-                                },
-                            },
-                        ]
-                    );
-                }
-            };
-            await checkPermissionsAndRedirectIfNeeded();
-
-            let location = await Location.getCurrentPositionAsync({});
+        if (location) {
             const isInIsrael = (latitude, longitude) => {
                 return latitude >= 29.5 && latitude <= 33.5 && longitude >= 34.3 && longitude <= 35.9;
             };
 
-            setCurrentRegion({
-                latitude: isInIsrael(location.coords.latitude, location.coords.longitude) ? location.coords.latitude : 31.7683,
-                longitude: isInIsrael(location.coords.latitude, location.coords.longitude) ? location.coords.longitude : 35.2137,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            });
-            setIsLoading(false);
-        };
-
-        fetchCurrentLocation();
-    }, []);
+            if (isInIsrael(location.coords.latitude, location.coords.longitude)) {
+                setCurrentRegion({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                });
+            }
+        }
+    }, [location]);
 
 
     useEffect(() => {
@@ -123,8 +95,9 @@ const MapScreen = ({navigation}) => {
     }, []);
 
     if (isLoading) {
-        return <LoadingAnimation />;
+        return <LoadingAnimation/>;
     }
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: COLORS.backgroundColor}}>
             <View style={styles.headerContainer}>
@@ -152,7 +125,6 @@ const MapScreen = ({navigation}) => {
                                             setSelectedLibrary(item);
                                             setSearchQuery(item.name);
                                             animateToRegion(item)
-
                                         }}>
                                         <Text style={styles.itemText}>{item.name}</Text>
                                     </TouchableOpacity>
@@ -166,19 +138,14 @@ const MapScreen = ({navigation}) => {
                     <View style={styles.searchIcon}>
                         <FontAwesome name="plus" size={25}/>
                     </View>
-                    <Text style={styles.addButtonText}>
-                        Add New Library
-                    </Text>
-                    <View style={styles.addButtonContainer}>
-                        <Text style={{fontSize: SIZES.h2, color: COLORS.black}}>ADD</Text>
-                    </View>
+                    <Text style={styles.addButtonText}>Add New Library</Text>
                 </TouchableOpacity>
             </View>
             <MapView
                 ref={mapRef}
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
-                     initialRegion={currentRegion}
+                initialRegion={currentRegion}
             >
                 {points.map((point) => (
                     <Marker
@@ -188,29 +155,25 @@ const MapScreen = ({navigation}) => {
                             longitude: point.longitude,
                         }}
                         pinColor={selectedLibrary && point.id === selectedLibrary.id ? "red" : "green"}
-
                         onPress={() => {
                             setSelectedLibrary(point);
                             setSearchQuery(point.name);
                             animateToRegion(point);
                         }}
-                    >
-                    </Marker>
+                    />
                 ))}
             </MapView>
             {selectedLibrary && (
                 <View style={styles.libraryDetailContainer}>
-                    <LibraryDetail library={selectedLibrary}   onDismiss={dismissLibraryDetail} onGetDirections={handleGetDirections}/>
+                    <LibraryDetail library={selectedLibrary} onDismiss={dismissLibraryDetail}
+                                   onGetDirections={handleGetDirections}/>
                 </View>
             )}
-
         </SafeAreaView>
-    )
-}
-
+    );
+};
 
 export default MapScreen;
-
 
 const styles = StyleSheet.create({
     container: {
@@ -224,7 +187,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         height: 200,
         margin: 10,
-        marginBottom: 20
+        marginBottom: 20,
     },
     searchSection: {
         flexDirection: "row",
@@ -247,12 +210,12 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         fontFamily: "Roboto-Regular",
         fontSize: SIZES.h2,
-        color: COLORS.textColor
+        color: COLORS.textColor,
     },
     addLibraryButton: {
         flexDirection: "row",
         alignItems: "center",
-        marginTop: 20
+        marginTop: 20,
     },
     addButtonContainer: {
         position: "absolute",
@@ -268,7 +231,7 @@ const styles = StyleSheet.create({
         fontSize: SIZES.h2,
         color: COLORS.black,
         paddingLeft: 10,
-        fontFamily: "Roboto-Regular"
+        fontFamily: "Roboto-Regular",
     },
     libraryDetailContainer: {
         position: 'absolute',
@@ -293,5 +256,4 @@ const styles = StyleSheet.create({
     itemText: {
         color: COLORS.textColor,
     },
-
 });

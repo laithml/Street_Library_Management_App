@@ -3,11 +3,16 @@ import {SafeAreaView, View, Text, ScrollView, Alert} from 'react-native';
 import Styles_screens from "../../constants/Styles";
 import Card from "../../components/Card";
 import {logoutUser} from "../../DB_handler/db_actions";
+import {useUser} from "../../Context/UserContext";
 
 const ProfileScreen = ({navigation}) => {
 
+    const {user} = useUser();
+    const bookMarks = user.bookmarks.length;
+
     const handlePress = (screenName) => {
         console.log(`Navigating to ${screenName}`);
+        navigation.navigate(screenName);
     };
 
     const signOut = () => {
@@ -47,6 +52,7 @@ const ProfileScreen = ({navigation}) => {
                 <View style={Styles_screens.section}>
                     <Text style={Styles_screens.sectionTitle}>My Library</Text>
                     <Card iconName="book" title="Books" info="Read 4, Taken 2" onPress={() => handlePress('Books')}/>
+                    <Card iconName="bookmark" title="Bookmarks" info={`${bookMarks} Bookmarks`} onPress={() => handlePress('BookmarksScreen')}/>
                     <Card iconName="map-marker" title="Libraries" info="Visited 3"
                           onPress={() => handlePress('Libraries')}/>
                 </View>

@@ -116,9 +116,18 @@ const Styles_screens = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
+    modalItemContainer: {
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+    },
     modalItemText: {
         fontSize: SIZES.body3,
         color: COLORS.textColor,
+    },closeButton: {
+        alignSelf: 'flex-end',
+        padding: 10,
     },
     searchInput: {
         width: '100%',
@@ -297,6 +306,17 @@ const Styles_screens = StyleSheet.create({
     }, iconContainer: {
         marginRight: 16, // This is the space between the icon and the text
     },
+    listItem: {
+        padding: 10,
+        backgroundColor: '#f8f8f8',
+        borderBottomWidth: 1,
+        borderColor: '#eee',
+    },
+    listItemText: {
+        fontSize: 18,
+        color: '#333',
+    }
+
 
 
 });

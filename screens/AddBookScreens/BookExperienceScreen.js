@@ -4,6 +4,7 @@ import {COLORS} from "../../constants";
 import React, {useState} from "react";
 import {Rating} from "react-native-ratings";
 import CategoriesSelection from "../../components/CategoriesSelection";
+import SelectionModal from "../../components/SelectionModal";
 
 
 const BookExperienceScreen = ({navigation, route}) => {
@@ -87,23 +88,18 @@ const BookExperienceScreen = ({navigation, route}) => {
                         {"Condition: " + (selectedCondition || "Choose Book Condition")}
                     </Text>
                 </TouchableOpacity>
-                <Modal visible={visible} animationType="slide" transparent={true}>
-                    <View style={Styles_screens.modalContainer}>
-                        <View style={Styles_screens.modalContent}>
-                            {conditions.map((condition, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={Styles_screens.modalItem}
-                                    onPress={() => {
-                                        setSelectedCondition(condition.label);
-                                        setVisible(false);
-                                    }}>
-                                    <Text style={Styles_screens.modalItemText}>{condition.label}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </View>
-                </Modal>
+
+                <SelectionModal  items={conditions}
+                                 visible={visible}
+                                 setVisible={setVisible}
+                                 onSelect={(condition) => {
+                                     setSelectedCondition(condition.label);
+                                     setVisible(false);
+                                 }}
+                                 renderItem={(item) => (
+                                     <Text style={Styles_screens.modalItemText}>{item.label}</Text>
+                                 )}
+                />
 
                 <View>
                     <Text style={Styles_screens.inputTitle}>Book Rating:</Text>

@@ -20,8 +20,58 @@ export const getCategoryById = async (id) => {
         console.log("No such document!");
         return null;
     }
+}
+
+export const addBookMark = async (userId, bookId) => {
+    console.log("Adding bookmark for user:", userId, "book:", bookId);
+    const userDocRef = doc(db, "Users", userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+        const user = userDoc.data();
+        // Ensure that the bookmarks field exists, initialize if necessary
+        if (!user.bookmarks) {
+            user.bookmarks = [];
+        }
+        if (!user.bookmarks.includes(bookId)) {
+            user.bookmarks.push(bookId);
+            await setDoc(userDocRef, user);
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
+
+export const removeBookMark = async (userId, bookId) => {
+    console.log("Removing bookmark for user:", userId, "book:", bookId);
+    const userDocRef = doc(db, "Users", userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+        const user = userDoc.data();
+        if (user.bookmarks && user.bookmarks.includes(bookId)) {
+            user.bookmarks = user.bookmarks.filter((id) => id !== bookId);
+            await setDoc(userDocRef, user);
+            return true;
+        }
+        return false;
+    }
+    return false;
 
 }
+
+
+
+export const getBookById = async (id) => {
+    const docRef = doc(db, "BooksData", id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return docSnap.data();
+    } else {
+        console.log("No such document!");
+        return null;
+    }
+}
+
 
 
 export const getLocationById = async (id) => {
