@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {COLORS, FONTS, SIZES} from "../../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {addBookMark, getBookById, getLocationById, removeBookMark} from "../../DB_handler/db_actions";
+import {addBookMark, getBookById, getLocationById, removeBookMark} from "../../actions/db_actions";
 import {useLocation} from "../../Context/LocationContext";
 import SelectionModal from "../../components/SelectionModal";
 import Styles_screens from "../../constants/Styles";

@@ -13,7 +13,7 @@ import {COLORS} from "../../constants";
 import React, {useRef, useState} from "react";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {loginUser} from "../../DB_handler/db_actions";
+import {loginUser} from "../../actions/db_actions";
 import {useUser} from "../../Context/UserContext";
 
 
@@ -41,12 +41,12 @@ const SignIn = ({navigation}) => {
             setLoading(true);
             const login = await loginUser(email, password);
             setLoading(false);
-            if (login) {
+            if (login.success) {
                 setUser(login.userData);
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Tab' }],
-                });``
+                });
             } else {
                 Alert.alert("Sign In Failed", "Invalid email or password", [{text: 'OK'}]);
             }

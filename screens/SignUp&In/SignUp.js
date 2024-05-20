@@ -14,7 +14,7 @@ import React, {useRef, useState} from "react";
 import CategoriesSelection from "../../components/CategoriesSelection";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {createUser} from "../../DB_handler/db_actions";
+import {createUser} from "../../actions/db_actions";
 
 
 const SignUp = ({navigation}) => {

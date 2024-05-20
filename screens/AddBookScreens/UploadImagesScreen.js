@@ -90,10 +90,10 @@ const UploadImagesScreen = ({navigation, route}) => {
             isValid = false;
             newErrors.selectedLib = 'Library location is required';
         }
-        if (images.length < 3) {
-            isValid = false;
-            newErrors.images = 'Please upload more images, front, back and side view of the book';
-        }
+        // if (images.length < 3) {
+        //     isValid = false;
+        //     newErrors.images = 'Please upload more images, front, back and side view of the book';
+        // }
         setErrors(newErrors);
         return isValid;
     }

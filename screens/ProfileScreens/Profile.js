@@ -2,7 +2,7 @@ import React from "react";
 import {SafeAreaView, View, Text, ScrollView, Alert} from 'react-native';
 import Styles_screens from "../../constants/Styles";
 import Card from "../../components/Card";
-import {logoutUser} from "../../DB_handler/db_actions";
+import {logoutUser} from "../../actions/db_actions";
 import {useUser} from "../../Context/UserContext";
 
 const ProfileScreen = ({navigation}) => {

@@ -1,5 +1,5 @@
 import Styles_screens from "../../constants/Styles";
-import {Alert, KeyboardAvoidingView, Modal, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import {Alert, KeyboardAvoidingView, Modal, Platform, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
 import {COLORS} from "../../constants";
 import React, {useState} from "react";
 import {Rating} from "react-native-ratings";

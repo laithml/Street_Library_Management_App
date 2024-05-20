@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {SafeAreaView, View, Text, TouchableOpacity, ScrollView, FlatList} from 'react-native';
 import {COLORS, FONTS, SIZES,} from '../../constants';
 import Styles_screens from "../../constants/Styles";
-import {fetchAndUpdateCategories, fetchBooks, fetchCategories} from "../../DB_handler/db_actions";
+import {fetchAndUpdateCategories, fetchBooks, fetchCategories} from "../../actions/db_actions";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import BookItem from "../../components/BookItem";
 import BookBasic from "../../components/BookBasic";

@@ -1,5 +1,14 @@
 import Styles_screens from "../../constants/Styles";
-import {Alert, KeyboardAvoidingView, SafeAreaView, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 import {COLORS, SIZES} from "../../constants";
 import React, {useRef, useState} from "react";
 

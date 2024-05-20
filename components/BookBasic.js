@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Image, Text, TouchableOpacity, View, Alert} from "react-native";
 import {COLORS, FONTS, SIZES} from "../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {addBookMark, removeBookMark, getCategoryById, getLocationById} from "../DB_handler/db_actions";
+import {addBookMark, removeBookMark, getCategoryById, getLocationById} from "../actions/db_actions";
 import {useUser} from "../Context/UserContext";
 import Styles_screens from "../constants/Styles";
 

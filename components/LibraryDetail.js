@@ -1,13 +1,13 @@
 import React from 'react';
-import {View, Text, Image, Button, StyleSheet, TouchableOpacity} from 'react-native';
-import {COLORS, SIZES} from "../constants";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { COLORS, SIZES } from "../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-const LibraryDetail = ({ library, onGetDirections,onDismiss }) => {
+const LibraryDetail = ({ library, onGetDirections, onDismiss }) => {
     return (
         <View style={styles.cardContainer}>
             <TouchableOpacity style={styles.dismissButton} onPress={onDismiss}>
-                <FontAwesome name={'close'} size={25}  />
+                <FontAwesome name="times" size={25} color={COLORS.black} />
             </TouchableOpacity>
             {library.imgSrcs && library.imgSrcs[0] && (
                 <Image source={{ uri: library.imgSrcs[0] }} style={styles.image} />
@@ -16,10 +16,10 @@ const LibraryDetail = ({ library, onGetDirections,onDismiss }) => {
                 <Text style={styles.name}>{library.name}</Text>
                 <Text style={styles.description}>{library.description}</Text>
             </View>
-            <View style={{flex:1,flexDirection:'row'  ,justifyContent:'center'}}>
-            <TouchableOpacity style={styles.button}  onPress={onGetDirections} >
-            <Text style={{color:COLORS.white}}>Get Directions</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={onGetDirections}>
+                    <Text style={styles.buttonText}>Get Directions</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -29,15 +29,16 @@ export default LibraryDetail;
 
 const styles = StyleSheet.create({
     cardContainer: {
-        backgroundColor: COLORS.backgroundColor2,
+        backgroundColor: COLORS.backgroundColor,
         borderRadius: SIZES.radius,
         borderWidth: 1,
-        borderColor: COLORS.black,
-        overflow: 'hidden',
+        borderColor: COLORS.gray,
+        padding: SIZES.padding,
     },
     image: {
         width: '100%',
         height: 120,
+        borderRadius: SIZES.radius,
     },
     textContainer: {
         padding: 10,
@@ -47,23 +48,35 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 5,
+        color: COLORS.textColor,
     },
     description: {
         fontSize: 16,
-        color: COLORS.textColor,
+        color: COLORS.gray,
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
         marginBottom: 10,
     },
     button: {
         backgroundColor: COLORS.secondary,
-        height: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
+        padding: 10,
         borderRadius: SIZES.radius,
-        marginBottom: 10,
         width: '90%',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: COLORS.white,
+        fontSize: 16,
     },
     dismissButton: {
-        alignSelf: 'flex-end',
-        padding: 8,
+        position: 'absolute',
+        right: 3,
+        top: 3,
+        padding: 3,
+        zIndex: 10,
     },
 });

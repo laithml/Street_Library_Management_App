@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, TouchableOpacity, View } from "react-native";
 import Styles_screens from "../constants/Styles";
-import {getCategories} from "../DB_handler/db_actions";
+import {getCategories} from "../actions/db_actions";
 
 const CategoriesSelection = ({ onGenreChange, selectedGenres }) => {
     const [activeCategory, setActiveCategory] = useState('Fiction'); // Track active category

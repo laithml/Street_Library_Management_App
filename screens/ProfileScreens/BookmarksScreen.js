@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {View, Text, FlatList, SafeAreaView} from 'react-native';
 import { useUser } from "../../Context/UserContext";
-import { getBookById } from "../../DB_handler/db_actions";
+import { getBookById } from "../../actions/db_actions";
 import BookBasic from "../../components/BookBasic";
 import Styles_screens from "../../constants/Styles";
 import LoadingAnimation from "../../components/LoadingAnimation";

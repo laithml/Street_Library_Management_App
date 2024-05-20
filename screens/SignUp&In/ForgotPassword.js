@@ -2,7 +2,7 @@ import Styles_screens from "../../constants/Styles";
 import {KeyboardAvoidingView, SafeAreaView, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {COLORS} from "../../constants";
 import React, {useState} from "react";
-import {resetPassword} from "../../DB_handler/db_actions";
+import {resetPassword} from "../../actions/db_actions";
 import LoadingAnimation from "../../components/LoadingAnimation";
 
 

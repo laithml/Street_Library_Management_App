@@ -1,6 +1,7 @@
 import {db, auth} from "../Config/Firebase";
 import {collection, query, getDocs, limit, startAfter, getDoc, doc, setDoc, updateDoc} from "firebase/firestore";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordResetEmail, signOut} from "firebase/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -10,6 +11,44 @@ const usersCollectionRef = collection(db, "Users");
 const CategoriesCollectionRef = collection(db, "Categories");
 const LibrariesCollectionRef = collection(db, "LibrariesData");
 
+
+
+
+const cacheLibraries = async (libraries) => {
+    try {
+        const jsonString = JSON.stringify(libraries);
+        await AsyncStorage.setItem('cachedLibraries', jsonString);
+    } catch (error) {
+        console.error('Error caching libraries:', error);
+    }
+};
+
+const getCachedLibraries = async () => {
+    try {
+        const jsonString = await AsyncStorage.getItem('cachedLibraries');
+        return jsonString ? JSON.parse(jsonString) : null;
+    } catch (error) {
+        console.error('Error retrieving cached libraries:', error);
+        return null;
+    }
+};
+
+
+
+export const fetchLibraries = async () => {
+    try {
+        const q = query(LibrariesCollectionRef);
+        const querySnapshot = await getDocs(q);
+        const libraries = [];
+        querySnapshot.forEach((doc) => {
+            libraries.push({ id: doc.id, ...doc.data() });
+        });
+        return libraries;
+    } catch (error) {
+        console.error("Failed to fetch libraries:", error);
+        return []; // Return an empty array on error
+    }
+};
 
 export const getCategoryById = async (id) => {
     const docRef = doc(db, "Categories", id);

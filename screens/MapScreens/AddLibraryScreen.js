@@ -11,21 +11,21 @@ import {
 } from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-import {COLORS, SIZES} from "../constants";
-import {GOOGLE_API_KEY} from "../constants/env";
+import {COLORS, SIZES} from "../../constants";
+import {GOOGLE_API_KEY} from "../../constants/env";
 import * as Location from "expo-location";
 import {collection, addDoc, doc, updateDoc} from "firebase/firestore";
-import {db} from "../Config/Firebase";
+import {db} from "../../Config/Firebase";
 
 import {
     pickImageFromLibrary,
     requestPermissionsAsync,
     takePhotoWithCamera,
     uploadImagesAndGetURLs
-} from "../Utils/ImagePickerUtils";
-import Styles_screens from "../constants/Styles";
+} from "../../Utils/ImagePickerUtils";
+import Styles_screens from "../../constants/Styles";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import LoadingAnimation from "../components/LoadingAnimation";
+import LoadingAnimation from "../../components/LoadingAnimation";
 
 
 const AddLibraryScreen = ({navigation}) => {
@@ -180,8 +180,7 @@ const AddLibraryScreen = ({navigation}) => {
 
                         {location && (
                             <MapView
-                                provider={PROVIDER_GOOGLE}
-                                style={Styles_screens.map}
+                                style={{height: 300, width: '100%', marginTop: 20,borderRadius: SIZES.radius, overflow: 'hidden'}}
                                 region={location}
                                 onPress={(e) => setLocation(e.nativeEvent.coordinate)}
                             >

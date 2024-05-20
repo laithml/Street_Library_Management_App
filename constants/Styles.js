@@ -1,6 +1,6 @@
 import {StyleSheet} from "react-native";
 import {COLORS, SIZES} from "./theme";
-import {Platform,StatusBar} from "react-native";
+import {Platform, StatusBar} from "react-native";
 
 
 const Styles_screens = StyleSheet.create({
@@ -8,6 +8,11 @@ const Styles_screens = StyleSheet.create({
         flex: 1,
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
         alignItems: 'center',
+        backgroundColor: COLORS.backgroundColor,
+
+    },
+    defContainer: {
+        flex: 1,
         backgroundColor: COLORS.backgroundColor,
     },
     inputContainer: {
@@ -25,7 +30,7 @@ const Styles_screens = StyleSheet.create({
         marginBottom: 20,
         fontSize: SIZES.h3,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
+        shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.2,
         shadowRadius: 3,
         elevation: 2,
@@ -87,8 +92,10 @@ const Styles_screens = StyleSheet.create({
         fontSize: SIZES.body3,
     },
     map: {
-        height: 250,
-        marginTop: 10,
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        zIndex: -1,
     },
     modalContainer: {
         flex: 1,
@@ -125,18 +132,54 @@ const Styles_screens = StyleSheet.create({
     modalItemText: {
         fontSize: SIZES.body3,
         color: COLORS.textColor,
-    },closeButton: {
+    }, closeButton: {
         alignSelf: 'flex-end',
         padding: 10,
     },
     searchInput: {
-        width: '100%',
-        backgroundColor: COLORS.primary,
+        flex: 1,
+        height: 40,
+        borderColor: COLORS.secondary,
+        borderWidth: 1,
+        paddingLeft: SIZES.padding,
         borderRadius: SIZES.radius,
-        height: 50,
-        paddingHorizontal: 20,
-        marginBottom: 20,
-        fontSize: SIZES.h3,
+        backgroundColor: '#fff',
+        marginRight: SIZES.margin,
+    },
+    floatingCard: {
+        position: 'absolute',
+        bottom: 20,
+        left: 10,
+        right: 10,
+        backgroundColor: 'white',
+        borderRadius: SIZES.radius,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        marginBottom: 35,
+    },
+    dropdown: {
+        position: 'absolute',
+        top: 50,
+        left: 10,
+        right: 10,
+        backgroundColor: 'white',
+        zIndex: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        maxHeight: 200,
+
+    },
+    dropdownItem: {
+        padding: 10,
+        fontSize: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
     },
     categoryContainer: {
         flexDirection: 'row',
@@ -240,11 +283,12 @@ const Styles_screens = StyleSheet.create({
         justifyContent: "center",
         marginTop: 20,
         marginBottom: 20
-    },header2: {
+    }, header2: {
         fontSize: SIZES.body3,
         fontWeight: "regular",
-        marginBottom: 20}
-    ,icon: {
+        marginBottom: 20
+    }
+    , icon: {
         position: 'absolute',
         right: 20,
         top: 12,
@@ -252,11 +296,11 @@ const Styles_screens = StyleSheet.create({
     inputWrapper: {
         width: '100%',
         position: 'relative',
-    },error: {
+    }, error: {
         color: 'red',
         fontSize: SIZES.body3,
         marginBottom: 10,
-    },errorField: {
+    }, errorField: {
         borderColor: 'red',
         borderWidth: 1,
     },
@@ -317,7 +361,8 @@ const Styles_screens = StyleSheet.create({
         fontSize: 18,
         color: '#333',
     },
-    headerContainer:{height: '10%',
+    headerContainer: {
+        height: '10%',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -335,7 +380,6 @@ const Styles_screens = StyleSheet.create({
         height: 35,
         borderRadius: 10,
     }
-
 
 
 });

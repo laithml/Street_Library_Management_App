@@ -3,8 +3,8 @@ import {createStackNavigator} from "@react-navigation/stack";
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import Tabs from "./navigation/tabs";
 import {useFonts} from 'expo-font';
-import { I18nManager} from 'react-native';
-import AddLibraryScreen from "./screens/AddLibraryScreen";
+import {I18nManager} from 'react-native';
+import AddLibraryScreen from "./screens/MapScreens/AddLibraryScreen";
 import BookInfoScreen from "./screens/AddBookScreens/BookInfoScreen";
 import BookExperienceScreen from "./screens/AddBookScreens/BookExperienceScreen";
 import UploadImagesScreen from "./screens/AddBookScreens/UploadImagesScreen";
@@ -17,6 +17,8 @@ import {UserProvider} from "./Context/UserContext";
 import BookDetails from "./screens/HomeScreens/BookDetails";
 import {LocationProvider} from "./Context/LocationContext";
 import BookmarksScreen from "./screens/ProfileScreens/BookmarksScreen";
+import {PersistGate} from "redux-persist/integration/react";
+import {Provider} from 'react-redux';
 
 
 SplashScreen.preventAutoHideAsync().catch(() => { /* Ignoring failure silently */
@@ -52,18 +54,22 @@ const App = () => {
 
     useEffect(() => {
         async function prepare() {
-
-
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            if (fontsLoaded) {
-                setAppIsReady(true);
+            try {
+                // You can also perform other configuration tasks here
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate a loading delay
                 await SplashScreen.hideAsync();
+            } catch (e) {
+                console.warn(e);
+            } finally {
+                setAppIsReady(true);
             }
         }
 
-        prepare();
+        if (fontsLoaded) {
+            prepare();
+        }
     }, [fontsLoaded]);
+
 
     if (!appIsReady) {
         return <LoadingAnimation/>;
@@ -89,13 +95,14 @@ const App = () => {
                         <Stack.Screen name="SignIn" component={SignIn}/>
                         <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
                         <Stack.Screen name="BookDetails" component={BookDetails}/>
-                        <Stack.Screen name="BookmarksScreen" component={BookmarksScreen} />
+                        <Stack.Screen name="BookmarksScreen" component={BookmarksScreen}/>
 
                     </Stack.Navigator>
                 </NavigationContainer>
 
             </LocationProvider>
         </UserProvider>
+
     )
 }
 

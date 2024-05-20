@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreens/HomeScreen";
 import { COLORS } from "../constants";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MapScreen from "../screens/MapScreen";
+import MapScreen from "../screens/MapScreens/MapScreen";
 import BookInfoScreen from "../screens/AddBookScreens/BookInfoScreen";
 import Profile from "../screens/ProfileScreens/Profile";
 
