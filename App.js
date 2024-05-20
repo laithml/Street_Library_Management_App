@@ -3,7 +3,7 @@ import {createStackNavigator} from "@react-navigation/stack";
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import Tabs from "./navigation/tabs";
 import {useFonts} from 'expo-font';
-import {I18nManager} from 'react-native';
+import { I18nManager} from 'react-native';
 import AddLibraryScreen from "./screens/AddLibraryScreen";
 import BookInfoScreen from "./screens/AddBookScreens/BookInfoScreen";
 import BookExperienceScreen from "./screens/AddBookScreens/BookExperienceScreen";
@@ -17,6 +17,7 @@ import {UserProvider} from "./Context/UserContext";
 import BookDetails from "./screens/HomeScreens/BookDetails";
 import {LocationProvider} from "./Context/LocationContext";
 import BookmarksScreen from "./screens/ProfileScreens/BookmarksScreen";
+
 
 SplashScreen.preventAutoHideAsync().catch(() => { /* Ignoring failure silently */
 });
