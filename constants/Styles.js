@@ -170,6 +170,7 @@ const Styles_screens = StyleSheet.create({
     },
     genreButtonText: {
         fontSize: SIZES.h3,
+
     },
     imageUploadSection: {
         flexDirection: 'row',
@@ -315,6 +316,24 @@ const Styles_screens = StyleSheet.create({
     listItemText: {
         fontSize: 18,
         color: '#333',
+    },
+    headerContainer:{height: '10%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    genreContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: SIZES.radius,
+    },
+    genre: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 5,
+        marginRight: SIZES.radius,
+        marginBottom: SIZES.radius,
+        height: 35,
+        borderRadius: 10,
     }
 
 

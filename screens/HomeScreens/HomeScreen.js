@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {SafeAreaView, View, Text, TouchableOpacity, ScrollView, FlatList} from 'react-native';
 import {COLORS, FONTS, SIZES,} from '../../constants';
 import Styles_screens from "../../constants/Styles";
-import {fetchBooks, fetchCategories} from "../../DB_handler/db_actions";
+import {fetchAndUpdateCategories, fetchBooks, fetchCategories} from "../../DB_handler/db_actions";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import BookItem from "../../components/BookItem";
 import BookBasic from "../../components/BookBasic";
@@ -41,6 +41,7 @@ const HomeScreen = ({navigation}) => {
         try {
             const fetchedCategories = await fetchCategories();
             setCategories(fetchedCategories);
+
         } catch (error) {
             console.error("Failed to fetch categories:", error);
         }
@@ -76,7 +77,7 @@ const HomeScreen = ({navigation}) => {
 
     return (
         <SafeAreaView style={Styles_screens.container}>
-            <View style={{height: '10%', flexDirection: 'row', alignItems: 'spcae-between'}}>
+            <View style={Styles_screens.headerContainer}>
                 {/* Header */}
                 <View style={{
                     flex: 1,
@@ -93,7 +94,7 @@ const HomeScreen = ({navigation}) => {
                         </View>
                     </View>
 
-                    {/* Points */}
+                    {/* Search*/}
                     <TouchableOpacity
                         style={{
                             height: 40,

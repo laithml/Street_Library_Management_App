@@ -29,7 +29,7 @@ const Tabs = () => {
                         case "Home":
                             iconName = "home";
                             break;
-                        case "Add":
+                        case "Add Book":
                             iconName = "plus";
                             break;
                         case "Map":
@@ -50,7 +50,7 @@ const Tabs = () => {
                 component={HomeScreen}
             />
             <Tab.Screen
-                name="Add"
+                name="Add Book"
                 component={BookInfoScreen}
             />
             <Tab.Screen

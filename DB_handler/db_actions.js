@@ -1,5 +1,5 @@
 import {db, auth} from "../Config/Firebase";
-import { collection, query, getDocs, limit, startAfter, getDoc, doc, setDoc} from "firebase/firestore";
+import {collection, query, getDocs, limit, startAfter, getDoc, doc, setDoc, updateDoc} from "firebase/firestore";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordResetEmail, signOut} from "firebase/auth";
 
 
@@ -85,7 +85,6 @@ export const getLocationById = async (id) => {
     }
 
 }
-
 
 export const fetchCategories = async () => {
     try {
