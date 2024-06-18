@@ -146,6 +146,15 @@ const Styles_screens = StyleSheet.create({
         backgroundColor: '#fff',
         marginRight: SIZES.margin,
     },
+    modalSearch: {
+        height: 40,
+        borderColor: COLORS.secondary,
+        borderWidth: 1,
+        paddingLeft: SIZES.padding,
+        borderRadius: SIZES.radius,
+        backgroundColor: '#fff',
+        marginRight: SIZES.margin,
+    },
     floatingCard: {
         position: 'absolute',
         bottom: 20,

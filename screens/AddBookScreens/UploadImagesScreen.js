@@ -192,7 +192,7 @@ const UploadImagesScreen = ({navigation, route}) => {
                     <View style={Styles_screens.modalContainer}>
                         <View style={Styles_screens.modalContent}>
                             <TextInput
-                                style={Styles_screens.searchInput}
+                                style={Styles_screens.modalSearch}
                                 placeholder="Search Library..."
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
