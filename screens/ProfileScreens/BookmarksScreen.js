@@ -8,7 +8,7 @@ const BookmarksScreen = ({ navigation }) => {
     return (
         <GenericBooksScreen
             navigation={navigation}
-            bookIds={user.bookmarks}
+            bookIds={user.bookmarks ? user.bookmarks : []}
             title="Bookmarks"
         />
     );

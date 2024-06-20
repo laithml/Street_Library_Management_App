@@ -10,7 +10,8 @@ import {
     setDoc,
     updateDoc,
     addDoc,
-    arrayUnion
+    arrayUnion,
+    arrayRemove
 } from "firebase/firestore";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordResetEmail, signOut} from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -104,42 +105,35 @@ export const getCategoryById = async (id) => {
     }
 }
 
+
 export const addBookMark = async (userId, bookId) => {
     console.log("Adding bookmark for user:", userId, "book:", bookId);
     const userDocRef = doc(db, "Users", userId);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-        const user = userDoc.data();
-        // Ensure that the bookmarks field exists, initialize if necessary
-        if (!user.bookmarks) {
-            user.bookmarks = [];
-        }
-        if (!user.bookmarks.includes(bookId)) {
-            user.bookmarks.push(bookId);
-            await setDoc(userDocRef, user);
-            return true;
-        }
+    try {
+        await updateDoc(userDocRef, {
+            bookmarks: arrayUnion(bookId)
+        });
+        return true;
+    } catch (error) {
+        console.error("Error adding bookmark: ", error);
         return false;
     }
-    return false;
-}
+};
+
 
 export const removeBookMark = async (userId, bookId) => {
     console.log("Removing bookmark for user:", userId, "book:", bookId);
     const userDocRef = doc(db, "Users", userId);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-        const user = userDoc.data();
-        if (user.bookmarks && user.bookmarks.includes(bookId)) {
-            user.bookmarks = user.bookmarks.filter((id) => id !== bookId);
-            await setDoc(userDocRef, user);
-            return true;
-        }
+    try {
+        await updateDoc(userDocRef, {
+            bookmarks: arrayRemove(bookId)
+        });
+        return true;
+    } catch (error) {
+        console.error("Error removing bookmark: ", error);
         return false;
     }
-    return false;
-
-}
+};
 
 
 

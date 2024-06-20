@@ -374,6 +374,7 @@ const Styles_screens = StyleSheet.create({
         height: '10%',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        marginBottom: SIZES.margin * 2,
     },
     genreContainer: {
         flexDirection: 'row',

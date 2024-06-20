@@ -18,6 +18,7 @@ import BookDetails from "./screens/HomeScreens/BookDetails";
 import {LocationProvider} from "./Context/LocationContext";
 import BookmarksScreen from "./screens/ProfileScreens/BookmarksScreen";
 import ContributedBooksScreen from "./screens/ProfileScreens/ContributedBooksScreen";
+import SearchScreen from "./screens/ProfileScreens/SearchScreen";
 
 
 
@@ -97,6 +98,7 @@ const App = () => {
                         <Stack.Screen name="BookDetails" component={BookDetails}/>
                         <Stack.Screen name="BookmarksScreen" component={BookmarksScreen}/>
                         <Stack.Screen name={"ContributedBooksScreen"} component={ContributedBooksScreen}/>
+                        <Stack.Screen name={"Search"} component={SearchScreen}/>
 
                     </Stack.Navigator>
                 </NavigationContainer>
