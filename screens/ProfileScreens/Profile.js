@@ -9,6 +9,7 @@ const ProfileScreen = ({navigation}) => {
 
     const {user} = useUser();
     const bookMarks = user.bookmarks.length;
+    const addedBooks = user.booksAdded?.length || 0;
 
     const handlePress = (screenName) => {
         console.log(`Navigating to ${screenName}`);
@@ -51,21 +52,11 @@ const ProfileScreen = ({navigation}) => {
                 {/* My Library Section */}
                 <View style={Styles_screens.section}>
                     <Text style={Styles_screens.sectionTitle}>My Library</Text>
-                    <Card iconName="book" title="Books" info="Read 4, Taken 2" onPress={() => handlePress('Books')}/>
                     <Card iconName="bookmark" title="Bookmarks" info={`${bookMarks} Bookmarks`} onPress={() => handlePress('BookmarksScreen')}/>
-                    <Card iconName="map-marker" title="Libraries" info="Visited 3"
-                          onPress={() => handlePress('Libraries')}/>
-                </View>
-
-                {/* My Contributions Section */}
-                <View style={Styles_screens.section}>
-                    <Text style={Styles_screens.sectionTitle}>My Contributions</Text>
-                    <Card iconName="book" title="Reviews" info="Reviewed 5" onPress={() => handlePress('Reviews')}/>
-                    <Card iconName="map-marker" title="Libraries" info="Added 2"
-                          onPress={() => handlePress('AddedLibraries')}/>
+                    <Card iconName="book" title="Books" info={`${addedBooks} books`} onPress={() => handlePress('ContributedBooksScreen')}/>
                     <Card iconName="plus" title="Add Book" onPress={() => handlePress('Add Book')}/>
-
                 </View>
+
                 {/* Settings Section */}
                 <View style={Styles_screens.section}>
                     <Text style={Styles_screens.sectionTitle}>Settings</Text>

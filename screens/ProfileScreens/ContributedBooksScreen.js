@@ -2,16 +2,16 @@ import React from 'react';
 import { useUser } from "../../Context/UserContext";
 import GenericBooksScreen from "../../components/GenericBooksScreen";
 
-const BookmarksScreen = ({ navigation }) => {
+const ContributedBooksScreen = ({ navigation }) => {
     const { user } = useUser();
 
     return (
         <GenericBooksScreen
             navigation={navigation}
-            bookIds={user.bookmarks}
-            title="Bookmarks"
+            bookIds={user.booksAdded ? user.booksAdded : []}
+            title="Contributions"
         />
     );
 };
 
-export default BookmarksScreen;
+export default ContributedBooksScreen;

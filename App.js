@@ -17,8 +17,8 @@ import {UserProvider} from "./Context/UserContext";
 import BookDetails from "./screens/HomeScreens/BookDetails";
 import {LocationProvider} from "./Context/LocationContext";
 import BookmarksScreen from "./screens/ProfileScreens/BookmarksScreen";
-import {PersistGate} from "redux-persist/integration/react";
-import {Provider} from 'react-redux';
+import ContributedBooksScreen from "./screens/ProfileScreens/ContributedBooksScreen";
+
 
 
 SplashScreen.preventAutoHideAsync().catch(() => { /* Ignoring failure silently */
@@ -96,6 +96,7 @@ const App = () => {
                         <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
                         <Stack.Screen name="BookDetails" component={BookDetails}/>
                         <Stack.Screen name="BookmarksScreen" component={BookmarksScreen}/>
+                        <Stack.Screen name={"ContributedBooksScreen"} component={ContributedBooksScreen}/>
 
                     </Stack.Navigator>
                 </NavigationContainer>

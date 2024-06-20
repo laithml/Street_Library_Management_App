@@ -6,16 +6,17 @@ import {
     TouchableOpacity,
     Image,
     ScrollView,
-    Animated, Linking, Alert
+    Animated,
+    Linking,
+    Alert
 } from 'react-native';
 import {COLORS, FONTS, SIZES} from "../../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {addBookMark, getBookById, getLocationById, removeBookMark} from "../../actions/db_actions";
+import {addBookMark, getBookById, getLocationById, removeBookMark, updateBookStatus} from "../../actions/db_actions";
 import {useLocation} from "../../Context/LocationContext";
 import SelectionModal from "../../components/SelectionModal";
 import Styles_screens from "../../constants/Styles";
 import {useUser} from "../../Context/UserContext";
-
 
 const LineDivider = () => {
     return (
@@ -27,25 +28,31 @@ const LineDivider = () => {
 
 const BookDetails = ({route, navigation}) => {
 
-    const [book, setBook] = React.useState(null);
+    const [book, setBook] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [sortedLibraries, setSortedLibraries] = useState([]);
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [isTaken, setIsTaken] = useState(false);
     const userLocation = useLocation();
     const {user} = useUser();
 
-
-    const [scrollViewWholeHeight, setScrollViewWholeHeight] = React.useState(1);
-    const [scrollViewVisibleHeight, setScrollViewVisibleHeight] = React.useState(0);
+    const [scrollViewWholeHeight, setScrollViewWholeHeight] = useState(1);
+    const [scrollViewVisibleHeight, setScrollViewVisibleHeight] = useState(0);
 
     const indicator = new Animated.Value(0);
 
     useEffect(() => {
         let {book} = route.params;
         setBook(book);
+        if(book.takenBy === undefined){
+            setIsTaken(false);
+        }else{
+            setIsTaken(book.takenBy !==null);
+        }
+
         checkBookmarkStatus(book.id);
-    }, [user.bookmarks]);
+    }, [route.params, user.bookmarks]);
 
     const checkBookmarkStatus = (bookId) => {
         setIsBookmarked(user.bookmarks.includes(bookId));
@@ -72,6 +79,22 @@ const BookDetails = ({route, navigation}) => {
         setIsBookmarked(false);
     };
 
+    const handleTakeBook = async () => {
+        if (!isTaken) {
+            Alert.alert(
+                "Take Book",
+                "Are you sure you want to take this book?",
+                [
+                    {text: "Cancel", style: "cancel"},
+                    {text: "Take", onPress: async () => {
+                            await updateBookStatus(book.id, { takenBy: user.id });
+                            setIsTaken(true);
+                            setBook({ ...book, takenBy: user.id });
+                        }}
+                ]
+            );
+        }
+    };
 
     function renderBookInfoSection() {
         return (
@@ -98,17 +121,15 @@ const BookDetails = ({route, navigation}) => {
                         left: 0,
                         backgroundColor: COLORS.black,
                         opacity: 0.6
-
                     }}
-                >
-                </View>
+                />
 
                 {/* Navigation header */}
                 <View
                     style={{flexDirection: 'row', paddingHorizontal: SIZES.radius, height: 80, alignItems: 'flex-end'}}>
                     <TouchableOpacity
                         style={{marginLeft: SIZES.base}}
-                        onPress={() => navigation.goBack()}
+                        onPress={() => navigation.navigate("Home")}
                     >
                         <FontAwesome name={"chevron-left"} size={20} color={COLORS.textColor}/>
                     </TouchableOpacity>
@@ -142,6 +163,9 @@ const BookDetails = ({route, navigation}) => {
                 <View style={{flex: 1.8, alignItems: 'center', justifyContent: 'center'}}>
                     <Text style={{...FONTS.h2, color: COLORS.textColor}}>{book.title}</Text>
                     <Text style={{...FONTS.body3, color: COLORS.textColor}}>{book.author}</Text>
+                    {isTaken && (
+                        <Text style={{...FONTS.body3, color: COLORS.lightRed}}>This book is taken</Text>
+                    )}
                 </View>
 
                 {/* Book Info */}
@@ -165,7 +189,7 @@ const BookDetails = ({route, navigation}) => {
                     {/* Pages */}
                     <View style={{flex: 1, paddingHorizontal: SIZES.radius, alignItems: 'center'}}>
                         <Text style={{...FONTS.h3, color: COLORS.white}}>{book.numPages}</Text>
-                        <Text style={{...FONTS.body4, color: COLORS.white}}>Number of Page</Text>
+                        <Text style={{...FONTS.body4, color: COLORS.white}}>Number of Pages</Text>
                     </View>
 
                     <LineDivider/>
@@ -181,7 +205,6 @@ const BookDetails = ({route, navigation}) => {
     }
 
     function renderBookDescription() {
-
         const indicatorSize = scrollViewWholeHeight > scrollViewVisibleHeight ? scrollViewVisibleHeight * scrollViewVisibleHeight / scrollViewWholeHeight : scrollViewVisibleHeight
 
         const difference = scrollViewVisibleHeight > indicatorSize ? scrollViewVisibleHeight - indicatorSize : 1
@@ -240,10 +263,8 @@ const BookDetails = ({route, navigation}) => {
         const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
         Linking.openURL(url).then(r => console.log(r));
 
-
         setModalVisible(false);
     }
-
 
     function getDistance(userLocation, libraryLocation) {
         const lat1 = userLocation.latitude;
@@ -264,7 +285,6 @@ const BookDetails = ({route, navigation}) => {
     }
 
     function renderBottomButton() {
-
         const handleGetDirections = async (bookId) => {
             let libraryDistances = [];
 
@@ -304,6 +324,24 @@ const BookDetails = ({route, navigation}) => {
                                  color={isBookmarked ? COLORS.textColor : COLORS.lightGray}/>
                 </TouchableOpacity>
 
+                {/* Take Book */}
+                {!isTaken && (
+                    <TouchableOpacity
+                        style={{
+                            flex: 1,
+                            backgroundColor: COLORS.primary,
+                            marginHorizontal: SIZES.base,
+                            marginVertical: SIZES.base,
+                            borderRadius: SIZES.radius,
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                        onPress={handleTakeBook}
+                    >
+                        <Text style={{...FONTS.h3, color: COLORS.textColor}}>Take Book</Text>
+                    </TouchableOpacity>
+                )}
+
                 {/* Get Directions */}
                 <TouchableOpacity
                     style={{
@@ -319,6 +357,9 @@ const BookDetails = ({route, navigation}) => {
                 >
                     <Text style={{...FONTS.h3, color: COLORS.white}}>Get Directions</Text>
                 </TouchableOpacity>
+
+
+
                 <SelectionModal
                     items={sortedLibraries}
                     visible={isModalVisible}

@@ -1,5 +1,17 @@
 import {db, auth} from "../Config/Firebase";
-import {collection, query, getDocs, limit, startAfter, getDoc, doc, setDoc, updateDoc} from "firebase/firestore";
+import {
+    collection,
+    query,
+    getDocs,
+    limit,
+    startAfter,
+    getDoc,
+    doc,
+    setDoc,
+    updateDoc,
+    addDoc,
+    arrayUnion
+} from "firebase/firestore";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordResetEmail, signOut} from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,28 +24,28 @@ const CategoriesCollectionRef = collection(db, "Categories");
 const LibrariesCollectionRef = collection(db, "LibrariesData");
 
 
+export const updateUserBooks = async (userId, bookId) => {
+    const userRef = doc(db, "Users", userId);
 
-
-const cacheLibraries = async (libraries) => {
-    try {
-        const jsonString = JSON.stringify(libraries);
-        await AsyncStorage.setItem('cachedLibraries', jsonString);
-    } catch (error) {
-        console.error('Error caching libraries:', error);
+    // Ensure the booksAdded array exists in the user's document
+    const userDoc = await getDoc(userRef);
+    if (userDoc.exists()) {
+        if (!userDoc.data().booksAdded) {
+            // If booksAdded array doesn't exist, create it
+            await updateDoc(userRef, {
+                booksAdded: arrayUnion(bookId)
+            });
+        } else {
+            // If booksAdded array exists, add the bookId to it
+            await updateDoc(userRef, {
+                booksAdded: arrayUnion(bookId)
+            });
+        }
+    } else {
+        // If user document doesn't exist, throw an error or handle as needed
+        throw new Error(`User with ID ${userId} does not exist`);
     }
 };
-
-const getCachedLibraries = async () => {
-    try {
-        const jsonString = await AsyncStorage.getItem('cachedLibraries');
-        return jsonString ? JSON.parse(jsonString) : null;
-    } catch (error) {
-        console.error('Error retrieving cached libraries:', error);
-        return null;
-    }
-};
-
-
 
 export const fetchLibraries = async () => {
     try {
@@ -47,6 +59,37 @@ export const fetchLibraries = async () => {
     } catch (error) {
         console.error("Failed to fetch libraries:", error);
         return []; // Return an empty array on error
+    }
+};
+
+export const updateBookStatus = async (bookId, data) => {
+    const bookRef = doc(db, "BooksData", bookId);
+    await updateDoc(bookRef, data);
+};
+
+export const addBook = async (bookData) => {
+    try {
+        const bookRef = await addDoc(collection(db, "BooksData"), bookData);
+        await updateDoc(doc(db, "BooksData", bookRef.id), {
+            id: bookRef.id
+        });
+
+        const libraryRef = doc(db, "LibrariesData", bookData.location);
+        const librarySnap = await getDoc(libraryRef);
+        if (librarySnap.exists()) {
+            const currentBooks = librarySnap.data().books || [];
+            await updateDoc(libraryRef, {
+                books: [...currentBooks, bookRef.id]
+            });
+            console.log("Library updated with new book ID");
+        } else {
+            console.log("No such library document!");
+        }
+
+        return bookRef.id;
+    } catch (error) {
+        console.error("Error adding book: ", error);
+        throw new Error(error);
     }
 };
 
