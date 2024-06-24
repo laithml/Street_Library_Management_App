@@ -14,13 +14,11 @@ import {
     arrayRemove
 } from "firebase/firestore";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordResetEmail, signOut} from "firebase/auth";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
 
 const booksCollectionRef = collection(db, "BooksData");
-const usersCollectionRef = collection(db, "Users");
 const CategoriesCollectionRef = collection(db, "Categories");
 const LibrariesCollectionRef = collection(db, "LibrariesData");
 
