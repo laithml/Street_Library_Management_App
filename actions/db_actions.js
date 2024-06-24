@@ -21,7 +21,20 @@ import {createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordR
 const booksCollectionRef = collection(db, "BooksData");
 const CategoriesCollectionRef = collection(db, "Categories");
 const LibrariesCollectionRef = collection(db, "LibrariesData");
+const UsersCollectionRef = collection(db, "Users");
 
+
+export const getUserById = async (id) => {
+    const docRef = doc(db, "Users", id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return docSnap.data();
+    } else {
+        console.log("No such document!");
+        return null;
+    }
+
+}
 
 export const updateUserBooks = async (userId, bookId) => {
     const userRef = doc(db, "Users", userId);

@@ -15,6 +15,7 @@ import {COLORS, SIZES} from "../../constants";
 import Styles_screens from "../../constants/Styles";
 import {useLocation} from "../../Context/LocationContext";
 import {fetchLibraries} from "../../actions/db_actions";
+import {useUser} from "../../Context/UserContext";
 
 const MapScreen = ({navigation}) => {
     const [libraries, setLibraries] = useState([]);
@@ -25,6 +26,7 @@ const MapScreen = ({navigation}) => {
     const [currentRegion, setCurrentRegion] = useState();
     const [filteredLibraries, setFilteredLibraries] = useState([]);
     const [visible, setVisible] = useState(false);
+    const {user} = useUser();
 
     const handleGetDirections = () => {
         if (selectedLibrary) {
@@ -176,13 +178,14 @@ const MapScreen = ({navigation}) => {
                 </View>
             )}
 
-            {/*{(isAdmin) &&*/}
+            {(user.isAdmin) && (
             <TouchableOpacity
                 style={[Styles_screens.submitButton, {width: '100%', marginTop: SIZES.margin}]}
                 onPress={() => navigation.navigate('AddLibrary')}>
                 <Text style={Styles_screens.submitButtonText}>Add New Library</Text>
             </TouchableOpacity>
-            {/*}*/}
+            )}
+
         </SafeAreaView>
     );
 };

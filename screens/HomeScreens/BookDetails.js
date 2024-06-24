@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {COLORS, FONTS, SIZES} from "../../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {addBookMark, getBookById, getLocationById, removeBookMark, updateBookStatus} from "../../actions/db_actions";
+import {addBookMark, getBookById, getLocationById, removeBookMark, updateBookStatus, getUserById} from "../../actions/db_actions";
 import {useLocation} from "../../Context/LocationContext";
 import SelectionModal from "../../components/SelectionModal";
 import Styles_screens from "../../constants/Styles";
@@ -27,13 +27,13 @@ const LineDivider = () => {
 }
 
 const BookDetails = ({route, navigation}) => {
-
     const [book, setBook] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [sortedLibraries, setSortedLibraries] = useState([]);
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isTaken, setIsTaken] = useState(false);
+    const [takerDetails, setTakerDetails] = useState(null);
     const userLocation = useLocation();
     const {user} = useUser();
 
@@ -45,10 +45,13 @@ const BookDetails = ({route, navigation}) => {
     useEffect(() => {
         let {book} = route.params;
         setBook(book);
-        if(book.takenBy === undefined){
+        if (book.takenBy === undefined) {
             setIsTaken(false);
-        }else{
-            setIsTaken(book.takenBy !==null);
+        } else {
+            setIsTaken(book.takenBy !== null);
+            if (book.takenBy !== null) {
+                fetchTakerDetails(book.takenBy);
+            }
         }
 
         checkBookmarkStatus(book.id);
@@ -56,6 +59,16 @@ const BookDetails = ({route, navigation}) => {
 
     const checkBookmarkStatus = (bookId) => {
         setIsBookmarked(user.bookmarks.includes(bookId));
+    };
+
+    const fetchTakerDetails = async (takerId) => {
+        try {
+            const taker = await getUserById(takerId);
+            setTakerDetails(taker);
+            console.log("Taker details:", taker);
+        } catch (error) {
+            console.error("Failed to fetch taker details:", error);
+        }
     };
 
     const toggleBookmark = async () => {
@@ -165,6 +178,9 @@ const BookDetails = ({route, navigation}) => {
                     <Text style={{...FONTS.body3, color: COLORS.textColor}}>{book.author}</Text>
                     {isTaken && (
                         <Text style={{...FONTS.body3, color: COLORS.lightRed}}>This book is taken</Text>
+                    )}
+                    {user.isAdmin && isTaken && takerDetails && (
+                        <Text style={{...FONTS.body3, color: COLORS.secondary}}>Taken by: {takerDetails.name}</Text>
                     )}
                 </View>
 
@@ -357,8 +373,6 @@ const BookDetails = ({route, navigation}) => {
                 >
                     <Text style={{...FONTS.h3, color: COLORS.white}}>Get Directions</Text>
                 </TouchableOpacity>
-
-
 
                 <SelectionModal
                     items={sortedLibraries}
