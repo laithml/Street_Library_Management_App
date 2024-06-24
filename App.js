@@ -18,7 +18,7 @@ import BookDetails from "./screens/HomeScreens/BookDetails";
 import {LocationProvider} from "./Context/LocationContext";
 import BookmarksScreen from "./screens/ProfileScreens/BookmarksScreen";
 import ContributedBooksScreen from "./screens/ProfileScreens/ContributedBooksScreen";
-import SearchScreen from "./screens/ProfileScreens/SearchScreen";
+import SearchScreen from "./screens/HomeScreens/SearchScreen";
 
 
 

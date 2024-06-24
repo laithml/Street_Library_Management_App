@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, TouchableOpacity, ScrollView, FlatList } from 'react-native';
-import { COLORS, FONTS, SIZES, } from '../../constants';
+import {SafeAreaView, View, Text, TouchableOpacity, ScrollView, FlatList, ActivityIndicator} from 'react-native';
+import { COLORS, FONTS, SIZES } from '../../constants';
 import Styles_screens from "../../constants/Styles";
-import { fetchBooks, fetchCategories, fetchLibraries } from "../../actions/db_actions";
+import {useUser} from "../../Context/UserContext";
+import {fetchBooks, fetchCategories, fetchLibraries} from "../../actions/db_actions";
 import LoadingAnimation from "../../components/LoadingAnimation";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import BookItem from "../../components/BookItem";
 import BookBasic from "../../components/BookBasic";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { useUser } from "../../Context/UserContext";
 import LibrarySelectionModal from "../../components/LibrarySelectionModal";
 
 const HomeScreen = ({ navigation }) => {
     const [books, setBooks] = useState([]);
     const [lastVisible, setLastVisible] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [categories, setCategories] = useState([]);
     const [activeCategory, setActiveCategory] = useState({});
     const [libraries, setLibraries] = useState([]);
@@ -23,26 +24,32 @@ const HomeScreen = ({ navigation }) => {
     const { user } = useUser();
 
     useEffect(() => {
-        setLoading(true);
-        loadBooks(user.defaultLibrary, true);
-        loadCategories();
-        loadLibraries();
-        setLoading(false);
+        const initialize = async () => {
+            setLoading(true);
+            await loadLibraries();
+            await loadCategories();
+            await loadBooks(user.defaultLibrary, true);
+            setLoading(false);
+        };
+
+        initialize();
     }, [user.defaultLibrary]);
 
-    const loadBooks = async (libraryId, reset = false) => {
+    const loadBooks = async (libraryId = null, reset = false) => {
         try {
             if (reset) {
                 setLastVisible(null);
                 setBooks([]);
             }
+            setLoadingMore(true);
             const { fetchedBooks, lastVisibleDoc } = await fetchBooks(lastVisible, pageSize);
-            const filteredBooks = fetchedBooks.filter(book => book.location === libraryId);
+            const filteredBooks = libraryId ? fetchedBooks.filter(book => book.location === libraryId) : fetchedBooks;
             setBooks(prevBooks => reset ? filteredBooks : [...prevBooks, ...filteredBooks]);
             setLastVisible(lastVisibleDoc);
-            setLoading(false);
+            setLoadingMore(false);
         } catch (error) {
             console.log(error);
+            setLoadingMore(false);
         }
     };
 
@@ -66,29 +73,32 @@ const HomeScreen = ({ navigation }) => {
         }
     };
 
-    const renderCategoryButton = (category) => {
-        return (
-            <TouchableOpacity
-                style={[
-                    Styles_screens.categoryButton,
-                    activeCategory === category ? Styles_screens.selectedCategory : {},
-                ]}
-                onPress={() => setActiveCategory(category)}
-            >
-                <Text style={Styles_screens.genreButtonText}>{category.name}</Text>
-            </TouchableOpacity>
-        );
-    };
+    const renderCategoryButton = (category) => (
+        <TouchableOpacity
+            style={[
+                Styles_screens.categoryButton,
+                activeCategory === category ? Styles_screens.selectedCategory : {},
+            ]}
+            onPress={() => setActiveCategory(category)}
+        >
+            <Text style={Styles_screens.genreButtonText}>{category.name}</Text>
+        </TouchableOpacity>
+    );
 
     const handleLoadMore = () => {
         if (lastVisible) {
-            loadBooks(selectedLibrary.id);
+            loadBooks(selectedLibrary ? selectedLibrary.id : null);
         }
     };
 
     const handleLibrarySelect = (id, name) => {
         setSelectedLibrary({ id, name });
         loadBooks(id, true);
+    };
+
+    const clearSelectedLibrary = () => {
+        setSelectedLibrary(null);
+        loadBooks(null, true); // Load all books
     };
 
     if (loading) {
@@ -113,14 +123,9 @@ const HomeScreen = ({ navigation }) => {
                         </View>
 
                         {/* Search */}
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('Search')}
-                        >
+                        <TouchableOpacity onPress={() => navigation.navigate('Search')}>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <View style={{
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
+                                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                                     <FontAwesome name={"search"} size={25} color={COLORS.textColor} />
                                 </View>
                             </View>
@@ -128,25 +133,31 @@ const HomeScreen = ({ navigation }) => {
                     </View>
 
                     {/* Library Switcher */}
-                    <TouchableOpacity
-                        style={{
-                            height: 40,
-                            paddingHorizontal: 15,
-                            borderRadius: 20,
-                            backgroundColor: COLORS.textColor,
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}
-                        onPress={() => setVisibleLibModel(true)}
-                    >
-                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                            <Text
-                                style={{ margin: SIZES.base, color: COLORS.white, ...FONTS.body3 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TouchableOpacity
+                            style={{
+                                flex: 1,
+                                height: 40,
+                                paddingHorizontal: 15,
+                                borderRadius: 20,
+                                backgroundColor: COLORS.textColor,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                            }}
+                            onPress={() => setVisibleLibModel(true)}
+                        >
+                            <Text style={{ margin: SIZES.base, color: COLORS.white, ...FONTS.body3 }}>
                                 {selectedLibrary ? selectedLibrary.name : 'Select Library'}
                             </Text>
                             <FontAwesome name={"angle-down"} size={20} color={COLORS.white} />
-                        </View>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                        {selectedLibrary && (
+                            <TouchableOpacity onPress={clearSelectedLibrary} style={{ marginLeft: 10 }}>
+                                <FontAwesome name={"times"} size={20} color={COLORS.textColor} />
+                            </TouchableOpacity>
+                        )}
+                    </View>
                 </View>
             </View>
             <ScrollView>
@@ -156,12 +167,13 @@ const HomeScreen = ({ navigation }) => {
                     {books.length > 0 ? (
                         <FlatList
                             data={books}
-                            keyExtractor={(item) => item.id.toString()}
+                            keyExtractor={(item, index) => `for-you-${item.id}-${index}`}
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             renderItem={({ item }) => <BookItem navigation={navigation} book={item} />}
                             onEndReached={handleLoadMore}
                             onEndReachedThreshold={0.1}
+                            ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={COLORS.primary} />}
                         />
                     ) : (
                         <Text style={{ ...FONTS.body3, color: COLORS.textColor, marginVertical: 10 }}>
@@ -174,15 +186,18 @@ const HomeScreen = ({ navigation }) => {
                 <View style={Styles_screens.section}>
                     <FlatList
                         data={categories}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item, index) => `category-${item.id}-${index}`}
                         renderItem={({ item }) => renderCategoryButton(item)}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                     />
                     <FlatList
                         data={books}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item, index) => `book-${item.id}-${index}`}
                         renderItem={({ item }) => <BookBasic navigation={navigation} book={item} />}
+                        onEndReached={handleLoadMore}
+                        onEndReachedThreshold={0.1}
+                        ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={COLORS.primary} />}
                     />
                 </View>
             </ScrollView>

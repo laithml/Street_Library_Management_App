@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal, View, TouchableOpacity, Text, FlatList } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Make sure FontAwesome is installed
 import Styles_screens from "../constants/Styles";
-import {Colors} from "react-native/Libraries/NewAppScreen";
 import {COLORS} from "../constants";
 
 const SelectionModal = ({ items, visible, setVisible, onSelect, renderItem }) => {
