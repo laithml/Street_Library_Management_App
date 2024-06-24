@@ -19,7 +19,7 @@ import {
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { useUser } from "../../Context/UserContext";
-import {addBook, fetchLibraries, updateUserBooks} from "../../actions/db_actions";
+import {addBook, fetchLibraries, fetchLibraryById, updateUserBooks} from "../../actions/db_actions";
 import LibrarySelectionModal from "../../components/LibrarySelectionModal";
 
 const UploadImagesScreen = ({ navigation, route }) => {
@@ -49,12 +49,18 @@ const UploadImagesScreen = ({ navigation, route }) => {
             setIsLoading(true);
             const librariesData = await fetchLibraries();
             setLibraries(librariesData);
+
+            if (user.defaultLibrary) {
+                const defaultLibrary = await fetchLibraryById(user.defaultLibrary);
+                setSelectedLib(defaultLibrary.name);
+                setSelectedLibId(defaultLibrary.id);
+            }
             setIsLoading(false);
         };
 
         fetchLibrariesData();
         requestPermissionsAsync();
-    }, []);
+    }, [user.defaultLibrary]);
 
     const pickImage = async () => {
         const uri = await pickImageFromLibrary();
