@@ -7,8 +7,10 @@ import BookBasic from "../../components/BookBasic";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LibrarySelectionModal from '../../components/LibrarySelectionModal';
 import { debounce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 const SearchScreen = ({ navigation }) => {
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -80,7 +82,7 @@ const SearchScreen = ({ navigation }) => {
                             color: COLORS.textColor,
                             height: 40,
                         }}
-                        placeholder="Search for books..."
+                        placeholder={t('searchForBooks')}
                         placeholderTextColor={COLORS.gray}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
@@ -107,7 +109,7 @@ const SearchScreen = ({ navigation }) => {
                         onPress={() => setVisibleLibModel(true)}
                     >
                         <Text style={{ margin: SIZES.base, color: COLORS.white, ...FONTS.body3 }}>
-                            {selectedLibrary ? selectedLibrary.name : 'Select Library'}
+                            {selectedLibrary ? selectedLibrary.name : t('selectLibrary')}
                         </Text>
                         <FontAwesome name={'angle-down'} size={20} color={COLORS.white} />
                     </TouchableOpacity>
@@ -119,7 +121,7 @@ const SearchScreen = ({ navigation }) => {
                 </View>
             </View>
             <View style={Styles_screens.section}>
-                <Text style={Styles_screens.sectionTitle}>Search Results</Text>
+                <Text style={Styles_screens.sectionTitle}>{t('searchResults')}</Text>
                 {loading ? (
                     <ActivityIndicator size="large" color={COLORS.primary} style={{ marginVertical: 20 }} />
                 ) : searchResults.length > 0 ? (
@@ -130,7 +132,7 @@ const SearchScreen = ({ navigation }) => {
                         contentContainerStyle={{ paddingBottom: 20 }}
                     />
                 ) : (
-                    <Text style={{ ...FONTS.body3, color: COLORS.textColor, marginVertical: 10 }}>No books found.</Text>
+                    <Text style={{ ...FONTS.body3, color: COLORS.textColor, marginVertical: 10 }}>{t('noBooksFound')}</Text>
                 )}
             </View>
 

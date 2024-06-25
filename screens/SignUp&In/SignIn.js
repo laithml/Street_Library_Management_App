@@ -9,16 +9,18 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-import {COLORS} from "../../constants";
-import React, {useRef, useState} from "react";
+import { COLORS } from "../../constants";
+import React, { useRef, useState } from "react";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {loginUser} from "../../actions/db_actions";
-import {useUser} from "../../Context/UserContext";
+import { loginUser } from "../../actions/db_actions";
+import { useUser } from "../../Context/UserContext";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from "../../components/LanguageSwitcher"; // import the language switcher
 
-
-const SignIn = ({navigation}) => {
-    const {setUser} = useUser();
+const SignIn = ({ navigation }) => {
+    const { t } = useTranslation();
+    const { setUser } = useUser();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -31,13 +33,13 @@ const SignIn = ({navigation}) => {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()\[\]\\.,;:\s@"]+\.)+[^<>()\[\]\\.,;:\s@"]{2,})$/i;
         return re.test(String(email).toLowerCase());
     };
+
     const handleSignIn = async () => {
         if (!isValidEmail(email)) {
-            setErrors({email: 'Invalid email'});
+            setErrors({ email: t('invalidEmail') });
             return;
         }
         if (email && password) {
-            console.log("Signing in with email:", email);
             setLoading(true);
             const login = await loginUser(email, password);
             setLoading(false);
@@ -48,43 +50,41 @@ const SignIn = ({navigation}) => {
                     routes: [{ name: 'Tab' }],
                 });
             } else {
-                Alert.alert("Sign In Failed", "Invalid email or password", [{text: 'OK'}]);
+                Alert.alert(t('signInFailed'), t('invalidEmailOrPassword'), [{ text: 'OK' }]);
             }
-
         }
-    }
+    };
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
-    }
+    };
+
     if (errors.email && isValidEmail(email)) {
         setErrors({});
     }
 
-
     if (loading) {
-        return (
-            <LoadingAnimation/>
-        )
+        return <LoadingAnimation />;
     }
 
     return (
-        <KeyboardAvoidingView style={{flex: 1}} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <SafeAreaView style={Styles_screens.container}>
                 <View style={Styles_screens.headerContainer}>
-                    <Text style={Styles_screens.headerText}>Sign In</Text>
+                    <Text style={Styles_screens.headerText}>{t('signIn')}</Text>
+                    <LanguageSwitcher />
                 </View>
-                <View style={{height: 1.5, marginBottom: 30, backgroundColor: 'grey', width: '100%'}}/>
+                <View style={{ height: 1.5, marginBottom: 30, backgroundColor: 'grey', width: '100%' }} />
 
-                <Text style={Styles_screens.header}>Welcome Back !</Text>
-                <Text style={Styles_screens.header2}>Sign in to your account</Text>
+                <Text style={Styles_screens.header}>{t('welcomeBack')}</Text>
+                <Text style={Styles_screens.header2}>{t('signInToAccount')}</Text>
                 <View style={Styles_screens.inputContainer}>
-                    <Text style={Styles_screens.inputTitle}>Email</Text>
+                    <Text style={Styles_screens.inputTitle}>{t('email')}</Text>
                     {errors.email && <Text style={Styles_screens.error}>{errors.email}</Text>}
                     <TextInput
                         placeholderTextColor={COLORS.textColor}
                         style={[Styles_screens.input, errors.email && Styles_screens.errorField]}
-                        placeholder="Email"
+                        placeholder={t('email')}
                         returnKeyType="next"
                         onSubmitEditing={() => passwordRef.current.focus()}
                         onChangeText={(text) => {
@@ -92,13 +92,13 @@ const SignIn = ({navigation}) => {
                         }}
                         value={email}
                     />
-                    <Text style={Styles_screens.inputTitle}>Password</Text>
+                    <Text style={Styles_screens.inputTitle}>{t('password')}</Text>
                     <View style={Styles_screens.inputWrapper}>
                         <TextInput
                             placeholderTextColor={COLORS.textColor}
                             style={Styles_screens.input}
                             secureTextEntry={passwordVisible}
-                            placeholder="Password"
+                            placeholder={t('password')}
                             ref={passwordRef}
                             onChangeText={(text) => {
                                 setPassword(text);
@@ -121,23 +121,21 @@ const SignIn = ({navigation}) => {
                         borderBottomWidth: 0.5,
                         borderBottomColor: COLORS.textColor,
                     }} onPress={() => navigation.navigate("ForgotPassword")}>
-                        <Text style={{color: COLORS.textColor,}}>Forgot Password?</Text>
+                        <Text style={{ color: COLORS.textColor }}>{t('forgotPassword')}</Text>
                     </TouchableOpacity>
                 </View>
-
             </SafeAreaView>
 
             <View style={Styles_screens.buttonsContainer}>
                 <TouchableOpacity style={Styles_screens.submitButton} onPress={handleSignIn}>
-                    <Text style={Styles_screens.submitButtonText}>Sign In</Text>
+                    <Text style={Styles_screens.submitButtonText}>{t('signInButton')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={Styles_screens.buttonNoBorder} onPress={() => navigation.navigate("SignUp")}>
-                    <Text style={Styles_screens.buttonText}>New user? Sign Up</Text>
+                    <Text style={Styles_screens.buttonText}>{t('newUserSignUp')}</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
-    )
-
+    );
 }
 
 export default SignIn;

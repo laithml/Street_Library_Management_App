@@ -1,75 +1,65 @@
 import React from "react";
-import {SafeAreaView, View, Text, ScrollView, Alert} from 'react-native';
+import { SafeAreaView, View, Text, ScrollView, Alert } from 'react-native';
 import Styles_screens from "../../constants/Styles";
 import Card from "../../components/Card";
-import {logoutUser} from "../../actions/db_actions";
-import {useUser} from "../../Context/UserContext";
+import { logoutUser } from "../../actions/db_actions";
+import { useUser } from "../../Context/UserContext";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from "../../components/LanguageSwitcher"; // import the language switcher
 
-const ProfileScreen = ({navigation}) => {
-
-    const {user} = useUser();
+const ProfileScreen = ({ navigation }) => {
+    const { t } = useTranslation();
+    const { user } = useUser();
     const bookMarks = user.bookmarks.length;
     const addedBooks = user.booksAdded?.length || 0;
 
     const handlePress = (screenName) => {
-        console.log(`Navigating to ${screenName}`);
         navigation.navigate(screenName);
     };
 
     const signOut = () => {
-
         Alert.alert(
-            "Sign Out",
-            "Are you sure you want to sign out?",
+            t('signOut'),
+            t('signOutConfirmation'),
             [
                 {
-                    text: "Cancel",
+                    text: t('cancel'),
                     onPress: () => console.log("Cancel Pressed"),
                     style: "cancel"
                 },
                 {
-                    text: "Sign Out", onPress: async () => {
+                    text: t('signOut'), onPress: async () => {
                         const signOut = await logoutUser();
                         if (signOut) {
-                            console.log("Sign out successful");
                             navigation.navigate('SignIn');
-
-                        } else {
-                            console.log("Sign out failed");
                         }
                     }
                 }
             ]
         );
-
-
-    }
+    };
 
     return (
         <SafeAreaView style={Styles_screens.container}>
+            <View style={Styles_screens.headerContainer}>
+                <Text style={Styles_screens.headerText}>{t('myLibrary')}</Text>
+                <LanguageSwitcher />
+            </View>
             <ScrollView style={Styles_screens.scrollView}>
-
-                {/* My Library Section */}
                 <View style={Styles_screens.section}>
-                    <Text style={Styles_screens.sectionTitle}>My Library</Text>
-                    <Card iconName="bookmark" title="Bookmarks" info={`${bookMarks} Bookmarks`} onPress={() => handlePress('BookmarksScreen')}/>
-                    <Card iconName="book" title="Books" info={`${addedBooks} books`} onPress={() => handlePress('ContributedBooksScreen')}/>
-                    <Card iconName="plus" title="Add Book" onPress={() => handlePress('Add Book')}/>
+                    <Card iconName="bookmark" title={t('bookmarks')} info={`${bookMarks} ${t('bookmarks')}`} onPress={() => handlePress('BookmarksScreen')} />
+                    <Card iconName="book" title={t('books')} info={`${addedBooks} ${t('books')}`} onPress={() => handlePress('ContributedBooksScreen')} />
+                    <Card iconName="plus" title={t('addBook')} onPress={() => handlePress('Add Book')} />
                 </View>
-
-                {/* Settings Section */}
                 <View style={Styles_screens.section}>
-                    <Text style={Styles_screens.sectionTitle}>Settings</Text>
-                    <Card iconName="cog" title="Account" onPress={() => handlePress('Account')}/>
-                    <Card iconName="bell" title="Notifications" onPress={() => handlePress('Notifications')}/>
-                    <Card iconName="info" title="About" onPress={() => handlePress('About')}/>
-                    <Card iconName="sign-out" title="Sign Out" onPress={signOut}/>
+                    <Card iconName="cog" title={t('account')} onPress={() => handlePress('Account')} />
+                    <Card iconName="bell" title={t('notifications')} onPress={() => handlePress('Notifications')} />
+                    <Card iconName="info" title={t('about')} onPress={() => handlePress('About')} />
+                    <Card iconName="sign-out" title={t('signOut')} onPress={signOut} />
                 </View>
-
             </ScrollView>
         </SafeAreaView>
     );
 };
-
 
 export default ProfileScreen;

@@ -17,6 +17,7 @@ import {useLocation} from "../../Context/LocationContext";
 import SelectionModal from "../../components/SelectionModal";
 import Styles_screens from "../../constants/Styles";
 import {useUser} from "../../Context/UserContext";
+import { useTranslation } from "react-i18next";
 
 const LineDivider = () => {
     return (
@@ -27,6 +28,7 @@ const LineDivider = () => {
 }
 
 const BookDetails = ({route, navigation}) => {
+    const { t } = useTranslation();
     const [book, setBook] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [sortedLibraries, setSortedLibraries] = useState([]);
@@ -74,11 +76,11 @@ const BookDetails = ({route, navigation}) => {
     const toggleBookmark = async () => {
         if (isBookmarked) {
             Alert.alert(
-                "Remove Bookmark",
-                "Are you sure you want to remove this book from your bookmarks?",
+                t("removeBookmark"),
+                t("removeBookmarkPrompt"),
                 [
-                    {text: "Cancel", style: "cancel"},
-                    {text: "Remove", onPress: () => handleRemoveBookmark()}
+                    {text: t("cancel"), style: "cancel"},
+                    {text: t("remove"), onPress: () => handleRemoveBookmark()}
                 ]
             );
         } else {
@@ -95,11 +97,11 @@ const BookDetails = ({route, navigation}) => {
     const handleTakeBook = async () => {
         if (!isTaken) {
             Alert.alert(
-                "Take Book",
-                "Are you sure you want to take this book?",
+                t("takeBook"),
+                t("takeBookPrompt"),
                 [
-                    {text: "Cancel", style: "cancel"},
-                    {text: "Take", onPress: async () => {
+                    {text: t("cancel"), style: "cancel"},
+                    {text: t("take"), onPress: async () => {
                             await updateBookStatus(book.id, { takenBy: user.id });
                             setIsTaken(true);
                             setBook({ ...book, takenBy: user.id });
@@ -148,7 +150,7 @@ const BookDetails = ({route, navigation}) => {
                     </TouchableOpacity>
 
                     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={{...FONTS.h3, color: COLORS.textColor}}>Book Detail</Text>
+                        <Text style={{...FONTS.h3, color: COLORS.textColor}}>{t("bookDetail")}</Text>
                     </View>
 
                     <TouchableOpacity
@@ -177,10 +179,10 @@ const BookDetails = ({route, navigation}) => {
                     <Text style={{...FONTS.h2, color: COLORS.textColor}}>{book.title}</Text>
                     <Text style={{...FONTS.body3, color: COLORS.textColor}}>{book.author}</Text>
                     {isTaken && (
-                        <Text style={{...FONTS.body3, color: COLORS.lightRed}}>This book is taken</Text>
+                        <Text style={{...FONTS.body3, color: COLORS.lightRed}}>{t("bookTaken")}</Text>
                     )}
                     {user.isAdmin && isTaken && takerDetails && (
-                        <Text style={{...FONTS.body3, color: COLORS.secondary}}>Taken by: {takerDetails.name}</Text>
+                        <Text style={{...FONTS.body3, color: COLORS.secondary}}>{t("takenBy")}: {takerDetails.name}</Text>
                     )}
                 </View>
 
@@ -197,7 +199,7 @@ const BookDetails = ({route, navigation}) => {
                     {/* Rating */}
                     <View style={{flex: 1, alignItems: 'center'}}>
                         <Text style={{...FONTS.h3, color: COLORS.white}}>{book.rating}</Text>
-                        <Text style={{...FONTS.body4, color: COLORS.white}}>Rating</Text>
+                        <Text style={{...FONTS.body4, color: COLORS.white}}>{t("rating")}</Text>
                     </View>
 
                     <LineDivider/>
@@ -205,7 +207,7 @@ const BookDetails = ({route, navigation}) => {
                     {/* Pages */}
                     <View style={{flex: 1, paddingHorizontal: SIZES.radius, alignItems: 'center'}}>
                         <Text style={{...FONTS.h3, color: COLORS.white}}>{book.numPages}</Text>
-                        <Text style={{...FONTS.body4, color: COLORS.white}}>Number of Pages</Text>
+                        <Text style={{...FONTS.body4, color: COLORS.white}}>{t("numPages")}</Text>
                     </View>
 
                     <LineDivider/>
@@ -213,7 +215,7 @@ const BookDetails = ({route, navigation}) => {
                     {/* Language */}
                     <View style={{flex: 1, alignItems: 'center'}}>
                         <Text style={{...FONTS.h3, color: COLORS.white}}>{book.language}</Text>
-                        <Text style={{...FONTS.body4, color: COLORS.white}}>Language</Text>
+                        <Text style={{...FONTS.body4, color: COLORS.white}}>{t("language")}</Text>
                     </View>
                 </View>
             </View>
@@ -261,7 +263,7 @@ const BookDetails = ({route, navigation}) => {
                         {useNativeDriver: false}
                     )}
                 >
-                    <Text style={{...FONTS.h2, color: COLORS.textColor, marginBottom: SIZES.padding}}>Description</Text>
+                    <Text style={{...FONTS.h2, color: COLORS.textColor, marginBottom: SIZES.padding}}>{t("description")}</Text>
                     <Text style={{...FONTS.body2, color: COLORS.lightGray}}>{book.description}</Text>
                 </ScrollView>
             </View>
@@ -354,7 +356,7 @@ const BookDetails = ({route, navigation}) => {
                         }}
                         onPress={handleTakeBook}
                     >
-                        <Text style={{...FONTS.h3, color: COLORS.textColor}}>Take Book</Text>
+                        <Text style={{...FONTS.h3, color: COLORS.textColor}}>{t("takeBook")}</Text>
                     </TouchableOpacity>
                 )}
 
@@ -371,7 +373,7 @@ const BookDetails = ({route, navigation}) => {
                     }}
                     onPress={() => handleGetDirections(book.id)}
                 >
-                    <Text style={{...FONTS.h3, color: COLORS.white}}>Get Directions</Text>
+                    <Text style={{...FONTS.h3, color: COLORS.white}}>{t("getDirections")}</Text>
                 </TouchableOpacity>
 
                 <SelectionModal

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     SafeAreaView,
     View,
@@ -8,31 +8,33 @@ import {
     StyleSheet,
     FlatList, Linking
 } from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LibraryDetail from "../../components/LibraryDetail";
-import {COLORS, SIZES} from "../../constants";
+import { COLORS, SIZES } from "../../constants";
 import Styles_screens from "../../constants/Styles";
-import {useLocation} from "../../Context/LocationContext";
-import {fetchLibraries} from "../../actions/db_actions";
-import {useUser} from "../../Context/UserContext";
+import { useLocation } from "../../Context/LocationContext";
+import { fetchLibraries } from "../../actions/db_actions";
+import { useUser } from "../../Context/UserContext";
+import { useTranslation } from 'react-i18next';
 
-const MapScreen = ({navigation}) => {
+const MapScreen = ({ navigation }) => {
+    const { t } = useTranslation();
     const [libraries, setLibraries] = useState([]);
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const mapRef = useRef(null);
-    const {location, errorMsg} = useLocation();
+    const { location, errorMsg } = useLocation();
     const [currentRegion, setCurrentRegion] = useState();
     const [filteredLibraries, setFilteredLibraries] = useState([]);
     const [visible, setVisible] = useState(false);
-    const {user} = useUser();
+    const { user } = useUser();
 
     const handleGetDirections = () => {
         if (selectedLibrary) {
             console.log('Getting directions...');
             console.log(selectedLibrary);
-            const {latitude, longitude} = selectedLibrary;
+            const { latitude, longitude } = selectedLibrary;
             const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
             Linking.openURL(url);
         }
@@ -59,7 +61,6 @@ const MapScreen = ({navigation}) => {
         }
     }, [libraries, searchQuery]);
 
-
     useEffect(() => {
         if (location) {
             const isInIsrael = (latitude, longitude) => {
@@ -76,7 +77,6 @@ const MapScreen = ({navigation}) => {
             }
         }
     }, [location]);
-
 
     const animateToRegion = (item) => {
         if (location) {
@@ -106,7 +106,6 @@ const MapScreen = ({navigation}) => {
         }
     }, [libraries.length]);
 
-
     return (
         <SafeAreaView style={Styles_screens.defContainer}>
             <View style={{
@@ -118,21 +117,21 @@ const MapScreen = ({navigation}) => {
             }}>
                 <TextInput
                     style={Styles_screens.searchInput}
-                    placeholder="Search for libraries..."
+                    placeholder={t('searchForLibraries')}
                     onChangeText={onSearchChange}
                     value={searchQuery}
                 />
                 <View
-                    style={[Styles_screens.submitButton, {width: 40, height: 40}]}
+                    style={[Styles_screens.submitButton, { width: 40, height: 40 }]}
                     onPress={() => console.log('Searching')}>
-                    <FontAwesome name="search" size={20} color={COLORS.white}/>
+                    <FontAwesome name="search" size={20} color={COLORS.white} />
                 </View>
                 {searchQuery && filteredLibraries.length > 0 && visible && (
                     <View style={Styles_screens.dropdown}>
                         <FlatList
                             data={filteredLibraries}
                             keyExtractor={item => item.id.toString()}
-                            renderItem={({item}) => (
+                            renderItem={({ item }) => (
                                 <TouchableOpacity onPress={() => {
                                     selectLibrary(item);
                                     setSearchQuery(item.name);
@@ -167,7 +166,6 @@ const MapScreen = ({navigation}) => {
                 )) : null}
             </MapView>
 
-
             {selectedLibrary && (
                 <View style={Styles_screens.floatingCard}>
                     <LibraryDetail
@@ -179,11 +177,11 @@ const MapScreen = ({navigation}) => {
             )}
 
             {(user.isAdmin) && (
-            <TouchableOpacity
-                style={[Styles_screens.submitButton, {width: '100%', marginTop: SIZES.margin}]}
-                onPress={() => navigation.navigate('AddLibrary')}>
-                <Text style={Styles_screens.submitButtonText}>Add New Library</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                    style={[Styles_screens.submitButton, { width: '100%', marginTop: SIZES.margin }]}
+                    onPress={() => navigation.navigate('AddLibrary')}>
+                    <Text style={Styles_screens.submitButtonText}>{t('addNewLibrary')}</Text>
+                </TouchableOpacity>
             )}
 
         </SafeAreaView>

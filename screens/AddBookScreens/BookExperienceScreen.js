@@ -1,14 +1,15 @@
-import Styles_screens from "../../constants/Styles";
-import {Alert, KeyboardAvoidingView, Modal, Platform, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
-import {COLORS} from "../../constants";
-import React, {useState} from "react";
-import {Rating} from "react-native-ratings";
+import React, { useState } from "react";
+import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { COLORS } from "../../constants";
+import { Rating } from "react-native-ratings";
 import CategoriesSelection from "../../components/CategoriesSelection";
 import SelectionModal from "../../components/SelectionModal";
+import Styles_screens from "../../constants/Styles";
+import { useTranslation } from 'react-i18next';
 
-
-const BookExperienceScreen = ({navigation, route}) => {
-    const {title, author, description, numPages, language} = route.params;
+const BookExperienceScreen = ({ navigation, route }) => {
+    const { t } = useTranslation();
+    const { title, author, description, numPages, language } = route.params;
 
     const [genre, setGenre] = useState([]);
     const [selectedCondition, setSelectedCondition] = useState('');
@@ -17,37 +18,35 @@ const BookExperienceScreen = ({navigation, route}) => {
     const [selectedCategory, setSelectedCategory] = useState('Fiction');
     const [errors, setErrors] = useState({});
 
-
     const conditions = [
-        {label: "New"},
-        {label: "Used - Good"},
-        {label: "Used - Acceptable"}
+        { label: t('new') },
+        { label: t('usedGood') },
+        { label: t('usedAcceptable') }
     ];
-
 
     const handleBackPress = () => {
         navigation.goBack();
     };
+
     const validateInput = () => {
         let isValid = true;
         let newErrors = {};
 
         if (!selectedCondition) {
             isValid = false;
-            newErrors.selectedCondition = 'Book condition is required';
+            newErrors.selectedCondition = t('bookConditionRequired');
         }
 
         if (genre.length === 0) {
             isValid = false;
-            newErrors.selectedGenre = 'Genre selection is required';
+            newErrors.selectedGenre = t('genreSelectionRequired');
         }
 
         setErrors(newErrors);
         return isValid;
     };
-    const handleNextPress = () => {
 
-            console.log(genre)
+    const handleNextPress = () => {
         if (validateInput()) {
             navigation.navigate('UploadImages', {
                 title,
@@ -61,82 +60,77 @@ const BookExperienceScreen = ({navigation, route}) => {
                 selectedGenres: genre,
             });
         } else {
-            Alert.alert('Input Error', 'Please correct the errors before proceeding.');
-
+            Alert.alert(t('inputError'), t('pleaseCorrectErrors'));
         }
     }
-
-
 
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+            <SafeAreaView style={Styles_screens.container}>
+                <View style={Styles_screens.headerContainer}>
+                    <Text style={Styles_screens.headerText}>{t('bookExperienceDetails')}</Text>
+                </View>
+                <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }}></View>
 
-        <SafeAreaView style={Styles_screens.container}>
+                <View style={Styles_screens.inputContainer}>
+                    <Text style={Styles_screens.inputTitle}>{t('bookCondition')}</Text>
+                    <TouchableOpacity style={[Styles_screens.button, { width: "100%" }]} onPress={() => setVisible(true)}>
+                        <Text style={Styles_screens.buttonText}>
+                            {"Condition: " + (selectedCondition || t('chooseBookCondition'))}
+                        </Text>
+                    </TouchableOpacity>
 
-            <View style={Styles_screens.headerContainer}>
-                <Text style={Styles_screens.headerText}>Book Experience Details</Text>
-            </View>
-            <View style={{height: 1.5, backgroundColor: 'grey', width: '100%'}}></View>
+                    <SelectionModal
+                        items={conditions}
+                        visible={visible}
+                        setVisible={setVisible}
+                        onSelect={(condition) => {
+                            setSelectedCondition(condition.label);
+                            setVisible(false);
+                        }}
+                        renderItem={(item) => (
+                            <Text style={Styles_screens.modalItemText}>{item.label}</Text>
+                        )}
+                    />
 
-            <View style={Styles_screens.inputContainer}>
-                <Text style={Styles_screens.inputTitle}>Book Condition:</Text>
-                <TouchableOpacity style={[Styles_screens.button, {width: "100%"}]} onPress={() => setVisible(true)}>
-                    <Text style={Styles_screens.buttonText}>
-                        {"Condition: " + (selectedCondition || "Choose Book Condition")}
-                    </Text>
-                </TouchableOpacity>
+                    <View>
+                        <Text style={Styles_screens.inputTitle}>{t('bookRating')}</Text>
+                        <Rating
+                            type="custom"
+                            ratingColor={COLORS.secondary}
+                            ratingBackgroundColor={COLORS.lightGray}
+                            ratingCount={5}
+                            imageSize={48}
+                            onFinishRating={setRating}
+                            startingValue={rating}
+                            style={{ paddingVertical: 10, marginVertical: 10, alignSelf: 'center' }}
+                            tintColor={COLORS.backgroundColor}
+                        />
+                    </View>
 
-                <SelectionModal  items={conditions}
-                                 visible={visible}
-                                 setVisible={setVisible}
-                                 onSelect={(condition) => {
-                                     setSelectedCondition(condition.label);
-                                     setVisible(false);
-                                 }}
-                                 renderItem={(item) => (
-                                     <Text style={Styles_screens.modalItemText}>{item.label}</Text>
-                                 )}
-                />
-
-                <View>
-                    <Text style={Styles_screens.inputTitle}>Book Rating:</Text>
-                    <Rating
-                        type="custom"
-                        ratingColor={COLORS.secondary}
-                        ratingBackgroundColor={COLORS.lightGray}
-                        ratingCount={5}
-                        imageSize={48}
-                        onFinishRating={setRating}
-                        startingValue={rating}
-                        style={{paddingVertical: 10, marginVertical: 10, alignSelf: 'center'}}
-                        tintColor={COLORS.backgroundColor}
+                    <Text style={Styles_screens.inputTitle}>{t('bookCategory')}</Text>
+                    <CategoriesSelection
+                        onGenreChange={setGenre}
+                        selectedGenres={genre}
                     />
                 </View>
+                {errors.selectedCondition && <Text style={{ color: 'red' }}>{errors.selectedCondition}</Text>}
+                {errors.selectedGenre && <Text style={{ color: 'red', textAlign: 'center' }}>{errors.selectedGenre}</Text>}
 
-                <Text style={Styles_screens.inputTitle}>Book Category:</Text>
-                <CategoriesSelection
-                    onGenreChange={setGenre}
-                    selectedGenres={genre}
-                />
-            </View>
-            {errors.selectedCondition && <Text style={{color: 'red'}}>{errors.selectedCondition}</Text>}
-            {errors.selectedGenre && <Text style={{color: 'red', textAlign: 'center'}}>{errors.selectedGenre}</Text>}
-
-            <View style={[Styles_screens.buttonsContainerRow]}>
-                <TouchableOpacity style={Styles_screens.buttonR} onPress={handleBackPress}>
-                    <Text style={Styles_screens.buttonText}>Back</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={Styles_screens.submitButtonR} onPress={handleNextPress}>
-                    <Text style={Styles_screens.submitButtonText}>Next</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+                <View style={[Styles_screens.buttonsContainerRow]}>
+                    <TouchableOpacity style={Styles_screens.buttonR} onPress={handleBackPress}>
+                        <Text style={Styles_screens.buttonText}>{t('back')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={Styles_screens.submitButtonR} onPress={handleNextPress}>
+                        <Text style={Styles_screens.submitButtonText}>{t('next')}</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
         </KeyboardAvoidingView>
     )
-
 }
 
 export default BookExperienceScreen;

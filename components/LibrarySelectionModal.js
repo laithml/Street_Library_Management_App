@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Styles_screens from "../constants/Styles";
 import {COLORS, SIZES} from "../constants";
+import { useTranslation } from "react-i18next";
 
 const LibrarySelectionModal = ({ visible, onClose, libraries, onSelect }) => {
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
@@ -12,7 +14,7 @@ const LibrarySelectionModal = ({ visible, onClose, libraries, onSelect }) => {
                 <View style={[Styles_screens.modalContent, { maxHeight: '60%' }]}>
                     <TextInput
                         style={Styles_screens.modalSearch}
-                        placeholder="Search Library..."
+                        placeholder={t("searchLibrary")}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                     />
@@ -38,8 +40,8 @@ const LibrarySelectionModal = ({ visible, onClose, libraries, onSelect }) => {
                         borderRadius: SIZES.radius,
                         height: 50,
                         marginTop: 10,
-                      }}>
-                        <Text style={Styles_screens.buttonText}>Close</Text>
+                    }}>
+                        <Text style={Styles_screens.buttonText}>{t("close")}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

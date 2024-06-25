@@ -3,8 +3,11 @@ import { Modal, View, TouchableOpacity, Text, FlatList } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Make sure FontAwesome is installed
 import Styles_screens from "../constants/Styles";
 import {COLORS} from "../constants";
+import { useTranslation } from "react-i18next";
 
 const SelectionModal = ({ items, visible, setVisible, onSelect, renderItem }) => {
+    const { t } = useTranslation();
+
     return (
         <Modal visible={visible} animationType="slide" transparent={true}>
             <View style={Styles_screens.modalContainer}>

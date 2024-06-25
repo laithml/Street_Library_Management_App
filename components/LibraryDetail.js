@@ -2,8 +2,11 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { COLORS, SIZES } from "../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useTranslation } from "react-i18next";
 
 const LibraryDetail = ({ library, onGetDirections, onDismiss }) => {
+    const { t } = useTranslation();
+
     return (
         <View style={styles.cardContainer}>
             <TouchableOpacity style={styles.dismissButton} onPress={onDismiss}>
@@ -18,7 +21,7 @@ const LibraryDetail = ({ library, onGetDirections, onDismiss }) => {
             </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={onGetDirections}>
-                    <Text style={styles.buttonText}>Get Directions</Text>
+                    <Text style={styles.buttonText}>{t("getDirections")}</Text>
                 </TouchableOpacity>
             </View>
         </View>

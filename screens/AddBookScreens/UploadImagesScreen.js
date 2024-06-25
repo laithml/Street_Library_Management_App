@@ -1,40 +1,18 @@
-import {
-    Alert,
-    FlatList,
-    Image,
-    SafeAreaView,
-    Text,
-    TouchableOpacity,
-    View
-} from "react-native";
-import Styles_screens from "../../constants/Styles";
 import React, { useEffect, useState } from "react";
+import { Alert, FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import Styles_screens from "../../constants/Styles";
 import { Timestamp } from "firebase/firestore";
-import {
-    pickImageFromLibrary,
-    requestPermissionsAsync,
-    takePhotoWithCamera,
-    uploadImagesAndGetURLs
-} from "../../Utils/ImagePickerUtils";
+import { pickImageFromLibrary, requestPermissionsAsync, takePhotoWithCamera, uploadImagesAndGetURLs } from "../../Utils/ImagePickerUtils";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { useUser } from "../../Context/UserContext";
-import {addBook, fetchLibraries, fetchLibraryById, updateUserBooks} from "../../actions/db_actions";
+import { addBook, fetchLibraries, fetchLibraryById, updateUserBooks } from "../../actions/db_actions";
 import LibrarySelectionModal from "../../components/LibrarySelectionModal";
+import { useTranslation } from 'react-i18next';
 
 const UploadImagesScreen = ({ navigation, route }) => {
-    const {
-        title,
-        author,
-        description,
-        numPages,
-        language,
-        rating,
-        selectedCondition,
-        selectedCategory,
-        selectedGenres,
-    } = route.params;
-
+    const { t } = useTranslation();
+    const { title, author, description, numPages, language, rating, selectedCondition, selectedCategory, selectedGenres } = route.params;
     const { user } = useUser();
     const [visibleLibModel, setVisibleLibModel] = useState(false);
     const [selectedLib, setSelectedLib] = useState('');
@@ -85,7 +63,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
         let newErrors = {};
         if (!selectedLibId) {
             isValid = false;
-            newErrors.selectedLib = 'Library location is required';
+            newErrors.selectedLib = t('libraryLocationRequired');
         }
         setErrors(newErrors);
         return isValid;
@@ -93,7 +71,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
 
     const handleSubmit = async () => {
         if (!validateInput()) {
-            Alert.alert('Input Error', 'Please correct the errors before proceeding.');
+            Alert.alert(t('inputError'), t('pleaseCorrectErrors'));
             return;
         }
         setIsLoading(true);
@@ -124,7 +102,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
             await updateUserBooks(user.id, bookId);
 
             navigation.navigate('BookDetails', { book: newBook });
-            Alert.alert("Book Submitted", "Your book has been successfully submitted!");
+            Alert.alert(t('bookSubmitted'), t('bookSubmittedSuccess'));
         } catch (error) {
             console.error("Error adding book: ", error);
         } finally {
@@ -147,20 +125,15 @@ const UploadImagesScreen = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={Styles_screens.container}>
-            {/* Header Section */}
             <View style={Styles_screens.headerContainer}>
-                <Text style={Styles_screens.headerText}>Upload Book Details</Text>
+                <Text style={Styles_screens.headerText}>{t('uploadBookDetails')}</Text>
             </View>
             <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }}></View>
-            {/* Main Content Section */}
             <View style={Styles_screens.inputContainer}>
-                <Text style={Styles_screens.descriptionText}>
-                    Choose the library where you'd like to place the book. This helps us organize books by location.
-                </Text>
-                <TouchableOpacity style={[Styles_screens.button, { width: "100%" }]}
-                                  onPress={() => setVisibleLibModel(true)}>
+                <Text style={Styles_screens.descriptionText}>{t('chooseLibrary')}</Text>
+                <TouchableOpacity style={[Styles_screens.button, { width: "100%" }]} onPress={() => setVisibleLibModel(true)}>
                     <Text style={Styles_screens.buttonText}>
-                        {"Library: " + (selectedLib || "Choose Library Location")}
+                        {"Library: " + (selectedLib || t('chooseLibraryLocation'))}
                     </Text>
                 </TouchableOpacity>
 
@@ -172,14 +145,14 @@ const UploadImagesScreen = ({ navigation, route }) => {
                 />
 
                 <Text style={[Styles_screens.descriptionText, { marginTop: 20 }]}>
-                    Upload at least 3 photos of the book: one for the front, one for the back, and one for the side.
+                    {t('uploadPhotos')}
                 </Text>
                 <View style={[Styles_screens.buttonsContainerRow, { position: '', paddingBottom: 18 }]}>
                     <TouchableOpacity style={Styles_screens.buttonR} onPress={pickImage}>
-                        <Text style={Styles_screens.buttonText}>Upload Photo</Text>
+                        <Text style={Styles_screens.buttonText}>{t('uploadPhoto')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={Styles_screens.buttonR} onPress={takePhoto}>
-                        <Text style={Styles_screens.buttonText}>Take Photo</Text>
+                        <Text style={Styles_screens.buttonText}>{t('takePhoto')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -211,13 +184,12 @@ const UploadImagesScreen = ({ navigation, route }) => {
 
             {errors.images && <Text style={Styles_screens.error}>{errors.images}</Text>}
 
-            {/* Footer Section */}
             <View style={[Styles_screens.buttonsContainerRow]}>
                 <TouchableOpacity style={Styles_screens.buttonR} onPress={handleBackPress}>
-                    <Text style={Styles_screens.buttonText}>Back</Text>
+                    <Text style={Styles_screens.buttonText}>{t('back')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={Styles_screens.submitButtonR} onPress={handleSubmit}>
-                    <Text style={Styles_screens.submitButtonText}>Submit</Text>
+                    <Text style={Styles_screens.submitButtonText}>{t('submit')}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

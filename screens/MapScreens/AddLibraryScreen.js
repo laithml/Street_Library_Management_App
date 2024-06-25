@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     TextInput,
@@ -7,16 +7,18 @@ import {
     ScrollView,
     SafeAreaView,
     Image,
-    FlatList, KeyboardAvoidingView, Platform, StatusBar
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+    StatusBar
 } from 'react-native';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-import {COLORS, SIZES} from "../../constants";
-import {GOOGLE_API_KEY} from "../../constants/env";
+import MapView, { Marker } from 'react-native-maps';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { COLORS, SIZES } from "../../constants";
+import { GOOGLE_API_KEY } from "../../constants/env";
 import * as Location from "expo-location";
-import {collection, addDoc, doc, updateDoc} from "firebase/firestore";
-import {db} from "../../Config/Firebase";
-
+import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
+import { db } from "../../Config/Firebase";
 import {
     pickImageFromLibrary,
     requestPermissionsAsync,
@@ -26,9 +28,10 @@ import {
 import Styles_screens from "../../constants/Styles";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import LoadingAnimation from "../../components/LoadingAnimation";
+import { useTranslation } from 'react-i18next';
 
-
-const AddLibraryScreen = ({navigation}) => {
+const AddLibraryScreen = ({ navigation }) => {
+    const { t } = useTranslation();
     const [location, setLocation] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -37,7 +40,6 @@ const AddLibraryScreen = ({navigation}) => {
 
     const descRef = useRef(null);
     const locationRef = useRef(null);
-
 
     useEffect(() => {
         requestPermissionsAsync();
@@ -56,6 +58,7 @@ const AddLibraryScreen = ({navigation}) => {
             setImages([...images, uri]);
         }
     };
+
     const handleRemoveImage = (uri) => {
         setImages(images.filter(image => image !== uri));
     };
@@ -63,12 +66,11 @@ const AddLibraryScreen = ({navigation}) => {
     const handleSubmit = async () => {
         try {
             if (!title || !description || !location || images.length === 0) {
-                alert('Please fill in all the fields');
+                alert(t('pleaseFillAllFields'));
                 return;
             }
 
             setIsLoading(true);
-            // Example: Upload each image to Firebase Storage and get their URLs
             const imageUrls = await uploadImagesAndGetURLs(images, 'libraries');
             const docRef = await addDoc(collection(db, "LibrariesData"), {
                 name: title,
@@ -78,14 +80,13 @@ const AddLibraryScreen = ({navigation}) => {
                 imgSrcs: imageUrls,
             });
 
-            // Update the same document with its ID
             await updateDoc(doc(db, "LibrariesData", docRef.id), {
                 id: docRef.id
             });
 
             console.log("Document written with ID: ", docRef.id);
             navigation.navigate('Map');
-            alert('Library added successfully');
+            alert(t('libraryAddedSuccessfully'));
 
         } catch (e) {
             console.error("Error adding document: ", e);
@@ -109,52 +110,50 @@ const AddLibraryScreen = ({navigation}) => {
         fetchLocation();
     }, []);
 
-
     if (isLoading) {
-        return <LoadingAnimation/>;
+        return <LoadingAnimation />;
     }
-
 
     return (
         <KeyboardAvoidingView
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <SafeAreaView
                 keyboardShouldPersistTaps='handled'
                 style={{
-                flex: 1,
-                paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-                backgroundColor: COLORS.backgroundColor,
-                margin: SIZES.padding
-            }}>
+                    flex: 1,
+                    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+                    backgroundColor: COLORS.backgroundColor,
+                    margin: SIZES.padding
+                }}>
                 <View style={Styles_screens.headerContainer}>
-                    <Text style={Styles_screens.headerText}>Add Library</Text>
+                    <Text style={Styles_screens.headerText}>{t('addLibrary')}</Text>
                 </View>
-                <View style={{height: 1.5, backgroundColor: 'grey', width: '100%'}}/>
+                <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }} />
                 <ScrollView>
-                    <View style={[Styles_screens.inputContainer, {width: 'auto'}]}>
-                        <Text style={Styles_screens.inputTitle}>Library Title</Text>
+                    <View style={[Styles_screens.inputContainer, { width: 'auto' }]}>
+                        <Text style={Styles_screens.inputTitle}>{t('libraryTitle')}</Text>
                         <TextInput style={Styles_screens.input}
-                                   placeholder="Library Title"
+                                   placeholder={t('libraryTitle')}
                                    placeholderTextColor={COLORS.textColor}
                                    returnKeyType="next"
                                    onSubmitEditing={() => descRef.current.focus()}
                                    onChangeText={text => setTitle(text)}
                         />
-                        <Text style={Styles_screens.inputTitle}>Description</Text>
+                        <Text style={Styles_screens.inputTitle}>{t('description')}</Text>
                         <TextInput style={[Styles_screens.input, Styles_screens.descriptionInput]}
-                                   placeholder="Description"
+                                   placeholder={t('description')}
                                    placeholderTextColor={COLORS.textColor}
                                    ref={descRef}
                                    returnKeyType="next"
                                    onSubmitEditing={() => locationRef.current.focus()}
                                    onChangeText={text => setDescription(text)}
-                                   multiline/>
+                                   multiline />
 
-                        <Text style={Styles_screens.inputTitle}>Location</Text>
+                        <Text style={Styles_screens.inputTitle}>{t('location')}</Text>
                         <GooglePlacesAutocomplete
-                            placeholder='Enter location'
+                            placeholder={t('location')}
                             fetchDetails={true}
                             ref={locationRef}
                             onPress={(data, details = null) => {
@@ -171,7 +170,6 @@ const AddLibraryScreen = ({navigation}) => {
                             }}
                             styles={{
                                 textInput: Styles_screens.input,
-
                             }}
                             textInputProps={{
                                 placeholderTextColor: COLORS.textColor,
@@ -180,11 +178,11 @@ const AddLibraryScreen = ({navigation}) => {
 
                         {location && (
                             <MapView
-                                style={{height: 300, width: '100%', marginTop: 20,borderRadius: SIZES.radius, overflow: 'hidden'}}
+                                style={{ height: 300, width: '100%', marginTop: 20, borderRadius: SIZES.radius, overflow: 'hidden' }}
                                 region={location}
                                 onPress={(e) => setLocation(e.nativeEvent.coordinate)}
                             >
-                                <Marker coordinate={location}/>
+                                <Marker coordinate={location} />
                             </MapView>
                         )}
                         <View style={Styles_screens.imageUploadSection}>
@@ -192,45 +190,42 @@ const AddLibraryScreen = ({navigation}) => {
                                 horizontal
                                 data={images}
                                 keyExtractor={(item, index) => index.toString()}
-                                renderItem={({item, index}) => (
+                                renderItem={({ item, index }) => (
                                     <View style={Styles_screens.imageItemContainer}>
-                                        <Image key={index} source={{uri: item}} style={Styles_screens.image}/>
+                                        <Image key={index} source={{ uri: item }} style={Styles_screens.image} />
                                         <TouchableOpacity
                                             style={Styles_screens.removeImageButton}
                                             onPress={() => handleRemoveImage(item)}
                                         >
-                                            <FontAwesome name="times" size={24}/>
+                                            <FontAwesome name="times" size={24} />
                                         </TouchableOpacity>
                                     </View>
                                 )}
                                 ListHeaderComponent={() => (
                                     <TouchableOpacity onPress={pickImage} style={Styles_screens.addImageButton}>
-                                        <FontAwesome name="plus" size={24} color="#000"/>
+                                        <FontAwesome name="plus" size={24} color="#000" />
                                     </TouchableOpacity>
                                 )}
                             />
-
                         </View>
                     </View>
                 </ScrollView>
             </SafeAreaView>
-                <View style={Styles_screens.buttonsContainer}>
-                    <View style={Styles_screens.buttonsContainerRow}>
-                        <TouchableOpacity style={Styles_screens.buttonR} onPress={pickImage}>
-                            <Text style={Styles_screens.buttonText}>Upload Photo</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={Styles_screens.buttonR} onPress={takePhoto}>
-                            <Text style={Styles_screens.buttonText}>Take Photo</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <TouchableOpacity style={Styles_screens.submitButton} onPress={handleSubmit}>
-                        <Text style={Styles_screens.submitButtonText}>Add Library</Text>
+            <View style={Styles_screens.buttonsContainer}>
+                <View style={Styles_screens.buttonsContainerRow}>
+                    <TouchableOpacity style={Styles_screens.buttonR} onPress={pickImage}>
+                        <Text style={Styles_screens.buttonText}>{t('uploadPhoto')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={Styles_screens.buttonR} onPress={takePhoto}>
+                        <Text style={Styles_screens.buttonText}>{t('takePhoto')}</Text>
                     </TouchableOpacity>
                 </View>
-
+                <TouchableOpacity style={Styles_screens.submitButton} onPress={handleSubmit}>
+                    <Text style={Styles_screens.submitButtonText}>{t('addLibrary')}</Text>
+                </TouchableOpacity>
+            </View>
         </KeyboardAvoidingView>
     );
 };
-
 
 export default AddLibraryScreen;

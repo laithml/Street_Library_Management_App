@@ -9,17 +9,19 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-import {
-    COLORS
-} from "../../constants";
+import { COLORS } from "../../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import CategoriesSelection from "../../components/CategoriesSelection";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { createUser, fetchLibraries } from "../../actions/db_actions";
 import LibrarySelectionModal from "../../components/LibrarySelectionModal";
 import Styles_screens from "../../constants/Styles";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from "../../components/LanguageSwitcher"; // import the language switcher
 
 const SignUp = ({ navigation }) => {
+    const { t } = useTranslation();
+
     const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -63,23 +65,23 @@ const SignUp = ({ navigation }) => {
 
         if (!userName.trim()) {
             isValid = false;
-            newErrors.firstName = 'Full name is required';
+            newErrors.firstName = t('fullNameRequired');
         }
         if (!isValidEmail(email)) {
             isValid = false;
-            newErrors.email = 'Email is invalid';
+            newErrors.email = t('emailInvalid');
         }
         if (!isValidPass(password)) {
             isValid = false;
-            newErrors.password = 'Password invalid';
+            newErrors.password = t('passwordInvalid');
         }
         if (password !== verifyPass) {
             isValid = false;
-            newErrors.verifyPass = 'Passwords do not match';
+            newErrors.verifyPass = t('passwordsDoNotMatch');
         }
         if (!selectedLibId) {
             isValid = false;
-            newErrors.selectedLib = 'Library is required';
+            newErrors.selectedLib = t('libraryRequired');
         }
 
         setErrors(newErrors);
@@ -117,7 +119,7 @@ const SignUp = ({ navigation }) => {
             }
             navigation.navigate('SignIn');
         } else {
-            Alert.alert('Input Error', 'Please correct the errors before proceeding.');
+            Alert.alert(t('inputError'), t('pleaseCorrectErrors'));
         }
     };
 
@@ -128,18 +130,19 @@ const SignUp = ({ navigation }) => {
         >
             <SafeAreaView style={Styles_screens.container}>
                 <View style={Styles_screens.headerContainer}>
-                    <Text style={Styles_screens.headerText}>Sign Up</Text>
+                    <Text style={Styles_screens.headerText}>{t('signUp')}</Text>
+                    <LanguageSwitcher />
                 </View>
                 <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }}></View>
                 <ScrollView style={{ flex: 1, marginBottom: 10, padding: 18 }}>
-                    <Text style={Styles_screens.header}>Welcome to Street Library</Text>
+                    <Text style={Styles_screens.header}>{t('welcome')}</Text>
                     <View style={[Styles_screens.inputContainer, { width: 'auto' }]}>
-                        <Text style={Styles_screens.inputTitle}>Full Name</Text>
+                        <Text style={Styles_screens.inputTitle}>{t('fullName')}</Text>
                         {errors.firstName && <Text style={Styles_screens.error}>{errors.firstName}</Text>}
                         <TextInput
                             placeholderTextColor={COLORS.textColor}
                             style={[Styles_screens.input, errors.firstName && Styles_screens.errorField]}
-                            placeholder="Full Name"
+                            placeholder={t('fullName')}
                             returnKeyType="next"
                             onSubmitEditing={() => emailRef.current.focus()}
                             onChangeText={(text) => {
@@ -149,12 +152,12 @@ const SignUp = ({ navigation }) => {
                             value={userName}
                         />
 
-                        <Text style={Styles_screens.inputTitle}>Email</Text>
+                        <Text style={Styles_screens.inputTitle}>{t('email')}</Text>
                         {errors.email && <Text style={Styles_screens.error}>{errors.email}</Text>}
                         <TextInput
                             placeholderTextColor={COLORS.textColor}
                             style={[Styles_screens.input, errors.email && Styles_screens.errorField]}
-                            placeholder="Email"
+                            placeholder={t('email')}
                             ref={emailRef}
                             returnKeyType="next"
                             onSubmitEditing={() => passwordRef.current.focus()}
@@ -165,13 +168,13 @@ const SignUp = ({ navigation }) => {
                             value={email}
                         />
 
-                        <Text style={Styles_screens.inputTitle}>Password</Text>
+                        <Text style={Styles_screens.inputTitle}>{t('password')}</Text>
                         {errors.password && <Text style={Styles_screens.error}>{errors.password}</Text>}
                         <View style={Styles_screens.inputWrapper}>
                             <TextInput
                                 placeholderTextColor={COLORS.textColor}
                                 style={[Styles_screens.input, errors.password && Styles_screens.errorField]}
-                                placeholder="Password"
+                                placeholder={t('password')}
                                 secureTextEntry={passwordVisible}
                                 ref={passwordRef}
                                 returnKeyType="next"
@@ -191,13 +194,13 @@ const SignUp = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={Styles_screens.inputTitle}>Re-type Password</Text>
+                        <Text style={Styles_screens.inputTitle}>{t('retypePassword')}</Text>
                         {errors.verifyPass && <Text style={Styles_screens.error}>{errors.verifyPass}</Text>}
                         <View style={Styles_screens.inputWrapper}>
                             <TextInput
                                 placeholderTextColor={COLORS.textColor}
                                 style={[Styles_screens.input, errors.verifyPass && Styles_screens.errorField]}
-                                placeholder="Re-type Password"
+                                placeholder={t('retypePassword')}
                                 ref={verifyPasswordRef}
                                 secureTextEntry={verifyPassVisible}
                                 onChangeText={(text) => {
@@ -217,11 +220,11 @@ const SignUp = ({ navigation }) => {
 
                         {errors.selectedLib && <Text style={Styles_screens.error}>{errors.selectedLib}</Text>}
                         <Text style={Styles_screens.descriptionText}>
-                            Choose the library where you'd like to attend it. This helps us organize books by location.
+                            {t('chooseLibrary')}
                         </Text>
                         <TouchableOpacity style={[Styles_screens.button, { width: "100%" }]} onPress={() => setVisibleLibModel(true)}>
                             <Text style={Styles_screens.buttonText}>
-                                {"Library: " + (selectedLib || "Choose Library Location")}
+                                {"Library: " + (selectedLib || t('chooseLibraryLocation'))}
                             </Text>
                         </TouchableOpacity>
 
@@ -235,7 +238,7 @@ const SignUp = ({ navigation }) => {
                             }}
                         />
 
-                        <Text style={Styles_screens.inputTitle}>Preferred Categories:</Text>
+                        <Text style={Styles_screens.inputTitle}>{t('preferredCategories')}</Text>
                         <CategoriesSelection
                             onGenreChange={setGenre}
                             selectedGenres={genre}
@@ -245,10 +248,10 @@ const SignUp = ({ navigation }) => {
 
                 <View style={Styles_screens.buttonsContainer}>
                     <TouchableOpacity style={Styles_screens.submitButton} onPress={handleSignUp}>
-                        <Text style={Styles_screens.submitButtonText}>Sign Up</Text>
+                        <Text style={Styles_screens.submitButtonText}>{t('signUpButton')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={Styles_screens.buttonNoBorder} onPress={() => navigation.navigate("SignIn")}>
-                        <Text style={Styles_screens.buttonText}>Already have an account? Sign In</Text>
+                        <Text style={Styles_screens.buttonText}>{t('alreadyHaveAccount')}</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>

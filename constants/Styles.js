@@ -390,8 +390,6 @@ const Styles_screens = StyleSheet.create({
         height: 35,
         borderRadius: 10,
     }
-
-
 });
 
 export default Styles_screens;

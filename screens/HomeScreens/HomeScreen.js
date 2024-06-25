@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {SafeAreaView, View, Text, TouchableOpacity, ScrollView, FlatList, ActivityIndicator} from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, ScrollView, FlatList, ActivityIndicator } from 'react-native';
 import { COLORS, FONTS, SIZES } from '../../constants';
 import Styles_screens from "../../constants/Styles";
-import {useUser} from "../../Context/UserContext";
-import {fetchBooks, fetchCategories, fetchLibraries} from "../../actions/db_actions";
+import { useUser } from "../../Context/UserContext";
+import { fetchBooks, fetchCategories, fetchLibraries } from "../../actions/db_actions";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import BookItem from "../../components/BookItem";
 import BookBasic from "../../components/BookBasic";
 import LibrarySelectionModal from "../../components/LibrarySelectionModal";
+import { useTranslation } from 'react-i18next';
 
 const HomeScreen = ({ navigation }) => {
+    const { t } = useTranslation();
     const [books, setBooks] = useState([]);
     const [lastVisible, setLastVisible] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -118,7 +120,7 @@ const HomeScreen = ({ navigation }) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: SIZES.base }}>
                         {/* Greetings */}
                         <View>
-                            <Text style={{ ...FONTS.h3, color: COLORS.textColor }}>Welcome</Text>
+                            <Text style={{ ...FONTS.h3, color: COLORS.textColor }}>{t('welcome')}</Text>
                             <Text style={{ ...FONTS.h2, color: COLORS.textColor }}>{user.name}</Text>
                         </View>
 
@@ -148,7 +150,7 @@ const HomeScreen = ({ navigation }) => {
                             onPress={() => setVisibleLibModel(true)}
                         >
                             <Text style={{ margin: SIZES.base, color: COLORS.white, ...FONTS.body3 }}>
-                                {selectedLibrary ? selectedLibrary.name : 'Select Library'}
+                                {selectedLibrary ? selectedLibrary.name : t('selectLibrary')}
                             </Text>
                             <FontAwesome name={"angle-down"} size={20} color={COLORS.white} />
                         </TouchableOpacity>
@@ -163,7 +165,7 @@ const HomeScreen = ({ navigation }) => {
             <ScrollView>
                 {/* For You Section */}
                 <View style={Styles_screens.section}>
-                    <Text style={Styles_screens.sectionTitle}>For You</Text>
+                    <Text style={Styles_screens.sectionTitle}>{t('forYou')}</Text>
                     {books.length > 0 ? (
                         <FlatList
                             data={books}
@@ -177,7 +179,7 @@ const HomeScreen = ({ navigation }) => {
                         />
                     ) : (
                         <Text style={{ ...FONTS.body3, color: COLORS.textColor, marginVertical: 10 }}>
-                            No books available in this library.
+                            {t('noBooksAvailable')}
                         </Text>
                     )}
                 </View>
