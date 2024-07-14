@@ -13,10 +13,11 @@ const resources = {
 i18n
     .use(initReactI18next)
     .init({
+        compatibilityJSON: 'v3',
         resources,
         lng: 'en', // default language
         fallbackLng: 'en',
-        interpolation: { escapeValue: false }
-    });
+        interpolation: {escapeValue: false}
+    }).then();
 
 export default i18n;

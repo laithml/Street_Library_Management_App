@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Street_Library_Management_App",
-    "slug": "Street_Library_Management_App",
+    "name": "Book Nest",
+    "slug": "book-nest",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,15 +27,22 @@
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.booknest.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8627a451-6da7-4ac6-b029-f3587c5ef623"
+      }
     }
   }
 }
