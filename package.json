@@ -1,12 +1,19 @@
 {
+<<<<<<< HEAD
   "name": "street_library_management_app_1",
   "version": "1.0.0",
   "description": "",
   "main": "node_modules/expo/AppEntry.js",
+=======
+  "name": "book_nest",
+  "version": "1.0.0",
+  "main": "expo/AppEntry.js",
+>>>>>>> 6b510d6 (Initial commit)
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
+<<<<<<< HEAD
     "web": "expo start --web",
     "eject": "expo eject"
   },
@@ -47,4 +54,18 @@
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0"
   }
+=======
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "~51.0.20",
+    "expo-status-bar": "~1.12.1",
+    "react": "18.2.0",
+    "react-native": "0.74.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  },
+  "private": true
+>>>>>>> 6b510d6 (Initial commit)
 }

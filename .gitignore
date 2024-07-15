@@ -28,7 +28,11 @@ yarn-error.*
 .DS_Store
 *.pem
 
+<<<<<<< HEAD
 # locales env files
+=======
+# local env files
+>>>>>>> 6b510d6 (Initial commit)
 .env*.local
 
 # typescript

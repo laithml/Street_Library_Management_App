@@ -1,15 +1,25 @@
 {
   "expo": {
+<<<<<<< HEAD
     "name": "Book Nest",
     "slug": "book-nest",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+=======
+    "name": "book_nest",
+    "slug": "book_nest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+>>>>>>> 6b510d6 (Initial commit)
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+<<<<<<< HEAD
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -43,6 +53,19 @@
       "eas": {
         "projectId": "8627a451-6da7-4ac6-b029-f3587c5ef623"
       }
+=======
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+>>>>>>> 6b510d6 (Initial commit)
     }
   }
 }
