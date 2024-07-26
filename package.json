@@ -6,7 +6,7 @@
   "main": "node_modules/expo/AppEntry.js",
 =======
   "name": "book_nest",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "expo/AppEntry.js",
 >>>>>>> 6b510d6 (Initial commit)
   "scripts": {
