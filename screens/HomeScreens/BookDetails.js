@@ -13,7 +13,6 @@ import {
 import {COLORS, FONTS, SIZES} from "../../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {addBookMark, getBookById, getLocationById, removeBookMark, updateBookStatus, getUserById} from "../../actions/db_actions";
-import {useLocation} from "../../Context/LocationContext";
 import SelectionModal from "../../components/SelectionModal";
 import Styles_screens from "../../constants/Styles";
 import {useUser} from "../../Context/UserContext";
@@ -36,7 +35,6 @@ const BookDetails = ({route, navigation}) => {
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isTaken, setIsTaken] = useState(false);
     const [takerDetails, setTakerDetails] = useState(null);
-    const userLocation = useLocation();
     const {user} = useUser();
 
     const [scrollViewWholeHeight, setScrollViewWholeHeight] = useState(1);

@@ -16,16 +16,14 @@ const styles = StyleSheet.create({
     container: {
         margin: SIZES.base,
         borderRadius: SIZES.radius,
-        shadowColor: COLORS.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: SIZES.radius,
-        elevation: 2,
+        backgroundColor: COLORS.textColor,
     },
     image: {
         width: 180,
         height: 250,
         borderRadius: SIZES.radius,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
     },
     title: {
         marginTop: SIZES.margin,

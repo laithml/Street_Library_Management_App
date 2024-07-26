@@ -1,7 +1,7 @@
 // UserContext.js
 import React, { createContext, useState, useContext } from 'react';
 
-const UserContext = createContext();
+const UserContext = createContext(undefined, undefined);
 
 export const useUser = () => useContext(UserContext);
 

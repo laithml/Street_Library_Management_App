@@ -5,7 +5,7 @@ import Card from "../../components/Card";
 import { logoutUser } from "../../actions/db_actions";
 import { useUser } from "../../Context/UserContext";
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from "../../components/LanguageSwitcher"; // import the language switcher
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 const ProfileScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -52,9 +52,9 @@ const ProfileScreen = ({ navigation }) => {
                     <Card iconName="plus" title={t('addBook')} onPress={() => handlePress('Add Book')} />
                 </View>
                 <View style={Styles_screens.section}>
-                    <Card iconName="cog" title={t('account')} onPress={() => handlePress('Account')} />
-                    <Card iconName="bell" title={t('notifications')} onPress={() => handlePress('Notifications')} />
-                    <Card iconName="info" title={t('about')} onPress={() => handlePress('About')} />
+                    {/*<Card iconName="cog" title={t('account')} onPress={() => handlePress('Account')} />*/}
+                    {/*<Card iconName="bell" title={t('notifications')} onPress={() => handlePress('Notifications')} />*/}
+                    {/*<Card iconName="info" title={t('about')} onPress={() => handlePress('About')} />*/}
                     <Card iconName="sign-out" title={t('signOut')} onPress={signOut} />
                 </View>
             </ScrollView>

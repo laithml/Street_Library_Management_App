@@ -1,191 +1,245 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    SafeAreaView,
     View,
-    Text,
-    TouchableOpacity,
     TextInput,
-    StyleSheet,
-    FlatList, Linking
+    TouchableOpacity,
+    Text,
+    SafeAreaView,
+    Image,
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+    StatusBar,
+    Alert,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import LibraryDetail from "../../components/LibraryDetail";
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { COLORS, SIZES } from "../../constants";
+import * as Location from "expo-location";
+import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
+import { db } from "../../Config/Firebase";
+import {
+    pickImageFromLibrary,
+    requestPermissionsAsync,
+    takePhotoWithCamera,
+    uploadImagesAndGetURLs
+} from "../../Utils/ImagePickerUtils";
 import Styles_screens from "../../constants/Styles";
-import { useLocation } from "../../Context/LocationContext";
-import { fetchLibraries } from "../../actions/db_actions";
-import { useUser } from "../../Context/UserContext";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import LoadingAnimation from "../../components/LoadingAnimation";
 import { useTranslation } from 'react-i18next';
+import appConfig from '../../app.json'; // Import the app.json
 
-const MapScreen = ({ navigation }) => {
+const AddLibraryScreen = ({ navigation }) => {
     const { t } = useTranslation();
-    const [libraries, setLibraries] = useState([]);
-    const [selectedLibrary, setSelectedLibrary] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const mapRef = useRef(null);
-    const { location, errorMsg } = useLocation();
-    const [currentRegion, setCurrentRegion] = useState();
-    const [filteredLibraries, setFilteredLibraries] = useState([]);
-    const [visible, setVisible] = useState(false);
-    const { user } = useUser();
+    const [location, setLocation] = useState(null);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [images, setImages] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleGetDirections = () => {
-        if (selectedLibrary) {
-            console.log('Getting directions...');
-            console.log(selectedLibrary);
-            const { latitude, longitude } = selectedLibrary;
-            const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
-            Linking.openURL(url);
-        }
-    };
-
-    const onSearchChange = (query) => {
-        setSearchQuery(query);
-        setVisible(true)
-    };
-
-    const selectLibrary = (library) => {
-        setSelectedLibrary(library);
-    };
+    const descRef = useRef(null);
+    const locationRef = useRef(null);
 
     useEffect(() => {
-        if (searchQuery) {
-            const lowercasedQuery = searchQuery.toLowerCase();
-            const filteredData = libraries.filter(library =>
-                library.name && typeof library.name === 'string' && library.name.toLowerCase().includes(lowercasedQuery)
-            );
-            setFilteredLibraries(filteredData);
-        } else {
-            setFilteredLibraries(libraries);
-        }
-    }, [libraries, searchQuery]);
+        requestPermissionsAsync();
+        fetchLocation();
+    }, []);
 
-    useEffect(() => {
-        if (location) {
-            const isInIsrael = (latitude, longitude) => {
-                return latitude >= 29.5 && latitude <= 33.5 && longitude >= 34.3 && longitude <= 35.9;
-            };
-
-            if (isInIsrael(location.coords.latitude, location.coords.longitude)) {
-                setCurrentRegion({
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                });
+    const fetchLocation = async () => {
+        setIsLoading(true);
+        try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert(t('permissionDenied'), t('locationPermissionDenied'));
+                return;
             }
-        }
-    }, [location]);
-
-    const animateToRegion = (item) => {
-        if (location) {
-            const adjustedLatitude = item.latitude - (0.0922 * 0.1);
-            const region = {
-                latitude: adjustedLatitude,
-                longitude: item.longitude,
+            const currentLocation = await Location.getCurrentPositionAsync({});
+            setLocation({
+                latitude: currentLocation.coords.latitude,
+                longitude: currentLocation.coords.longitude,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
-            };
-            mapRef.current?.animateToRegion(region, 350);
+            });
+        } catch (error) {
+            console.error("Error fetching location: ", error);
+            Alert.alert(t('error'), t('locationFetchError'));
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const dismissLibraryDetail = () => {
-        setSelectedLibrary(null);
-        setSearchQuery('');
+    const pickImage = async () => {
+        const uri = await pickImageFromLibrary();
+        if (uri) {
+            setImages([...images, uri]);
+        }
     };
 
-    useEffect(() => {
-        if (libraries.length === 0) {  // Only fetch if libraries are not already loaded
-            const getLibraries = async () => {
-                const fetchedLibraries = await fetchLibraries();
-                setLibraries(fetchedLibraries);
-            };
-            getLibraries();
+    const takePhoto = async () => {
+        const uri = await takePhotoWithCamera();
+        if (uri) {
+            setImages([...images, uri]);
         }
-    }, [libraries.length]);
+    };
+
+    const handleRemoveImage = (uri) => {
+        setImages(images.filter(image => image !== uri));
+    };
+
+    const handleSubmit = async () => {
+        if (!title || !description || !location || images.length === 0) {
+            Alert.alert(t('inputError'), t('pleaseFillAllFields'));
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const imageUrls = await uploadImagesAndGetURLs(images, 'libraries');
+            const docRef = await addDoc(collection(db, "LibrariesData"), {
+                name: title,
+                description,
+                latitude: location.latitude,
+                longitude: location.longitude,
+                imgSrcs: imageUrls,
+            });
+
+            await updateDoc(doc(db, "LibrariesData", docRef.id), {
+                id: docRef.id
+            });
+
+            console.log("Document written with ID: ", docRef.id);
+            navigation.navigate('Map');
+            Alert.alert(t('success'), t('libraryAddedSuccessfully'));
+
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            Alert.alert(t('error'), t('libraryAddError'));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    if (isLoading) {
+        return <LoadingAnimation />;
+    }
+
+    const renderHeader = () => (
+        <View>
+            <View style={Styles_screens.headerContainer}>
+                <Text style={Styles_screens.headerText}>{t('addLibrary')}</Text>
+            </View>
+            <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }} />
+            <View style={[Styles_screens.inputContainer, { width: 'auto' }]}>
+                <Text style={Styles_screens.inputTitle}>{t('libraryTitle')}</Text>
+                <TextInput
+                    style={Styles_screens.input}
+                    placeholder={t('libraryTitle')}
+                    placeholderTextColor={COLORS.textColor}
+                    returnKeyType="next"
+                    onSubmitEditing={() => descRef.current.focus()}
+                    onChangeText={text => setTitle(text)}
+                />
+                <Text style={Styles_screens.inputTitle}>{t('description')}</Text>
+                <TextInput
+                    style={[Styles_screens.input, Styles_screens.descriptionInput]}
+                    placeholder={t('description')}
+                    placeholderTextColor={COLORS.textColor}
+                    ref={descRef}
+                    returnKeyType="next"
+                    onSubmitEditing={() => locationRef.current.focus()}
+                    onChangeText={text => setDescription(text)}
+                    multiline
+                />
+                <Text style={Styles_screens.inputTitle}>{t('location')}</Text>
+                <GooglePlacesAutocomplete
+                    placeholder={t('location')}
+                    fetchDetails={true}
+                    ref={locationRef}
+                    onPress={(data, details = null) => {
+                        setLocation({
+                            latitude: details.geometry.location.lat,
+                            longitude: details.geometry.location.lng,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        });
+                    }}
+                    query={{
+                        key: appConfig.expo.extra.googleMapsApiKey,
+                        language: 'en',
+                    }}
+                    styles={{
+                        textInput: Styles_screens.input,
+                    }}
+                    textInputProps={{
+                        placeholderTextColor: COLORS.textColor,
+                    }}
+                />
+                {location && (
+                    <MapView
+                        style={{ height: 300, width: '100%', marginTop: 20, borderRadius: SIZES.radius, overflow: 'hidden' }}
+                        region={location}
+                        onPress={(e) => setLocation(e.nativeEvent.coordinate)}
+                    >
+                        <Marker coordinate={location} />
+                    </MapView>
+                )}
+            </View>
+        </View>
+    );
 
     return (
-        <SafeAreaView style={Styles_screens.defContainer}>
-            <View style={{
-                flexDirection: 'row',
-                padding: 10,
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                backgroundColor: COLORS.primary,
-            }}>
-                <TextInput
-                    style={Styles_screens.searchInput}
-                    placeholder={t('searchForLibraries')}
-                    onChangeText={onSearchChange}
-                    value={searchQuery}
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <SafeAreaView
+                style={{
+                    flex: 1,
+                    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+                    backgroundColor: COLORS.backgroundColor,
+                    margin: SIZES.padding
+                }}
+            >
+                <FlatList
+                    data={images}
+                    keyExtractor={(item, index) => index.toString()}
+                    ListHeaderComponent={renderHeader}
+                    renderItem={({ item, index }) => (
+                        <View style={Styles_screens.imageItemContainer}>
+                            <Image key={index} source={{ uri: item }} style={Styles_screens.image} />
+                            <TouchableOpacity
+                                style={Styles_screens.removeImageButton}
+                                onPress={() => handleRemoveImage(item)}
+                            >
+                                <FontAwesome name="times" size={24} />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    ListFooterComponent={() => (
+                        <View style={Styles_screens.imageUploadSection}>
+                            <TouchableOpacity onPress={pickImage} style={Styles_screens.addImageButton}>
+                                <FontAwesome name="plus" size={24} color="#000" />
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 />
-                <View
-                    style={[Styles_screens.submitButton, { width: 40, height: 40 }]}
-                    onPress={() => console.log('Searching')}>
-                    <FontAwesome name="search" size={20} color={COLORS.white} />
-                </View>
-                {searchQuery && filteredLibraries.length > 0 && visible && (
-                    <View style={Styles_screens.dropdown}>
-                        <FlatList
-                            data={filteredLibraries}
-                            keyExtractor={item => item.id.toString()}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => {
-                                    selectLibrary(item);
-                                    setSearchQuery(item.name);
-                                    animateToRegion(item);
-                                    setVisible(false)
-                                }}>
-                                    <Text style={Styles_screens.dropdownItem}>{item.name}</Text>
-                                </TouchableOpacity>
-                            )}
-                        />
+                <View style={Styles_screens.buttonsContainer}>
+                    <View style={Styles_screens.buttonsContainerRow}>
+                        <TouchableOpacity style={Styles_screens.buttonR} onPress={pickImage}>
+                            <Text style={Styles_screens.buttonText}>{t('uploadPhoto')}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={Styles_screens.buttonR} onPress={takePhoto}>
+                            <Text style={Styles_screens.buttonText}>{t('takePhoto')}</Text>
+                        </TouchableOpacity>
                     </View>
-                )}
-
-            </View>
-
-            <MapView
-                ref={mapRef}
-                style={Styles_screens.map}
-                initialRegion={currentRegion}>
-                {filteredLibraries.length > 0 ? filteredLibraries.map(library => (
-                    <Marker
-                        key={library.id}
-                        coordinate={{
-                            latitude: library.latitude,
-                            longitude: library.longitude
-                        }}
-                        onPress={() => {
-                            setSelectedLibrary(library);
-                            animateToRegion(library);
-                        }}
-                    />
-                )) : null}
-            </MapView>
-
-            {selectedLibrary && (
-                <View style={Styles_screens.floatingCard}>
-                    <LibraryDetail
-                        library={selectedLibrary}
-                        onGetDirections={() => handleGetDirections()}
-                        onDismiss={() => dismissLibraryDetail()}
-                    />
+                    <TouchableOpacity style={Styles_screens.submitButton} onPress={handleSubmit}>
+                        <Text style={Styles_screens.submitButtonText}>{t('addLibrary')}</Text>
+                    </TouchableOpacity>
                 </View>
-            )}
-
-            {(user.isAdmin) && (
-                <TouchableOpacity
-                    style={[Styles_screens.submitButton, { width: '100%', marginTop: SIZES.margin }]}
-                    onPress={() => navigation.navigate('AddLibrary')}>
-                    <Text style={Styles_screens.submitButtonText}>{t('addNewLibrary')}</Text>
-                </TouchableOpacity>
-            )}
-
-        </SafeAreaView>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
     );
 };
 
-export default MapScreen;
+export default AddLibraryScreen;
