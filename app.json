@@ -15,10 +15,8 @@
 
     "ios": {
       "supportsTablet": true,
-      "config": {
-        "googleMapsApiKey": "AIzaSyBGWn55gEQDaNM78WI9brE_RXcBpxdmUFw"
-      },
-      "buildNumber": "1.0.0"
+
+      "buildNumber": "1.0.1"
     },
     "android": {
       "package": "com.laithml.book_nest",
