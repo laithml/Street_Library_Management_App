@@ -29,7 +29,6 @@ import Styles_screens from "../../constants/Styles";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { useTranslation } from 'react-i18next';
-import Constants from 'expo-constants';
 
 const AddLibraryScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -166,7 +165,7 @@ const AddLibraryScreen = ({ navigation }) => {
                         });
                     }}
                     query={{
-                        key: Constants.manifest.extra.googleMapsApiKey,
+                        key: "AIzaSyBGWn55gEQDaNM78WI9brE_RXcBpxdmUFw",
                         language: 'en',
                     }}
                     styles={{

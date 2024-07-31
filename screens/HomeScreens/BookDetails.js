@@ -36,6 +36,7 @@ const BookDetails = ({route, navigation}) => {
     const [isTaken, setIsTaken] = useState(false);
     const [takerDetails, setTakerDetails] = useState(null);
     const {user} = useUser();
+    const [userLocation, setUserLocation] = useState(null);
 
     const [scrollViewWholeHeight, setScrollViewWholeHeight] = useState(1);
     const [scrollViewVisibleHeight, setScrollViewVisibleHeight] = useState(0);
@@ -304,22 +305,11 @@ const BookDetails = ({route, navigation}) => {
         const handleGetDirections = async (bookId) => {
             let libraryDistances = [];
 
-            const book = await getBookById(bookId); // Assuming book.id is available
-            for (let i = 0; i < book.location.length; i++) {
-                const location = await getLocationById(book.location[i]);
-                const distance = getDistance(userLocation.location.coords, location);
-                libraryDistances.push({
-                    ...location,
-                    distance: distance.toFixed(2)
-                });
-            }
-
-            // Sort by distance
-            libraryDistances.sort((a, b) => a.distance - b.distance);
-
-            // Set sorted libraries and show modal
-            setSortedLibraries(libraryDistances);
-            setModalVisible(true);
+            const book = await getBookById(bookId);
+            console.log("Book location:", book.location);
+            const bookLocation = await getLocationById(book.location);
+            const map_link= "https://www.google.com/maps/dir/?api=1&destination="+bookLocation.latitude+","+bookLocation.longitude;
+            Linking.openURL(map_link).then(r => console.log(r));
         };
 
         return (

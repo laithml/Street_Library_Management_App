@@ -39,21 +39,27 @@ const HomeScreen = ({ navigation }) => {
 
     const loadBooks = async (libraryId = null, reset = false) => {
         try {
+            console.log("Loading books from library:", libraryId);
             if (reset) {
                 setLastVisible(null);
                 setBooks([]);
             }
             setLoadingMore(true);
             const { fetchedBooks, lastVisibleDoc } = await fetchBooks(lastVisible, pageSize);
+            console.log("Fetched books:", fetchedBooks);
             const filteredBooks = libraryId ? fetchedBooks.filter(book => book.location === libraryId) : fetchedBooks;
+            console.log("Filtered books:", filteredBooks);
             setBooks(prevBooks => reset ? filteredBooks : [...prevBooks, ...filteredBooks]);
             setLastVisible(lastVisibleDoc);
             setLoadingMore(false);
+            console.log("Books loaded successfully");
+            console.log("Last visible:", lastVisibleDoc);
         } catch (error) {
-            console.log(error);
+            console.log("Error loading books:", error);
             setLoadingMore(false);
         }
     };
+
 
     const loadCategories = async () => {
         try {
