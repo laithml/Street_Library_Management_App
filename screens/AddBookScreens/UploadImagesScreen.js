@@ -28,7 +28,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
             const librariesData = await fetchLibraries();
             setLibraries(librariesData);
 
-            if (user.defaultLibrary) {
+            if (user?.defaultLibrary) {
                 const defaultLibrary = await fetchLibraryById(user.defaultLibrary);
                 setSelectedLib(defaultLibrary.name);
                 setSelectedLibId(defaultLibrary.id);
@@ -38,7 +38,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
 
         fetchLibrariesData();
         requestPermissionsAsync();
-    }, [user.defaultLibrary]);
+    }, [user?.defaultLibrary]);
 
     const pickImage = async () => {
         const uri = await pickImageFromLibrary();

@@ -108,5 +108,16 @@
   "librarySelection": "اختيار المكتبة",
   "searchLibrary": "ابحث عن مكتبة...",
   "libraryDetails": "تفاصيل المكتبة",
-  "noBooksFound": "لا توجد كتب {{title}} حتى الآن."
+  "manualAddBook": "إضافة كتاب يدوي",
+  "automaticAddBook": "إضافة كتاب تلقائي",
+  "pickImage": "اختر صورة",
+  "processing": "جارٍ المعالجة...",
+  "editBook": "تحرير الكتاب",
+  "rotateImage": "تدوير الصورة",
+  "extractedText": "النص المستخرج",
+  "save": "حفظ",
+  "delete": "حذف",
+  "dismiss": "تجاهل"
+
+
 }

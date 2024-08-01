@@ -19,6 +19,12 @@ import ContributedBooksScreen from "./screens/ProfileScreens/ContributedBooksScr
 import SearchScreen from "./screens/HomeScreens/SearchScreen";
 import { I18nextProvider } from 'react-i18next';
 import i18n from './Config/i18n';
+import InitialScreen from "./screens/AddBookScreens/InitialScreen";
+import BookEditComponent from "./components/BookEditComponent";
+import BookEditScreen from "./screens/AddBookScreens/BookEditScreen";
+import { Provider } from 'react-redux';
+import store from './redux/store';
+
 
 I18nManager.forceRTL(false);
 
@@ -40,11 +46,12 @@ const Stack = createStackNavigator();
 const App = () => {
     return (
         <I18nextProvider i18n={i18n}>
+            <Provider store={store}>
             <UserProvider>
                 <LocationProvider>
                     <GestureHandlerRootView style={{ flex: 1 }}>
                         <NavigationContainer theme={theme}>
-                            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'SignIn'}>
+                            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'InitialScreen'}>
                                 <Stack.Screen name="Tab" component={Tabs} />
                                 <Stack.Screen name="AddLibrary" component={AddLibraryScreen} />
                                 <Stack.Screen name="BookInfo" component={BookInfoScreen} />
@@ -57,11 +64,15 @@ const App = () => {
                                 <Stack.Screen name="BookmarksScreen" component={BookmarksScreen} />
                                 <Stack.Screen name="ContributedBooksScreen" component={ContributedBooksScreen} />
                                 <Stack.Screen name="Search" component={SearchScreen} />
+                                <Stack.Screen name="InitialScreen" component={InitialScreen} />
+                                <Stack.Screen name="BookEditComponent" component={BookEditComponent} />
+                                <Stack.Screen name="BookEdit" component={BookEditScreen} />
                             </Stack.Navigator>
                         </NavigationContainer>
                     </GestureHandlerRootView>
                 </LocationProvider>
             </UserProvider>
+            </Provider>
         </I18nextProvider>
     );
 };

@@ -3,8 +3,7 @@ import * as Location from "expo-location";
 import {getDownloadURL, ref, uploadBytesResumable} from "firebase/storage";
 import {storage} from "../Config/Firebase";
 
-
-export const uploadImagesAndGetURLs = async (images,folder) => {
+export const uploadImagesAndGetURLs = async (images, folder) => {
     const imageUrls = await Promise.all(images.map(async (uri) => {
         // Fetch the image as a blob
         const response = await fetch(uri);
@@ -44,7 +43,6 @@ export const uploadImagesAndGetURLs = async (images,folder) => {
     return imageUrls;
 };
 
-
 export const requestPermissionsAsync = async () => {
     await Location.requestForegroundPermissionsAsync();
     const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
@@ -53,10 +51,10 @@ export const requestPermissionsAsync = async () => {
         alert('Sorry, we need camera roll permissions to make this work!');
     }
 };
+
 export const pickImageFromLibrary = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-
         quality: 1,
     });
 
@@ -68,6 +66,12 @@ export const pickImageFromLibrary = async () => {
 };
 
 export const takePhotoWithCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+        alert('Sorry, we need camera permissions to make this work!');
+        return null;
+    }
+
     let result = await ImagePicker.launchCameraAsync({
         quality: 1,
     });

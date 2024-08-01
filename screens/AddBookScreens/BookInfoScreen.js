@@ -1,14 +1,15 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { COLORS, SIZES } from "../../constants";
 import Styles_screens from "../../constants/Styles";
 import { useTranslation } from 'react-i18next';
 
-const BookInfoScreen = ({ navigation }) => {
+const BookInfoScreen = ({ route, navigation }) => {
     const { t } = useTranslation();
-    const [title, setTitle] = useState('');
-    const [author, setAuthor] = useState('');
-    const [description, setDescription] = useState('');
+    const { book } = route.params;
+    const [title, setTitle] = useState(book.title || '');
+    const [author, setAuthor] = useState(book.author || '');
+    const [description, setDescription] = useState(book.description || '');
     const [numPages, setNumPages] = useState('');
     const [language, setLanguage] = useState('');
     const [errors, setErrors] = useState({});
@@ -55,13 +56,14 @@ const BookInfoScreen = ({ navigation }) => {
 
     const handleNextPress = () => {
         if (validateInput()) {
-            // Navigate to the next screen and pass the collected book information
             navigation.navigate('BookExperience', {
-                title,
-                author,
-                description,
-                numPages,
-                language,
+                book: {
+                    title,
+                    author,
+                    description,
+                    numPages,
+                    language,
+                }
             });
             resetFormFields();
         } else {
@@ -72,7 +74,7 @@ const BookInfoScreen = ({ navigation }) => {
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : SIZES.height}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <SafeAreaView style={Styles_screens.container}>
                 <View style={Styles_screens.headerContainer}>
@@ -148,7 +150,7 @@ const BookInfoScreen = ({ navigation }) => {
                 </View>
             </SafeAreaView>
         </KeyboardAvoidingView>
-    )
+    );
 }
 
 export default BookInfoScreen;

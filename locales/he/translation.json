@@ -108,6 +108,13 @@
   "librarySelection": "בחירת ספרייה",
   "searchLibrary": "חפש ספרייה...",
   "libraryDetails": "פרטי הספרייה",
-  "noBooksFound": "אין עדיין ספרי {{title}}."
+  "editBook": "ערוך ספר",
+  "rotateImage": "סובב תמונה",
+  "extractedText": "טקסט שחולץ",
+  "save": "שמור",
+  "delete": "מחק",
+  "dismiss": "בטל",
+  "pickImage": "בחר תמונה",
+  "processing": "מעבד..."
 
 }

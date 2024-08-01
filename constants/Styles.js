@@ -374,7 +374,6 @@ const Styles_screens = StyleSheet.create({
         height: '10%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: SIZES.margin * 2,
     },
     genreContainer: {
         flexDirection: 'row',
@@ -389,7 +388,69 @@ const Styles_screens = StyleSheet.create({
         marginBottom: SIZES.radius,
         height: 35,
         borderRadius: 10,
-    }
+    },
+    optionContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    optionButton: {
+        backgroundColor: COLORS.primary,
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '80%',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+    },
+    iconPadding: {
+        paddingLeft: 10,
+    },
+    modal: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalButton: {
+        backgroundColor: COLORS.primary,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+    modalButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        marginLeft: 10,
+    },
+    processedDataContainer: {
+        marginBottom: 16,
+        alignItems: 'center',
+    },
+    processedImage: {
+        width: 300,
+        height: 300,
+        marginBottom: 8,
+        borderRadius: 8,
+    },
+    labelContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
+        marginVertical: 10,
+    },
+    labelButton: {
+        backgroundColor: '#007BFF',
+        padding: 10,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    labelButtonText: {
+        color: '#FFF',
+        fontSize: 16,
+    },
 });
 
 export default Styles_screens;

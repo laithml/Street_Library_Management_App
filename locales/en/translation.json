@@ -32,7 +32,6 @@
   "myLibrary": "My Library",
   "bookmarks": "Bookmarks",
   "books": "Books",
-  "addBook": "Add Book",
   "settings": "Settings",
   "account": "Account",
   "notifications": "Notifications",
@@ -108,6 +107,16 @@
   "librarySelection": "Library Selection",
   "searchLibrary": "Search Library...",
   "libraryDetails": "Library Details",
-  "noBooksFound": "No {{title}} books yet."
+  "addBook": "Add Book",
+  "manualAddBook": "Manual Add Book",
+  "automaticAddBook": "Automatic Add Book",
+  "pickImage": "Pick Image",
+  "processing": "Processing...",
+  "editBook": "Edit Book",
+  "rotateImage": "Rotate Image",
+  "extractedText": "Extracted Text",
+  "save": "Save",
+  "delete": "Delete",
+  "dismiss": "Dismiss"
 
 }
