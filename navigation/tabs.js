@@ -6,6 +6,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MapScreen from "../screens/MapScreens/MapScreen";
 import BookInfoScreen from "../screens/AddBookScreens/BookInfoScreen";
 import Profile from "../screens/ProfileScreens/Profile";
+import InitialScreen from "../screens/AddBookScreens/InitialScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -51,7 +52,7 @@ const Tabs = () => {
             />
             <Tab.Screen
                 name="Add Book"
-                component={BookInfoScreen}
+                component={InitialScreen}
             />
             <Tab.Screen
                 name="Map"

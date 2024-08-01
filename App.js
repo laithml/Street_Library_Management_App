@@ -51,7 +51,7 @@ const App = () => {
                 <LocationProvider>
                     <GestureHandlerRootView style={{ flex: 1 }}>
                         <NavigationContainer theme={theme}>
-                            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'InitialScreen'}>
+                            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'SignIn'}>
                                 <Stack.Screen name="Tab" component={Tabs} />
                                 <Stack.Screen name="AddLibrary" component={AddLibraryScreen} />
                                 <Stack.Screen name="BookInfo" component={BookInfoScreen} />

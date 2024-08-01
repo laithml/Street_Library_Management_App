@@ -19,12 +19,9 @@ const BookEditScreen = ({ route, navigation }) => {
     const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
     const [text, setText] = useState(book.text);
-    const [rotation, setRotation] = useState(0);
     const [selection, setSelection] = useState({ start: 0, end: 0 });
 
-    const handleRotateImage = () => {
-        setRotation(rotation + 90);
-    };
+
 
     const handleLabelSelect = (label) => {
         const selectedText = text.slice(selection.start, selection.end);
@@ -47,7 +44,7 @@ const BookEditScreen = ({ route, navigation }) => {
     };
 
     const handleSaveBook = () => {
-        navigation.navigate('BookInfo', { book: { title, author, description } });
+        navigation.navigate('BookInfo', { book: { title, author, description, image: book.image } });
     };
 
     const handleDelete = () => {
@@ -69,11 +66,8 @@ const BookEditScreen = ({ route, navigation }) => {
                 <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }}></View>
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: imageUri }}
-                           style={[Styles_screens.image, { transform: [{ rotate: `${rotation}deg` }] }]} />
+                           style={Styles_screens.image} />
                 </View>
-                <TouchableOpacity style={Styles_screens.button} onPress={handleRotateImage}>
-                    <Text style={Styles_screens.buttonText}>{t('rotateImage')}</Text>
-                </TouchableOpacity>
                 <TextInput
                     style={[Styles_screens.input, styles.textArea]}
                     value={text}

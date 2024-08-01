@@ -56,14 +56,14 @@ const BookInfoScreen = ({ route, navigation }) => {
 
     const handleNextPress = () => {
         if (validateInput()) {
+            console.log(("the first line of image is: " + book.image ));
             navigation.navigate('BookExperience', {
-                book: {
-                    title,
-                    author,
-                    description,
-                    numPages,
-                    language,
-                }
+                title,
+                author,
+                description,
+                numPages,
+                language,
+                image: book.image
             });
             resetFormFields();
         } else {

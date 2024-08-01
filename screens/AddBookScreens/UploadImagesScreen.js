@@ -12,11 +12,11 @@ import { useTranslation } from 'react-i18next';
 
 const UploadImagesScreen = ({ navigation, route }) => {
     const { t } = useTranslation();
-    const { title, author, description, numPages, language, rating, selectedCondition, selectedCategory, selectedGenres } = route.params;
+    const { title, author, description, numPages, language, rating, selectedCondition, selectedCategory, selectedGenres, image } = route.params;
     const { user } = useUser();
     const [visibleLibModel, setVisibleLibModel] = useState(false);
     const [selectedLib, setSelectedLib] = useState('');
-    const [images, setImages] = useState([]);
+    const [images, setImages] = useState([`data:image/png;base64,${image}`]);
     const [libraries, setLibraries] = useState([]);
     const [selectedLibId, setSelectedLibId] = useState('');
     const [errors, setErrors] = useState({});
@@ -82,14 +82,14 @@ const UploadImagesScreen = ({ navigation, route }) => {
             title,
             author,
             description,
-            numPages: parseInt(numPages),
+            numPages,
             language,
-            rating: parseInt(rating),
-            condition: selectedCondition,
-            category: selectedCategory,
+            rating,
+            selectedCondition,
+            selectedCategory,
             genre: selectedGenres,
-            location: selectedLibId,
             images: imageUrls,
+            location: selectedLibId,
             addedBy: user.id,
             addedAt: Timestamp.now(),
             takenBy: null,

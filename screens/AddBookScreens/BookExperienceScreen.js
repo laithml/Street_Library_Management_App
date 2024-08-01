@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const BookExperienceScreen = ({ navigation, route }) => {
     const { t } = useTranslation();
-    const { title, author, description, numPages, language } = route.params;
+    const { title, author, description, numPages, language, image } = route.params;
 
     const [genre, setGenre] = useState([]);
     const [selectedCondition, setSelectedCondition] = useState('');
@@ -48,6 +48,7 @@ const BookExperienceScreen = ({ navigation, route }) => {
 
     const handleNextPress = () => {
         if (validateInput()) {
+            console.log("image is: " + image);
             navigation.navigate('UploadImages', {
                 title,
                 author,
@@ -58,6 +59,7 @@ const BookExperienceScreen = ({ navigation, route }) => {
                 selectedCondition,
                 selectedCategory,
                 selectedGenres: genre,
+                image
             });
         } else {
             Alert.alert(t('inputError'), t('pleaseCorrectErrors'));
