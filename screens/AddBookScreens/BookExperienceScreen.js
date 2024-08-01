@@ -48,7 +48,6 @@ const BookExperienceScreen = ({ navigation, route }) => {
 
     const handleNextPress = () => {
         if (validateInput()) {
-            console.log("image is: " + image);
             navigation.navigate('UploadImages', {
                 title,
                 author,
@@ -59,7 +58,7 @@ const BookExperienceScreen = ({ navigation, route }) => {
                 selectedCondition,
                 selectedCategory,
                 selectedGenres: genre,
-                image
+                image: image
             });
         } else {
             Alert.alert(t('inputError'), t('pleaseCorrectErrors'));

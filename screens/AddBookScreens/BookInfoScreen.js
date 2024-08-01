@@ -1,12 +1,12 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { COLORS, SIZES } from "../../constants";
+import { COLORS } from "../../constants";
 import Styles_screens from "../../constants/Styles";
 import { useTranslation } from 'react-i18next';
 
 const BookInfoScreen = ({ route, navigation }) => {
     const { t } = useTranslation();
-    const { book } = route.params;
+    const book = route.params?.book || {};
     const [title, setTitle] = useState(book.title || '');
     const [author, setAuthor] = useState(book.author || '');
     const [description, setDescription] = useState(book.description || '');
@@ -56,14 +56,13 @@ const BookInfoScreen = ({ route, navigation }) => {
 
     const handleNextPress = () => {
         if (validateInput()) {
-            console.log(("the first line of image is: " + book.image ));
             navigation.navigate('BookExperience', {
                 title,
                 author,
                 description,
                 numPages,
                 language,
-                image: book.image
+                image: book.image || null
             });
             resetFormFields();
         } else {
