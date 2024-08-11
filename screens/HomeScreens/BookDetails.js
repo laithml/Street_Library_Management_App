@@ -33,7 +33,6 @@ const BookDetails = ({route, navigation}) => {
     const [sortedLibraries, setSortedLibraries] = useState([]);
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const [isBookmarked, setIsBookmarked] = useState(false);
-    const [isTaken, setIsTaken] = useState(false);
     const [takerDetails, setTakerDetails] = useState(null);
     const {user} = useUser();
     const [userLocation, setUserLocation] = useState(null);
@@ -44,15 +43,11 @@ const BookDetails = ({route, navigation}) => {
     const indicator = new Animated.Value(0);
 
     useEffect(() => {
-        let {book} = route.params;
+        let { book } = route.params;
         setBook(book);
-        if (book.takenBy === undefined) {
-            setIsTaken(false);
-        } else {
-            setIsTaken(book.takenBy !== null);
-            if (book.takenBy !== null) {
-                fetchTakerDetails(book.takenBy);
-            }
+
+        if (book.isTaken && book.takenBy && book.takenBy.length > 0) {
+            fetchTakerDetails(book.takenBy[book.takenBy.length - 1]);
         }
 
         checkBookmarkStatus(book.id);
@@ -94,16 +89,24 @@ const BookDetails = ({route, navigation}) => {
     };
 
     const handleTakeBook = async () => {
-        if (!isTaken) {
+        if (!book.isTaken) {
             Alert.alert(
                 t("takeBook"),
                 t("takeBookPrompt"),
                 [
-                    {text: t("cancel"), style: "cancel"},
-                    {text: t("take"), onPress: async () => {
-                            await updateBookStatus(book.id, { takenBy: user.id });
-                            setIsTaken(true);
-                            setBook({ ...book, takenBy: user.id });
+                    { text: t("cancel"), style: "cancel" },
+                    { text: t("take"), onPress: async () => {
+                            try {
+                                await updateBookStatus(book.id, user.id);
+
+                                const updatedTakenBy = [...(book.takenBy || []), user.id];
+                                setBook({ ...book, takenBy: updatedTakenBy, isTaken: true });
+
+                                const taker = await getUserById(user.id);
+                                setTakerDetails(taker);
+                            } catch (error) {
+                                console.error("Error updating book status:", error);
+                            }
                         }}
                 ]
             );
@@ -111,10 +114,13 @@ const BookDetails = ({route, navigation}) => {
     };
 
     function renderBookInfoSection() {
+        const isTaken = book.isTaken;
+        const lastTakerId = isTaken && book.takenBy ? book.takenBy[book.takenBy.length - 1] : null;
+
         return (
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
                 <ImageBackground
-                    source={{uri: book.images[0]}}
+                    source={{ uri: book.images[0] }}
                     resizeMode="cover"
                     style={{
                         position: 'absolute',
@@ -140,30 +146,30 @@ const BookDetails = ({route, navigation}) => {
 
                 {/* Navigation header */}
                 <View
-                    style={{flexDirection: 'row', paddingHorizontal: SIZES.radius, height: 80, alignItems: 'flex-end'}}>
+                    style={{ flexDirection: 'row', paddingHorizontal: SIZES.radius, height: 80, alignItems: 'flex-end' }}>
                     <TouchableOpacity
-                        style={{marginLeft: SIZES.base}}
+                        style={{ marginLeft: SIZES.base }}
                         onPress={() => navigation.navigate("Home")}
                     >
-                        <FontAwesome name={"chevron-left"} size={20} color={COLORS.textColor}/>
+                        <FontAwesome name={"chevron-left"} size={20} color={COLORS.textColor} />
                     </TouchableOpacity>
 
-                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={{...FONTS.h3, color: COLORS.textColor}}>{t("bookDetail")}</Text>
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{ ...FONTS.h3, color: COLORS.textColor }}>{t("bookDetail")}</Text>
                     </View>
 
                     <TouchableOpacity
-                        style={{marginRigth: SIZES.base}}
+                        style={{ marginRigth: SIZES.base }}
                         onPress={() => console.log("Click More")}
                     >
-                        <FontAwesome name={"ellipsis-v"} size={20} color={COLORS.textColor}/>
+                        <FontAwesome name={"ellipsis-v"} size={20} color={COLORS.textColor} />
                     </TouchableOpacity>
                 </View>
 
                 {/* Book Cover */}
-                <View style={{flex: 5, paddingTop: SIZES.padding2, alignItems: 'center'}}>
+                <View style={{ flex: 5, paddingTop: SIZES.padding2, alignItems: 'center' }}>
                     <Image
-                        source={{uri: book.images[0]}}
+                        source={{ uri: book.images[0] }}
                         resizeMode="contain"
                         style={{
                             flex: 1,
@@ -174,14 +180,14 @@ const BookDetails = ({route, navigation}) => {
                 </View>
 
                 {/* Book Name and Author */}
-                <View style={{flex: 1.8, alignItems: 'center', justifyContent: 'center'}}>
-                    <Text style={{...FONTS.h2, color: COLORS.textColor}}>{book.title}</Text>
-                    <Text style={{...FONTS.body3, color: COLORS.textColor}}>{book.author}</Text>
+                <View style={{ flex: 1.8, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ ...FONTS.h2, color: COLORS.textColor }}>{book.title}</Text>
+                    <Text style={{ ...FONTS.body3, color: COLORS.textColor }}>{book.author}</Text>
                     {isTaken && (
-                        <Text style={{...FONTS.body3, color: COLORS.lightRed}}>{t("bookTaken")}</Text>
+                        <Text style={{ ...FONTS.body3, color: COLORS.lightRed }}>{t("bookTaken")}</Text>
                     )}
                     {user.isAdmin && isTaken && takerDetails && (
-                        <Text style={{...FONTS.body3, color: COLORS.secondary}}>{t("takenBy")}: {takerDetails.name}</Text>
+                        <Text style={{ ...FONTS.body3, color: COLORS.secondary }}>{t("takenBy")}: {takerDetails.name}</Text>
                     )}
                 </View>
 
@@ -196,40 +202,40 @@ const BookDetails = ({route, navigation}) => {
                     }}
                 >
                     {/* Rating */}
-                    <View style={{flex: 1, alignItems: 'center'}}>
-                        <Text style={{...FONTS.h3, color: COLORS.white}}>{book.rating}</Text>
-                        <Text style={{...FONTS.body4, color: COLORS.white}}>{t("rating")}</Text>
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Text style={{ ...FONTS.h3, color: COLORS.white }}>{book.rating}</Text>
+                        <Text style={{ ...FONTS.body4, color: COLORS.white }}>{t("rating")}</Text>
                     </View>
 
-                    <LineDivider/>
+                    <LineDivider />
 
                     {/* Pages */}
-                    <View style={{flex: 1, paddingHorizontal: SIZES.radius, alignItems: 'center'}}>
-                        <Text style={{...FONTS.h3, color: COLORS.white}}>{book.numPages}</Text>
-                        <Text style={{...FONTS.body4, color: COLORS.white}}>{t("numPages")}</Text>
+                    <View style={{ flex: 1, paddingHorizontal: SIZES.radius, alignItems: 'center' }}>
+                        <Text style={{ ...FONTS.h3, color: COLORS.white }}>{book.numPages}</Text>
+                        <Text style={{ ...FONTS.body4, color: COLORS.white }}>{t("numPages")}</Text>
                     </View>
 
-                    <LineDivider/>
+                    <LineDivider />
 
                     {/* Language */}
-                    <View style={{flex: 1, alignItems: 'center'}}>
-                        <Text style={{...FONTS.h3, color: COLORS.white}}>{book.language}</Text>
-                        <Text style={{...FONTS.body4, color: COLORS.white}}>{t("language")}</Text>
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Text style={{ ...FONTS.h3, color: COLORS.white }}>{book.language}</Text>
+                        <Text style={{ ...FONTS.body4, color: COLORS.white }}>{t("language")}</Text>
                     </View>
                 </View>
             </View>
-        )
+        );
     }
 
     function renderBookDescription() {
-        const indicatorSize = scrollViewWholeHeight > scrollViewVisibleHeight ? scrollViewVisibleHeight * scrollViewVisibleHeight / scrollViewWholeHeight : scrollViewVisibleHeight
+        const indicatorSize = scrollViewWholeHeight > scrollViewVisibleHeight ? scrollViewVisibleHeight * scrollViewVisibleHeight / scrollViewWholeHeight : scrollViewVisibleHeight;
 
-        const difference = scrollViewVisibleHeight > indicatorSize ? scrollViewVisibleHeight - indicatorSize : 1
+        const difference = scrollViewVisibleHeight > indicatorSize ? scrollViewVisibleHeight - indicatorSize : 1;
 
         return (
-            <View style={{flex: 1, flexDirection: 'row', padding: SIZES.padding}}>
+            <View style={{ flex: 1, flexDirection: 'row', padding: SIZES.padding }}>
                 {/* Custom Scrollbar */}
-                <View style={{width: 4, height: "100%", backgroundColor: COLORS.gray1}}>
+                <View style={{ width: 4, height: "100%", backgroundColor: COLORS.gray1 }}>
                     <Animated.View
                         style={{
                             width: 4,
@@ -248,22 +254,22 @@ const BookDetails = ({route, navigation}) => {
 
                 {/* Description */}
                 <ScrollView
-                    contentContainerStyle={{paddingLeft: SIZES.padding2}}
+                    contentContainerStyle={{ paddingLeft: SIZES.padding2 }}
                     showsVerticalScrollIndicator={false}
                     scrollEventThrottle={16}
                     onContentSizeChange={(width, height) => {
                         setScrollViewWholeHeight(height)
                     }}
-                    onLayout={({nativeEvent: {layout: {x, y, width, height}}}) => {
+                    onLayout={({ nativeEvent: { layout: { x, y, width, height } } }) => {
                         setScrollViewVisibleHeight(height)
                     }}
                     onScroll={Animated.event(
-                        [{nativeEvent: {contentOffset: {y: indicator}}}],
-                        {useNativeDriver: false}
+                        [{ nativeEvent: { contentOffset: { y: indicator } } }],
+                        { useNativeDriver: false }
                     )}
                 >
-                    <Text style={{...FONTS.h2, color: COLORS.textColor, marginBottom: SIZES.padding}}>{t("description")}</Text>
-                    <Text style={{...FONTS.body2, color: COLORS.lightGray}}>{book.description}</Text>
+                    <Text style={{ ...FONTS.h2, color: COLORS.textColor, marginBottom: SIZES.padding }}>{t("description")}</Text>
+                    <Text style={{ ...FONTS.body2, color: COLORS.lightGray }}>{book.description}</Text>
                 </ScrollView>
             </View>
         )
@@ -276,7 +282,7 @@ const BookDetails = ({route, navigation}) => {
     const handleSelectLibrary = (library) => {
         setSelectedLibrary(library);
 
-        const {latitude, longitude} = library;
+        const { latitude, longitude } = library;
         const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
         Linking.openURL(url).then(r => console.log(r));
 
@@ -303,17 +309,15 @@ const BookDetails = ({route, navigation}) => {
 
     function renderBottomButton() {
         const handleGetDirections = async (bookId) => {
-            let libraryDistances = [];
-
             const book = await getBookById(bookId);
             console.log("Book location:", book.location);
             const bookLocation = await getLocationById(book.location);
-            const map_link= "https://www.google.com/maps/dir/?api=1&destination="+bookLocation.latitude+","+bookLocation.longitude;
+            const map_link = "https://www.google.com/maps/dir/?api=1&destination=" + bookLocation.latitude + "," + bookLocation.longitude;
             Linking.openURL(map_link).then(r => console.log(r));
         };
 
         return (
-            <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
                 {/* Bookmark */}
                 <TouchableOpacity
                     style={{
@@ -327,11 +331,11 @@ const BookDetails = ({route, navigation}) => {
                     }}
                     onPress={toggleBookmark}>
                     <FontAwesome name={"bookmark"} size={25}
-                                 color={isBookmarked ? COLORS.textColor : COLORS.lightGray}/>
+                                 color={isBookmarked ? COLORS.textColor : COLORS.lightGray} />
                 </TouchableOpacity>
 
                 {/* Take Book */}
-                {!isTaken && (
+                {!book.isTaken && (
                     <TouchableOpacity
                         style={{
                             flex: 1,
@@ -344,7 +348,7 @@ const BookDetails = ({route, navigation}) => {
                         }}
                         onPress={handleTakeBook}
                     >
-                        <Text style={{...FONTS.h3, color: COLORS.textColor}}>{t("takeBook")}</Text>
+                        <Text style={{ ...FONTS.h3, color: COLORS.textColor }}>{t("takeBook")}</Text>
                     </TouchableOpacity>
                 )}
 
@@ -361,7 +365,7 @@ const BookDetails = ({route, navigation}) => {
                     }}
                     onPress={() => handleGetDirections(book.id)}
                 >
-                    <Text style={{...FONTS.h3, color: COLORS.white}}>{t("getDirections")}</Text>
+                    <Text style={{ ...FONTS.h3, color: COLORS.white }}>{t("getDirections")}</Text>
                 </TouchableOpacity>
 
                 <SelectionModal
@@ -382,19 +386,19 @@ const BookDetails = ({route, navigation}) => {
 
     if (book) {
         return (
-            <View style={{flex: 1, backgroundColor: COLORS.backgroundColor}}>
+            <View style={{ flex: 1, backgroundColor: COLORS.backgroundColor }}>
                 {/* Book Cover Section */}
-                <View style={{flex: 4}}>
+                <View style={{ flex: 4 }}>
                     {renderBookInfoSection()}
                 </View>
 
                 {/* Description */}
-                <View style={{flex: 2}}>
+                <View style={{ flex: 2 }}>
                     {renderBookDescription()}
                 </View>
 
                 {/* Buttons */}
-                <View style={{height: 70, marginBottom: 30}}>
+                <View style={{ height: 70, marginBottom: 30 }}>
                     {renderBottomButton()}
                 </View>
             </View>

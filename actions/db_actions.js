@@ -119,11 +119,21 @@ export const fetchLibraries = async () => {
     }
 };
 
-export const updateBookStatus = async (bookId, data) => {
+export const updateBookStatus = async (bookId, userId) => {
     const bookRef = doc(db, "BooksData", bookId);
-    await updateDoc(bookRef, data);
-};
 
+    try {
+        await updateDoc(bookRef, {
+            takenBy: arrayUnion(userId),  // Append the user ID to the takenBy array
+            isTaken: true                 // Set isTaken to true
+        });
+
+        console.log(`Book ${bookId} updated successfully with user ${userId} as taken.`);
+    } catch (error) {
+        console.error("Error updating book status:", error);
+        throw new Error(error.message);
+    }
+};
 export const addBook = async (bookData) => {
     try {
         const bookRef = await addDoc(collection(db, "BooksData"), bookData);

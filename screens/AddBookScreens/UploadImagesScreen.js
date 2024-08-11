@@ -101,6 +101,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
                 addedBy: user.id,
                 addedAt: Timestamp.now(),
                 takenBy: [],
+                isTaken: false,
             };
 
             console.log("Book Data: ", bookData);
