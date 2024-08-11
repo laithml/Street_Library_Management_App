@@ -14,6 +14,7 @@ import {
     arrayRemove
 } from "firebase/firestore";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordResetEmail, signOut} from "firebase/auth";
+import {uploadImagesAndGetURLs} from "../Utils/ImagePickerUtils";
 
 
 
@@ -22,6 +23,37 @@ const booksCollectionRef = collection(db, "BooksData");
 const CategoriesCollectionRef = collection(db, "Categories");
 const LibrariesCollectionRef = collection(db, "LibrariesData");
 const UsersCollectionRef = collection(db, "Users");
+
+
+export const addLibrary = async (title, description, location, images) => {
+    try {
+        // Upload images and get URLs
+        const imageUrls = await uploadImagesAndGetURLs(images, 'libraries');
+
+        // Add the library document to Firestore
+        const docRef = await addDoc(collection(db, "LibrariesData"), {
+            name: title,
+            description,
+            latitude: location.latitude,
+            longitude: location.longitude,
+            imgSrcs: imageUrls,
+            books: [] // Adding an empty array under the field name "books"
+        });
+
+        // Update the document with its own ID
+        await updateDoc(doc(db, "LibrariesData", docRef.id), {
+            id: docRef.id
+        });
+
+        console.log("Document written with ID: ", docRef.id);
+        return docRef.id;
+
+    } catch (error) {
+        console.error("Error adding document: ", error);
+        throw new Error(error.message);
+    }
+};
+
 
 
 export const getUserById = async (id) => {

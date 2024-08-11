@@ -41,7 +41,7 @@ const Styles_screens = StyleSheet.create({
     buttonsContainer: {
         width: '100%',
         alignItems: 'center',
-        marginBottom: SIZES.padding,
+        marginTop: 10,
     },
     buttonsContainerRow: {
         flexDirection: 'row',
@@ -374,7 +374,7 @@ const Styles_screens = StyleSheet.create({
         height: '10%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: SIZES.margin*1.5,
+        marginBottom: SIZES.margin*2.2,
     },
     genreContainer: {
         flexDirection: 'row',
