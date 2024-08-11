@@ -78,14 +78,14 @@ const InitialScreen = ({ navigation }) => {
                 <View style={Styles_screens.modalContainer}>
                     <View style={Styles_screens.modalContent}>
                         <TouchableOpacity style={Styles_screens.modalButton} onPress={handleTakePhoto}>
-                            <FontAwesome name="camera" size={30} color="#fff" />
-                            <Text style={Styles_screens.modalButtonText}>{t('takePhoto')}</Text>
+                            <FontAwesome name="camera" size={30} color={COLORS.secondary} />
+                            <Text style={[Styles_screens.modalButtonText,{color: COLORS.black}]}>{t('takePhoto')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={Styles_screens.modalButton} onPress={handlePickImage}>
-                            <FontAwesome name="image" size={30} color="#fff" />
-                            <Text style={Styles_screens.modalButtonText}>{t('pickImage')}</Text>
+                            <FontAwesome name="image" size={30} color={COLORS.secondary} />
+                            <Text style={[Styles_screens.modalButtonText,{color: COLORS.black}]}>{t('pickImage')}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={Styles_screens.modalButton} onPress={() => setModalVisible(false)}>
+                        <TouchableOpacity style={[Styles_screens.modalButton,{backgroundColor: COLORS.lightRed}]} onPress={() => setModalVisible(false)}>
                             <Text style={Styles_screens.modalButtonText}>{t('cancel')}</Text>
                         </TouchableOpacity>
                     </View>
