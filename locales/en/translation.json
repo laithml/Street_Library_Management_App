@@ -117,6 +117,10 @@
   "extractedText": "Extracted Text",
   "save": "Save",
   "delete": "Delete",
-  "dismiss": "Dismiss"
-
+  "dismiss": "Dismiss",
+  "releaseBook": "Release Book",
+  "releaseBookPrompt": "Are you sure you want to mark this book as returned?",
+  "adminActions": "Admin Actions",
+"bookNotTakenPrompt": "Book has not been taken yet.",
+"bookNotTaken": "Book Not Taken"
 }

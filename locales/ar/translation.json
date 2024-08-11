@@ -112,12 +112,18 @@
   "automaticAddBook": "إضافة كتاب تلقائي",
   "pickImage": "اختر صورة",
   "processing": "جارٍ المعالجة...",
-  "editBook": "تحرير الكتاب",
   "rotateImage": "تدوير الصورة",
   "extractedText": "النص المستخرج",
   "save": "حفظ",
   "delete": "حذف",
-  "dismiss": "تجاهل"
+  "dismiss": "تجاهل",
+  "releaseBook": "ارجاع الكتاب",
+  "releaseBookPrompt": "هل أنت متأكد أنك تريد تحديد هذا الكتاب على أنه تم إرجاعه؟",
+  "editBook": "تعديل الكتاب",
+  "adminActions": "إجراءات المسؤول",
+  "bookNotTaken": "لم يتم أخذ الكتاب",
+  "bookNotTakenPrompt": "لم يتم اخذ الكتاب بعد."
+
 
 
 }
