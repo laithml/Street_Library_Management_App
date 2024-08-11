@@ -53,7 +53,10 @@ const BookEditScreen = ({ route, navigation }) => {
             dispatch(setCurrentBookIndex(nextIndex));
             navigation.replace('BookEdit');
         } else {
-            navigation.navigate('InitialScreen');
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Tab' }],
+            });
         }
     };
 
@@ -153,7 +156,7 @@ const styles = StyleSheet.create({
         height: 150,
     },
     deleteButton: {
-        backgroundColor: '#FF0000',
+        backgroundColor: COLORS.lightRed,
         width: '90%',
         padding: 16,
         borderRadius: SIZES.radius,

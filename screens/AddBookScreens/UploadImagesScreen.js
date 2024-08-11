@@ -9,6 +9,8 @@ import { useUser } from "../../Context/UserContext";
 import { addBook, fetchLibraries, fetchLibraryById, updateUserBooks } from "../../actions/db_actions";
 import LibrarySelectionModal from "../../components/LibrarySelectionModal";
 import { useTranslation } from 'react-i18next';
+import {setCurrentBookIndex} from "../../redux/store";
+import {useDispatch, useSelector} from "react-redux";
 
 const UploadImagesScreen = ({ navigation, route }) => {
     const { t } = useTranslation();
@@ -21,6 +23,9 @@ const UploadImagesScreen = ({ navigation, route }) => {
     const [selectedLibId, setSelectedLibId] = useState('');
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(true);
+    const books = useSelector((state) => state.books);
+    const currentIndex = useSelector((state) => state.currentBookIndex);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchLibrariesData = async () => {
@@ -76,39 +81,54 @@ const UploadImagesScreen = ({ navigation, route }) => {
         }
         setIsLoading(true);
 
-        const imageUrls = await uploadImagesAndGetURLs(images, 'books');
-
-        const bookData = {
-            title,
-            author,
-            description,
-            numPages,
-            language,
-            rating,
-            selectedCondition,
-            selectedCategory,
-            genre: selectedGenres,
-            images: imageUrls,
-            location: selectedLibId,
-            addedBy: user.id,
-            addedAt: Timestamp.now(),
-            takenBy: null,
-        };
-        console.log("Book Data: ", bookData);
-
         try {
+            // Upload the images and get the URLs
+            const imageUrls = await uploadImagesAndGetURLs(images, 'books');
+
+            // Create the book data object
+            const bookData = {
+                title,
+                author,
+                description,
+                numPages,
+                language,
+                rating,
+                selectedCondition,
+                selectedCategory,
+                genre: selectedGenres,
+                images: imageUrls,
+                location: selectedLibId,
+                addedBy: user.id,
+                addedAt: Timestamp.now(),
+                takenBy: [],
+            };
+
+            console.log("Book Data: ", bookData);
+
+            // Add the book to the database
             const bookId = await addBook(bookData);
             const newBook = { id: bookId, ...bookData };
             await updateUserBooks(user.id, bookId);
 
-            navigation.navigate('BookDetails', { book: newBook });
-            Alert.alert(t('bookSubmitted'), t('bookSubmittedSuccess'));
+            const nextIndex = currentIndex + 1;
+            if (nextIndex < books.length) {
+                dispatch(setCurrentBookIndex(nextIndex));
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'BookEdit' }],
+                });
+            } else {
+                navigation.navigate('BookDetails', { book: newBook });
+                Alert.alert(t('bookSubmitted'), t('bookSubmittedSuccess'));            }
         } catch (error) {
             console.error("Error adding book: ", error);
+            Alert.alert(t('submissionError'), t('submissionErrorMessage'));
         } finally {
             setIsLoading(false);
         }
     };
+
+
 
     const handleRemoveImage = (uri) => {
         setImages(images.filter(image => image !== uri));
