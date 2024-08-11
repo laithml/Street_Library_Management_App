@@ -29,37 +29,37 @@ const HomeScreen = ({ navigation }) => {
         const initialize = async () => {
             setLoading(true);
             await loadLibraries();
-            await loadCategories();
-            await loadBooks(user.defaultLibrary, true);
             setLoading(false);
         };
 
         initialize();
-    }, [user.defaultLibrary]);
+    }, []);
+
+    useEffect(() => {
+        if (selectedLibrary !== null) {
+            loadBooks(selectedLibrary.id, true);
+        }
+    }, [selectedLibrary]);
 
     const loadBooks = async (libraryId = null, reset = false) => {
         try {
-            console.log("Loading books from library:", libraryId);
             if (reset) {
                 setLastVisible(null);
                 setBooks([]);
             }
             setLoadingMore(true);
             const { fetchedBooks, lastVisibleDoc } = await fetchBooks(lastVisible, pageSize);
-            console.log("Fetched books:", fetchedBooks);
-            const filteredBooks = libraryId ? fetchedBooks.filter(book => book.location === libraryId) : fetchedBooks;
-            console.log("Filtered books:", filteredBooks);
+            const filteredBooks = libraryId
+                ? fetchedBooks.filter(book => book.location === libraryId)
+                : fetchedBooks;
             setBooks(prevBooks => reset ? filteredBooks : [...prevBooks, ...filteredBooks]);
             setLastVisible(lastVisibleDoc);
             setLoadingMore(false);
-            console.log("Books loaded successfully");
-            console.log("Last visible:", lastVisibleDoc);
         } catch (error) {
             console.log("Error loading books:", error);
             setLoadingMore(false);
         }
     };
-
 
     const loadCategories = async () => {
         try {
@@ -75,7 +75,10 @@ const HomeScreen = ({ navigation }) => {
             const fetchedLibraries = await fetchLibraries();
             setLibraries(fetchedLibraries);
             const defaultLibrary = fetchedLibraries.find(lib => lib.id === user.defaultLibrary);
-            setSelectedLibrary(defaultLibrary);
+            setSelectedLibrary(defaultLibrary || null); // Set the default library or null
+            if (!defaultLibrary) {
+                loadBooks(null, true); // Load books from all libraries if no default library
+            }
         } catch (error) {
             console.error("Failed to fetch libraries:", error);
         }
@@ -100,8 +103,7 @@ const HomeScreen = ({ navigation }) => {
     };
 
     const handleLibrarySelect = (id, name) => {
-        setSelectedLibrary({ id, name });
-        loadBooks(id, true);
+        setSelectedLibrary({ id, name });  // This will trigger the useEffect to fetch books
     };
 
     const clearSelectedLibrary = () => {
