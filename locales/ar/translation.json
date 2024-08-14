@@ -137,8 +137,18 @@
   "noTakersFound": "لم يتم العثور على مستعيرين",
   "saveChanges": "حفظ التغييرات",
   "bookUpdated": "تم تحديث الكتاب بنجاح.",
-  "failedToUpdateBook": "فشل في تحديث الكتاب."
-
-
+  "failedToUpdateBook": "فشل في تحديث الكتاب.",
+  "changeDefaultLibrary": "تغيير المكتبة الافتراضية",
+  "defaultLibraryUpdated": "تم تحديث المكتبة الافتراضية",
+  "failedToUpdateLibrary": "فشل تحديث المكتبة الافتراضية",
+  "adminSection": "قسم الإدارة",
+  "booksManagement": "إدارة الكتب",
+  "adminsManagement": "إدارة المسؤولين",
+  "usersManagement": "إدارة المستخدمين",
+  "libraryInfoManagement": "إدارة معلومات المكتبة",
+  "noUsersFound": "لم يتم العثور على مستخدمين",
+  "usersList": "قائمة المستخدمين",
+  "searchForUsers": "ابحث عن مستخدمين...",
+  "searchForAdmins": "ابحث عن مسؤولين...",
 
 }

@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { COLORS, FONTS, SIZES } from '../../constants';
 import Styles_screens from "../../constants/Styles";
-import { fetchBooks, fetchLibraries } from "../../actions/db_actions";
+import { fetchBooks, fetchLibraries, getLocationById } from "../../actions/db_actions";
 import BookBasic from "../../components/BookBasic";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LibrarySelectionModal from '../../components/LibrarySelectionModal';
 import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useUser } from "../../Context/UserContext";
 
 const SearchScreen = ({ navigation }) => {
     const { t } = useTranslation();
+    const { user } = useUser();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -28,21 +30,40 @@ const SearchScreen = ({ navigation }) => {
             }
         };
 
+        getLocationById(user.defaultLibrary).then((loc) => {
+            setSelectedLibrary({ id: loc.id, name: loc.name });
+            fetchBooksByLibrary(loc.id);
+        });
+
         loadLibraries();
     }, []);
 
+    const fetchBooksByLibrary = async (libraryId) => {
+        if (!libraryId) return; // Ensure libraryId is valid
+        setLoading(true);
+        try {
+            const { fetchedBooks } = await fetchBooks(libraryId);
+            setSearchResults(fetchedBooks);
+        } catch (error) {
+            console.error('Error fetching books:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const debouncedSearch = debounce(async (query) => {
-        if (query.trim() === '') {
-            setSearchResults([]);
+        if (query.trim() === '' || !selectedLibrary) {
+            if (selectedLibrary) {
+                fetchBooksByLibrary(selectedLibrary.id);
+            }
             return;
         }
 
         setLoading(true);
         try {
-            const { fetchedBooks } = await fetchBooks();
+            const { fetchedBooks } = await fetchBooks(selectedLibrary.id);
             const results = fetchedBooks.filter(book =>
-                book.title.toLowerCase().includes(query.toLowerCase()) &&
-                (!selectedLibrary || book.location === selectedLibrary.id)
+                book.title.toLowerCase().includes(query.toLowerCase())
             );
             setSearchResults(results);
         } catch (error) {
@@ -53,22 +74,31 @@ const SearchScreen = ({ navigation }) => {
     }, 600);
 
     useEffect(() => {
-        debouncedSearch(searchQuery);
+        if (selectedLibrary) {
+            if (searchQuery === '') {
+                fetchBooksByLibrary(selectedLibrary.id);
+            } else {
+                debouncedSearch(searchQuery);
+            }
+        }
     }, [searchQuery, selectedLibrary]);
 
     const clearSearch = () => {
         setSearchQuery('');
-        setSearchResults([]);
+        if (selectedLibrary) {
+            fetchBooksByLibrary(selectedLibrary.id);
+        }
     };
 
     const clearSelectedLibrary = () => {
         setSelectedLibrary(null);
-        debouncedSearch(searchQuery);
+        setSearchResults([]);
     };
 
     const handleLibrarySelect = (id, name) => {
         setSelectedLibrary({ id, name });
         setVisibleLibModel(false);
+        fetchBooksByLibrary(id);
     };
 
     return (
@@ -129,7 +159,6 @@ const SearchScreen = ({ navigation }) => {
                         data={searchResults}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) => <BookBasic navigation={navigation} book={item} />}
-                        contentContainerStyle={{ paddingBottom: 20 }}
                     />
                 ) : (
                     <Text style={{ ...FONTS.body3, color: COLORS.textColor, marginVertical: 10 }}>{t('noBooksFound')}</Text>

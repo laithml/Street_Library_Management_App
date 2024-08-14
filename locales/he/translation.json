@@ -135,7 +135,19 @@
   "noTakersFound": "לא נמצאו שואלים",
   "saveChanges": "שמור שינויים",
   "bookUpdated": "הספר עודכן בהצלחה.",
-  "failedToUpdateBook": "נכשל עדכון הספר."
+  "failedToUpdateBook": "נכשל עדכון הספר.",
+  "changeDefaultLibrary": "שנה ספריית ברירת מחדל",
+  "defaultLibraryUpdated": "הספרייה הברירת מחדל עודכנה בהצלחה.",
+  "failedToUpdateLibrary": "נכשל עדכון הספרייה הברירת מחדל.",
+  "adminSection": "אזור מנהל",
+  "booksManagement": "ניהול ספרים",
+  "adminsManagement": "ניהול מנהלים",
+  "usersManagement": "ניהול משתמשים",
+  "libraryInfoManagement": "ניהול מידע ספרייה",
+  "noUsersFound": "לא נמצאו משתמשים",
+  "usersList": "רשימת משתמשים",
+  "searchForUsers": "חפש משתמשים...",
+  "searchForAdmins": "חפש מנהלים...",
 
 
 

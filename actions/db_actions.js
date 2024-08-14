@@ -11,7 +11,7 @@ import {
     updateDoc,
     addDoc,
     arrayUnion,
-    arrayRemove
+    arrayRemove, Timestamp,where
 } from "firebase/firestore";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordResetEmail, signOut} from "firebase/auth";
 import {uploadImagesAndGetURLs} from "../Utils/ImagePickerUtils";
@@ -22,10 +22,9 @@ import {uploadImagesAndGetURLs} from "../Utils/ImagePickerUtils";
 const booksCollectionRef = collection(db, "BooksData");
 const CategoriesCollectionRef = collection(db, "Categories");
 const LibrariesCollectionRef = collection(db, "LibrariesData");
-const UsersCollectionRef = collection(db, "Users");
 
 
-export const addLibrary = async (title, description, location, images) => {
+export const addLibrary = async (title, description, location, images,userId) => {
     try {
         // Upload images and get URLs
         const imageUrls = await uploadImagesAndGetURLs(images, 'libraries');
@@ -37,7 +36,11 @@ export const addLibrary = async (title, description, location, images) => {
             latitude: location.latitude,
             longitude: location.longitude,
             imgSrcs: imageUrls,
-            books: [] // Adding an empty array under the field name "books"
+            books: [],
+            addedBy: userId,
+            addedAt: Timestamp.now(),
+            admins: [userId],
+            users: [userId]
         });
 
         // Update the document with its own ID
@@ -174,6 +177,40 @@ export const releaseBook = async (bookId) => {
     }
 }
 
+export const updateUserDefaultLibrary = async (userId, newLibraryId) => {
+    const userRef = doc(db, "Users", userId);
+
+    try {
+        // Fetch the user's current data
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data();
+        const currentLibraryId = userData.defaultLibrary;
+
+        if (currentLibraryId) {
+            // Remove the user from the current library's users array
+            const currentLibraryRef = doc(db, "LibrariesData", currentLibraryId);
+            await updateDoc(currentLibraryRef, {
+                users: arrayRemove(userId)
+            });
+        }
+
+        // Add the user to the new library's users array
+        const newLibraryRef = doc(db, "LibrariesData", newLibraryId);
+        await updateDoc(newLibraryRef, {
+            users: arrayUnion(userId)
+        });
+
+        // Update the user's default library
+        await updateDoc(userRef, {
+            defaultLibrary: newLibraryId
+        });
+
+        console.log(`User ${userId} default library updated from ${currentLibraryId} to ${newLibraryId}`);
+    } catch (error) {
+        console.error("Error updating default library: ", error);
+        throw new Error(error.message);
+    }
+};
 
 export const updateBookStatus = async (bookId, userId) => {
     const bookRef = doc(db, "BooksData", bookId);
@@ -301,13 +338,25 @@ export const fetchCategories = async () => {
 }
 
 
-export const fetchBooks = async (lastVisible, pageSize) => {
+export const fetchBooks = async (libraryId, lastVisible = null, pageSize = 10) => {
     try {
         let q;
+
         if (lastVisible) {
-            q = query(booksCollectionRef, startAfter(lastVisible), limit(pageSize));
+            // Add filtering by libraryId
+            q = query(
+                collection(db, "BooksData"),
+                where("location", "==", libraryId),
+                startAfter(lastVisible),
+                limit(pageSize)
+            );
         } else {
-            q = query(booksCollectionRef, limit(pageSize));
+            // Add filtering by libraryId
+            q = query(
+                collection(db, "BooksData"),
+                where("location", "==", libraryId),
+                limit(pageSize)
+            );
         }
 
         const querySnapshot = await getDocs(q);
@@ -321,11 +370,10 @@ export const fetchBooks = async (lastVisible, pageSize) => {
 
         return { fetchedBooks, lastVisibleDoc };
     } catch (error) {
-        console.log("Error fetching books with pagination:", error);
-        throw new Error(error);
+        console.error("Error fetching books with pagination:", error);
+        throw new Error(error.message);
     }
 };
-
 export const getCategories = async () => {
     const categories = [];
     const querySnapshot = await getDocs(collection(db, "Categories"));
@@ -394,5 +442,104 @@ export const logoutUser = async () => {
 }
 
 
+export const fetchAdmins = async (libraryId) => {
+    const libraryRef = doc(db, "LibrariesData", libraryId);
+
+    try {
+        const libraryDoc = await getDoc(libraryRef);
+        if (libraryDoc.exists()) {
+            const admins = libraryDoc.data().admins || [];
+            return admins;
+        } else {
+            console.error("No such library!");
+            return [];
+        }
+    } catch (error) {
+        console.error("Error fetching admins: ", error);
+        throw new Error(error.message);
+    }
+};
+
+
+export const addAdmin = async (libraryId, userId) => {
+    const libraryRef = doc(db, "LibrariesData", libraryId);
+    const userRef = doc(db, "Users", userId);
+
+    try {
+        await updateDoc(libraryRef, {
+            admins: arrayUnion(userId)
+        });
+
+        await updateDoc(userRef, {
+            libraries: arrayUnion(libraryId),
+            isAdmin: true
+        });
+
+        console.log(`User ${userId} added as admin to library ${libraryId}`);
+    } catch (error) {
+        console.error("Error adding admin: ", error);
+        throw new Error(error.message);
+    }
+};
+
+export const removeAdmin = async (libraryId, userId) => {
+    const libraryRef = doc(db, "LibrariesData", libraryId);
+    const userRef = doc(db, "Users", userId);
+
+    try {
+        await updateDoc(libraryRef, {
+            admins: arrayRemove(userId)
+        });
+
+        //if it's last library of user, remove isAdmin
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data();
+        if (userData.libraries.length === 1) {
+            await updateDoc(userRef, {
+                isAdmin: false
+            });
+        }
+
+        await updateDoc(userRef, {
+            libraries: arrayRemove(libraryId)
+        })
+
+
+        console.log(`User ${userId} removed as admin from library ${libraryId}`);
+    } catch (error) {
+        console.error("Error removing admin: ", error);
+        throw new Error(error.message);
+    }
+};
+
+
+
+export const fetchUsers = async () => {
+    const usersRef = collection(db, "Users");
+
+    try {
+        const querySnapshot = await getDocs(usersRef);
+        const users = [];
+        querySnapshot.forEach((doc) => {
+            users.push({ id: doc.id, ...doc.data() });
+        });
+
+        return users;
+    } catch (error) {
+        console.error("Error fetching users: ", error);
+        throw new Error(error.message);
+    }
+};
+
+export const userFromId = async (id) => {
+    const docRef = doc(db, "Users", id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return docSnap.data();
+    } else {
+        console.log("No such document!");
+        return null;
+    }
+}
 
 

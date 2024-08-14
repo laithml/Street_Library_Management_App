@@ -137,5 +137,18 @@
   "noTakersFound": "No takers found",
   "saveChanges": "Save Changes",
   "bookUpdated": "Book updated successfully.",
-  "failedToUpdateBook": "Failed to update the book."
+  "failedToUpdateBook": "Failed to update the book.",
+  "changeDefaultLibrary": "Change Default Library",
+  "defaultLibraryUpdated": "Default library updated successfully.",
+  "failedToUpdateLibrary": "Failed to update default library.",
+  "adminSection": "Admin Section",
+  "booksManagement": "Books Management",
+  "adminsManagement": "Admins Management",
+  "usersManagement": "Users Management",
+  "libraryInfoManagement": "Library Information Management",
+  "noUsersFound": "No users found",
+  "usersList": "Users List",
+  "searchForUsers": "Search for users...",
+  "searchForAdmins": "Search for admins...",
+
 }

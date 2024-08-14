@@ -48,18 +48,20 @@ const HomeScreen = ({ navigation }) => {
                 setBooks([]);
             }
             setLoadingMore(true);
-            const { fetchedBooks, lastVisibleDoc } = await fetchBooks(lastVisible, pageSize);
-            const filteredBooks = libraryId
-                ? fetchedBooks.filter(book => book.location === libraryId)
-                : fetchedBooks;
-            setBooks(prevBooks => reset ? filteredBooks : [...prevBooks, ...filteredBooks]);
+
+            // Fetch books with the provided libraryId and lastVisible
+            const { fetchedBooks, lastVisibleDoc } = await fetchBooks(libraryId, lastVisible, pageSize);
+
+            // Update the state with the newly fetched books
+            setBooks(prevBooks => reset ? fetchedBooks : [...prevBooks, ...fetchedBooks]);
             setLastVisible(lastVisibleDoc);
-            setLoadingMore(false);
         } catch (error) {
-            console.log("Error loading books:", error);
+            console.error("Error loading books:", error);
+        } finally {
             setLoadingMore(false);
         }
     };
+
 
     const loadCategories = async () => {
         try {

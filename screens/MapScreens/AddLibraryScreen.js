@@ -22,6 +22,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import LoadingAnimation from "../../components/LoadingAnimation";
 import { useTranslation } from 'react-i18next';
 import { addLibrary } from '../../actions/db_actions';
+import {useUser} from "../../Context/UserContext";
 
 const AddLibraryScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -30,6 +31,7 @@ const AddLibraryScreen = ({ navigation }) => {
     const [description, setDescription] = useState('');
     const [images, setImages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const {user} = useUser();
 
     const descRef = useRef(null);
     const locationRef = useRef(null);
@@ -88,7 +90,7 @@ const AddLibraryScreen = ({ navigation }) => {
 
         setIsLoading(true);
         try {
-            const docId = await addLibrary(title, description, location, images);
+            const docId = await addLibrary(title, description, location, images,user.id);
             console.log("Library added with ID: ", docId);
             navigation.navigate('Map');
             Alert.alert(t('success'), t('libraryAddedSuccessfully'));

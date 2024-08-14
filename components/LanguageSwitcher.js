@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: COLORS.primary,
+        backgroundColor: COLORS.lightRed,
         borderRadius: 5,
     },
     closeButtonText: {
