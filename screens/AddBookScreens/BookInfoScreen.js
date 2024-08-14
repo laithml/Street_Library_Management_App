@@ -1,5 +1,15 @@
 import React, { useRef, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 import { COLORS } from "../../constants";
 import Styles_screens from "../../constants/Styles";
 import { useTranslation } from 'react-i18next';
@@ -73,7 +83,7 @@ const BookInfoScreen = ({ route, navigation }) => {
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === 'ios' ? 'padding' : 10}
         >
             <SafeAreaView style={Styles_screens.container}>
                 <View style={Styles_screens.headerContainer}>
@@ -81,7 +91,7 @@ const BookInfoScreen = ({ route, navigation }) => {
                 </View>
                 <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }}></View>
 
-                <View style={Styles_screens.inputContainer}>
+                <ScrollView style={Styles_screens.inputContainer}>
                     <Text style={Styles_screens.inputTitle}>{t('title')}</Text>
                     {errors.title && <Text style={Styles_screens.error}>{errors.title}</Text>}
                     <TextInput
@@ -141,7 +151,7 @@ const BookInfoScreen = ({ route, navigation }) => {
                         onChangeText={(text) => { setLanguage(text); setErrors(prev => ({ ...prev, language: null })); }}
                         value={language}
                     />
-                </View>
+                </ScrollView>
                 <View style={Styles_screens.buttonsContainer}>
                     <TouchableOpacity style={Styles_screens.submitButton} onPress={handleNextPress}>
                         <Text style={Styles_screens.submitButtonText}>{t('next')}</Text>

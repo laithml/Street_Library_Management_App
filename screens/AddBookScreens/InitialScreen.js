@@ -8,6 +8,7 @@ import { pickImageFromLibrary, takePhotoWithCamera } from "../../Utils/ImagePick
 import { processImage } from "../../actions/model_actions";
 import { setBooks, setCurrentBookIndex } from "../../redux/store";
 import { COLORS } from "../../constants";
+import LoadingAnimation from "../../components/LoadingAnimation";
 
 const InitialScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -67,7 +68,6 @@ const InitialScreen = ({ navigation }) => {
                     <Text style={[Styles_screens.buttonText, Styles_screens.iconPadding]}>{t('automaticAddBook')}</Text>
                 </TouchableOpacity>
             </View>
-            {isProcessing && <Text>{t('processing')}</Text>}
 
             <Modal
                 transparent={true}
@@ -79,16 +79,32 @@ const InitialScreen = ({ navigation }) => {
                     <View style={Styles_screens.modalContent}>
                         <TouchableOpacity style={Styles_screens.modalButton} onPress={handleTakePhoto}>
                             <FontAwesome name="camera" size={30} color={COLORS.secondary} />
-                            <Text style={[Styles_screens.modalButtonText,{color: COLORS.black}]}>{t('takePhoto')}</Text>
+                            <Text style={[Styles_screens.modalButtonText, { color: COLORS.black }]}>{t('takePhoto')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={Styles_screens.modalButton} onPress={handlePickImage}>
                             <FontAwesome name="image" size={30} color={COLORS.secondary} />
-                            <Text style={[Styles_screens.modalButtonText,{color: COLORS.black}]}>{t('pickImage')}</Text>
+                            <Text style={[Styles_screens.modalButtonText, { color: COLORS.black }]}>{t('pickImage')}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[Styles_screens.modalButton,{backgroundColor: COLORS.lightRed}]} onPress={() => setModalVisible(false)}>
+                        <TouchableOpacity style={[Styles_screens.modalButton, { backgroundColor: COLORS.lightRed }]} onPress={() => setModalVisible(false)}>
                             <Text style={Styles_screens.modalButtonText}>{t('cancel')}</Text>
                         </TouchableOpacity>
                     </View>
+                </View>
+            </Modal>
+
+            <Modal
+                transparent={true}
+                animationType="fade"
+                visible={isProcessing}
+                onRequestClose={() => {}}
+            >
+                <View style={{
+                    flex: 1,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <LoadingAnimation />
                 </View>
             </Modal>
         </SafeAreaView>

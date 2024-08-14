@@ -16,7 +16,6 @@ export const uploadImagesAndGetURLs = async (images, folder) => {
         // Start the file upload
         const uploadTask = uploadBytesResumable(imageRef, blob);
 
-
         // Wait for upload to complete
         await new Promise((resolve, reject) => {
             uploadTask.on('state_changed',

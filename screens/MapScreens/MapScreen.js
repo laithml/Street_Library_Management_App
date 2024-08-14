@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     TextInput,
     StyleSheet,
-    FlatList, Linking
+    FlatList, Linking, Platform, KeyboardAvoidingView
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -107,7 +107,11 @@ const MapScreen = ({ navigation }) => {
     }, [libraries.length]);
 
     return (
-        <SafeAreaView style={Styles_screens.defContainer}>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+        <SafeAreaView style={Styles_screens.container}>
             <View style={{
                 flexDirection: 'row',
                 padding: 10,
@@ -185,6 +189,7 @@ const MapScreen = ({ navigation }) => {
             )}
 
         </SafeAreaView>
+        </KeyboardAvoidingView>
     );
 };
 

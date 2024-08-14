@@ -228,6 +228,7 @@ const Styles_screens = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 20,
+        marginBottom: 40,
     },
 
     addImageButton: {

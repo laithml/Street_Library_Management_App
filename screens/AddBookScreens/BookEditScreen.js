@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Image,
+    TextInput,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Platform, KeyboardAvoidingView
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import Styles_screens from "../../constants/Styles";
@@ -61,12 +71,17 @@ const BookEditScreen = ({ route, navigation }) => {
     };
 
     return (
-        <SafeAreaView style={[Styles_screens.defContainer]}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+        <SafeAreaView style={[Styles_screens.container]}>
                 <View style={Styles_screens.headerContainer}>
                     <Text style={Styles_screens.headerText}>{t('editBook')}</Text>
                 </View>
                 <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }}></View>
+                <ScrollView style={Styles_screens.inputContainer}>
+
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: imageUri }}
                            style={Styles_screens.image} />
@@ -109,14 +124,15 @@ const BookEditScreen = ({ route, navigation }) => {
                     placeholder={t('description')}
                     multiline
                 />
-                <TouchableOpacity style={Styles_screens.button} onPress={handleSaveBook}>
-                    <Text style={Styles_screens.buttonText}>{t('save')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-                    <Text style={styles.deleteButtonText}>{t('delete')}</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </SafeAreaView>
+                </ScrollView>
+            <TouchableOpacity style={Styles_screens.button} onPress={handleSaveBook}>
+                <Text style={Styles_screens.buttonText}>{t('save')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+                <Text style={styles.deleteButtonText}>{t('delete')}</Text>
+            </TouchableOpacity>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
     );
 };
 

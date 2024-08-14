@@ -101,7 +101,6 @@ const UploadImagesScreen = ({ navigation, route }) => {
                 addedBy: user.id,
                 addedAt: Timestamp.now(),
                 takenBy: [],
-                isTaken: false,
             };
 
             console.log("Book Data: ", bookData);
@@ -119,7 +118,10 @@ const UploadImagesScreen = ({ navigation, route }) => {
                     routes: [{ name: 'BookEdit' }],
                 });
             } else {
-                navigation.navigate('BookDetails', { book: newBook });
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'BookDetails', params: { book: newBook } }],
+                });
                 Alert.alert(t('bookSubmitted'), t('bookSubmittedSuccess'));            }
         } catch (error) {
             console.error("Error adding book: ", error);
@@ -176,7 +178,6 @@ const UploadImagesScreen = ({ navigation, route }) => {
                         <Text style={Styles_screens.buttonText}>{t('takePhoto')}</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
 
             <View style={Styles_screens.imageUploadSection}>
                 <FlatList
@@ -204,6 +205,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
             {errors.selectedLib && <Text style={Styles_screens.error}>{errors.selectedLib}</Text>}
 
             {errors.images && <Text style={Styles_screens.error}>{errors.images}</Text>}
+            </View>
 
             <View style={[Styles_screens.buttonsContainerRow]}>
                 <TouchableOpacity style={Styles_screens.buttonR} onPress={handleBackPress}>

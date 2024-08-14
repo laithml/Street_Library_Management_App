@@ -1,5 +1,5 @@
 export const processImage = async (imageUri) => {
-    const url = 'http://localhost:8000/upload-images';  // Change this URL to your actual FastAPI server URL
+    const url = 'https://laithml_bookscannerapi.jce.ac/upload-images';  // Change this URL to your actual FastAPI server URL
 
     try {
         // Convert the image URI to a blob since fetch API needs FormData with a blob for file upload
