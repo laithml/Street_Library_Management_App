@@ -120,7 +120,22 @@
   "releaseBookPrompt": "האם אתה בטוח שאתה רוצה לסמן ספר זה כמאוחזר?",
   "adminActions": "פעולות מנהל",
   "bookNotTakenPrompt": "הספר עדיין לא נלקח",
-    "bookNotTaken": "הספר עדיין לא נלקח"
+  "bookNotTaken": "הספר עדיין לא נלקח",
+  "editBookDetails": "ערוך פרטי הספר",
+  "selectThumbnail": "בחר תמונה ממוזערת",
+  "addedAt": "נוסף בתאריך",
+  "addedBy": "נוסף על ידי",
+  "viewAllTakers": "הצג את כל השואלים",
+  "takerDetails": "פרטי השואל",
+  "takerHistory": "היסטוריית השואלים",
+  "addedByUserDetails": "פרטי המשתמש שהוסיף את הספר",
+  "name": "שם",
+  "noDetailsAvailable": "אין פרטים זמינים",
+  "noTakers": "אין שואלים",
+  "noTakersFound": "לא נמצאו שואלים",
+  "saveChanges": "שמור שינויים",
+  "bookUpdated": "הספר עודכן בהצלחה.",
+  "failedToUpdateBook": "נכשל עדכון הספר."
 
 
 

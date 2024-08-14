@@ -121,6 +121,21 @@
   "releaseBook": "Release Book",
   "releaseBookPrompt": "Are you sure you want to mark this book as returned?",
   "adminActions": "Admin Actions",
-"bookNotTakenPrompt": "Book has not been taken yet.",
-"bookNotTaken": "Book Not Taken"
+  "bookNotTakenPrompt": "Book has not been taken yet.",
+  "bookNotTaken": "Book Not Taken",
+  "editBookDetails": "Edit Book Details",
+  "selectThumbnail": "Select Thumbnail",
+  "addedAt": "Added At",
+  "addedBy": "Added By",
+  "viewAllTakers": "View All Takers",
+  "takerDetails": "Taker Details",
+  "takerHistory": "Taker History",
+  "addedByUserDetails": "Added By User Details",
+  "name": "Name",
+  "noDetailsAvailable": "No details available",
+  "noTakers": "No Takers",
+  "noTakersFound": "No takers found",
+  "saveChanges": "Save Changes",
+  "bookUpdated": "Book updated successfully.",
+  "failedToUpdateBook": "Failed to update the book."
 }

@@ -104,6 +104,45 @@ export const fetchLibraryById = async (id) => {
 
 }
 
+export const updateBookDetails = async (bookId, updatedBookData) => {
+    const bookRef = doc(db, "BooksData", bookId);
+
+    try {
+        // Fetch the existing book document
+        const bookSnapshot = await getDoc(bookRef);
+
+        if (!bookSnapshot.exists()) {
+            throw new Error(`Book with ID ${bookId} does not exist`);
+        }
+
+        const existingBookData = bookSnapshot.data();
+
+        // Merge non-editable fields with the updated data
+        const mergedBookData = {
+            ...updatedBookData,
+            addedBy: existingBookData.addedBy,
+            addedAt: existingBookData.addedAt,
+            id: existingBookData.id,
+            location: existingBookData.location,
+            selectedCategory: existingBookData.selectedCategory,
+            selectedCondition: existingBookData.selectedCondition,
+            takenBy: existingBookData.takenBy,
+            isTaken: existingBookData.isTaken      ,
+            rating: existingBookData.rating
+        };
+
+        // Overwrite the entire book document with the merged data
+        await setDoc(bookRef, mergedBookData, { merge: false });
+
+        console.log(`Book ${bookId} updated successfully with merged data.`);
+        return true;
+    } catch (error) {
+        console.error("Error updating book details:", error);
+        throw new Error(error.message);
+    }
+};
+
+
 export const fetchLibraries = async () => {
     try {
         const q = query(LibrariesCollectionRef);
@@ -119,13 +158,30 @@ export const fetchLibraries = async () => {
     }
 };
 
+export const releaseBook = async (bookId) => {
+    const bookRef = doc(db, "BooksData", bookId);
+
+    try {
+        // Update only the `isTaken` field to `false`
+        await updateDoc(bookRef, {
+            isTaken: false
+        });
+
+        console.log(`Book ${bookId} released successfully.`);
+    } catch (error) {
+        console.error("Error releasing book:", error);
+        throw new Error(error.message);
+    }
+}
+
+
 export const updateBookStatus = async (bookId, userId) => {
     const bookRef = doc(db, "BooksData", bookId);
 
     try {
         await updateDoc(bookRef, {
-            takenBy: arrayUnion(userId),  // Append the user ID to the takenBy array
-            isTaken: true                 // Set isTaken to true
+            takenBy: arrayUnion(userId),
+            isTaken: true
         });
 
         console.log(`Book ${bookId} updated successfully with user ${userId} as taken.`);
@@ -134,6 +190,7 @@ export const updateBookStatus = async (bookId, userId) => {
         throw new Error(error.message);
     }
 };
+
 export const addBook = async (bookData) => {
     try {
         const bookRef = await addDoc(collection(db, "BooksData"), bookData);

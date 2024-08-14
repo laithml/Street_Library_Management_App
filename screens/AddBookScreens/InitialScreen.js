@@ -9,6 +9,7 @@ import { processImage } from "../../actions/model_actions";
 import { setBooks, setCurrentBookIndex } from "../../redux/store";
 import { COLORS } from "../../constants";
 import LoadingAnimation from "../../components/LoadingAnimation";
+import ImagePickerModal from "../../components/ImagePickerModal";
 
 const InitialScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -69,28 +70,7 @@ const InitialScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
 
-            <Modal
-                transparent={true}
-                animationType="slide"
-                visible={isModalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={Styles_screens.modalContainer}>
-                    <View style={Styles_screens.modalContent}>
-                        <TouchableOpacity style={Styles_screens.modalButton} onPress={handleTakePhoto}>
-                            <FontAwesome name="camera" size={30} color={COLORS.secondary} />
-                            <Text style={[Styles_screens.modalButtonText, { color: COLORS.black }]}>{t('takePhoto')}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={Styles_screens.modalButton} onPress={handlePickImage}>
-                            <FontAwesome name="image" size={30} color={COLORS.secondary} />
-                            <Text style={[Styles_screens.modalButtonText, { color: COLORS.black }]}>{t('pickImage')}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[Styles_screens.modalButton, { backgroundColor: COLORS.lightRed }]} onPress={() => setModalVisible(false)}>
-                            <Text style={Styles_screens.modalButtonText}>{t('cancel')}</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+            <ImagePickerModal isVisible={isModalVisible} onPickImage={handlePickImage} onTakePhoto={handleTakePhoto} onClose={() => setModalVisible(false)} />
 
             <Modal
                 transparent={true}

@@ -24,6 +24,7 @@ import BookEditComponent from "./components/BookEditComponent";
 import BookEditScreen from "./screens/AddBookScreens/BookEditScreen";
 import { Provider } from 'react-redux';
 import store from './redux/store';
+import EditBookAdmin from "./screens/AdminScreens/EditBookAdmin";
 
 
 I18nManager.forceRTL(false);
@@ -67,6 +68,7 @@ const App = () => {
                                 <Stack.Screen name="InitialScreen" component={InitialScreen} />
                                 <Stack.Screen name="BookEditComponent" component={BookEditComponent} />
                                 <Stack.Screen name="BookEdit" component={BookEditScreen} />
+                                <Stack.Screen name="BookEditAdmin" component={EditBookAdmin} />
                             </Stack.Navigator>
                         </NavigationContainer>
                     </GestureHandlerRootView>

@@ -5,43 +5,60 @@ import {storage} from "../Config/Firebase";
 
 export const uploadImagesAndGetURLs = async (images, folder) => {
     const imageUrls = await Promise.all(images.map(async (uri) => {
-        // Fetch the image as a blob
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        const fileName = uri.split('/').pop(); // Extract file name from URI
+        // Check if the URI is already a Firebase Storage URL
+        if (uri.startsWith('https://firebasestorage.googleapis.com/')) {
+            // If it's a Firebase Storage URL, return it as is
+            return uri;
+        }
 
-        // Create a storage reference
-        const imageRef = ref(storage, `${folder}/${new Date().toISOString()}-${fileName}`);
+        try {
+            // Fetch the image as a blob
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            const fileName = uri.split('/').pop(); // Extract file name from URI
 
-        // Start the file upload
-        const uploadTask = uploadBytesResumable(imageRef, blob);
+            // Create a storage reference
+            const imageRef = ref(storage, `${folder}/${new Date().toISOString()}-${fileName}`);
 
-        // Wait for upload to complete
-        await new Promise((resolve, reject) => {
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    // Optional: Monitor progress, pause, resume here
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log('Upload is ' + progress + '% done');
-                },
-                (error) => {
-                    // Handle unsuccessful uploads
-                    console.log(error);
-                    reject(error);
-                },
-                () => {
-                    // Handle successful uploads on complete
-                    resolve();
-                }
-            );
-        });
+            // Start the file upload
+            const uploadTask = uploadBytesResumable(imageRef, blob);
 
-        // After upload completes, get the download URL
-        return getDownloadURL(uploadTask.snapshot.ref);
+            // Wait for upload to complete
+            const downloadUrl = await new Promise((resolve, reject) => {
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        // Optional: Monitor progress, pause, resume here
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    },
+                    (error) => {
+                        // Handle unsuccessful uploads
+                        console.error('Upload failed:', error);
+                        reject(error);
+                    },
+                    async () => {
+                        // Handle successful uploads on complete
+                        try {
+                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                            resolve(downloadURL);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    }
+                );
+            });
+
+            return downloadUrl;
+
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            throw new Error('Failed to upload image');
+        }
     }));
 
     return imageUrls;
 };
+
 
 export const requestPermissionsAsync = async () => {
     await Location.requestForegroundPermissionsAsync();

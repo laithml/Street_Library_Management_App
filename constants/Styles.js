@@ -372,10 +372,9 @@ const Styles_screens = StyleSheet.create({
         color: '#333',
     },
     headerContainer: {
-        height: '10%',
+        height: '8%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: SIZES.margin*2.2,
     },
     genreContainer: {
         flexDirection: 'row',

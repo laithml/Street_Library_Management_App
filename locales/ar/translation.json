@@ -122,7 +122,22 @@
   "editBook": "تعديل الكتاب",
   "adminActions": "إجراءات المسؤول",
   "bookNotTaken": "لم يتم أخذ الكتاب",
-  "bookNotTakenPrompt": "لم يتم اخذ الكتاب بعد."
+  "bookNotTakenPrompt": "لم يتم اخذ الكتاب بعد.",
+  "editBookDetails": "تعديل تفاصيل الكتاب",
+  "selectThumbnail": "اختر الصورة المصغرة",
+  "addedAt": "أضيف في",
+  "addedBy": "أضيف بواسطة",
+  "viewAllTakers": "عرض جميع المستعيرين",
+  "takerDetails": "تفاصيل المستعير",
+  "takerHistory": "تاريخ المستعيرين",
+  "addedByUserDetails": "تفاصيل المستخدم الذي أضاف الكتاب",
+  "name": "الاسم",
+  "noDetailsAvailable": "لا توجد تفاصيل متاحة",
+  "noTakers": "لا يوجد مستعيرين",
+  "noTakersFound": "لم يتم العثور على مستعيرين",
+  "saveChanges": "حفظ التغييرات",
+  "bookUpdated": "تم تحديث الكتاب بنجاح.",
+  "failedToUpdateBook": "فشل في تحديث الكتاب."
 
 
 

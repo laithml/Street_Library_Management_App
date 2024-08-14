@@ -13,7 +13,15 @@ import {
 } from 'react-native';
 import {COLORS, FONTS, SIZES} from "../../constants";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {addBookMark, getBookById, getLocationById, removeBookMark, updateBookStatus, getUserById} from "../../actions/db_actions";
+import {
+    addBookMark,
+    getBookById,
+    getLocationById,
+    removeBookMark,
+    updateBookStatus,
+    getUserById,
+    releaseBook
+} from "../../actions/db_actions";
 import Styles_screens from "../../constants/Styles";
 import {useUser} from "../../Context/UserContext";
 import {useTranslation} from "react-i18next";
@@ -91,27 +99,29 @@ const BookDetails = ({route, navigation}) => {
                 t("takeBook"),
                 t("takeBookPrompt"),
                 [
-                    {text: t("cancel"), style: "cancel"},
-                    {text: t("take"), onPress: async () => {
+                    { text: t("cancel"), style: "cancel" },
+                    { text: t("take"), onPress: async () => {
                             try {
-                                await updateBookStatus(book.id, {
-                                    isTaken: true,
-                                    takenBy: [...(book.takenBy || []), user.id]
-                                });
+                                // Update the book's status and takenBy array
+                                await updateBookStatus(book.id, user.id);
 
+                                // Update the local state of the book
                                 const updatedTakenBy = [...(book.takenBy || []), user.id];
-                                setBook({...book, takenBy: updatedTakenBy, isTaken: true});
+                                setBook({ ...book, takenBy: updatedTakenBy, isTaken: true });
 
+                                // Optionally, fetch and set the taker details if needed
                                 const taker = await getUserById(user.id);
                                 setTakerDetails(taker);
                             } catch (error) {
                                 console.error("Error updating book status:", error);
                             }
-                        }}
+                        }
+                    }
                 ]
             );
         }
     };
+
 
     const handleReleaseBook = async () => {
         if (!book.isTaken) {
@@ -127,11 +137,8 @@ const BookDetails = ({route, navigation}) => {
                 {
                     text: t("release"), onPress: async () => {
                         try {
-                            await updateBookStatus(book.id, {
-                                isTaken: false,
-                                takenBy: []
-                            });
-                            setBook({...book, isTaken: false, takenBy: []});
+                            await releaseBook(book.id);
+                            setBook({...book, isTaken: false});
                         } catch (error) {
                             console.error("Error releasing book:", error);
                         }
@@ -142,7 +149,7 @@ const BookDetails = ({route, navigation}) => {
     };
 
     const handleEditBook = () => {
-        navigation.navigate("EditBookScreen", {book});
+        navigation.navigate("BookEditAdmin", {book});
     };
 
     const openModal = () => {
@@ -188,7 +195,7 @@ const BookDetails = ({route, navigation}) => {
                     style={{flexDirection: 'row', paddingHorizontal: SIZES.radius, height: 80, alignItems: 'flex-end'}}>
                     <TouchableOpacity
                         style={{marginLeft: SIZES.base}}
-                        onPress={() => navigation.navigate("Home")}
+                        onPress={() => navigation.navigate("Tab")}
                     >
                         <FontAwesome name={"chevron-left"} size={20} color={COLORS.textColor}/>
                     </TouchableOpacity>
@@ -197,12 +204,13 @@ const BookDetails = ({route, navigation}) => {
                         <Text style={{...FONTS.h3, color: COLORS.textColor}}>{t("bookDetail")}</Text>
                     </View>
 
-                    <TouchableOpacity
+                    {user.isAdmin &&(<TouchableOpacity
                         style={{marginRight: SIZES.base}}
                         onPress={openModal}
                     >
                         <FontAwesome name={"ellipsis-v"} size={20} color={COLORS.textColor}/>
                     </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Book Cover */}
@@ -415,19 +423,23 @@ const BookDetails = ({route, navigation}) => {
                                 <Text style={{...FONTS.body3, color: COLORS.white, textAlign: 'center'}}>{t("releaseBook")}</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={{
-                                    backgroundColor: COLORS.secondary,
-                                    padding: 10,
-                                    borderRadius: SIZES.radius
-                                }}
-                                onPress={() => {
-                                    closeModal();
-                                    handleEditBook();
-                                }}
-                            >
-                                <Text style={{...FONTS.body3, color: COLORS.white, textAlign: 'center'}}>{t("editBook")}</Text>
-                            </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{
+                                        backgroundColor: COLORS.secondary,
+                                        padding: 10,
+                                        borderRadius: SIZES.radius
+                                    }}
+                                    onPress={() => {
+                                        closeModal();
+                                        handleEditBook();
+                                    }}
+                                >
+                                    <Text style={{...FONTS.body3, color: COLORS.white, textAlign: 'center'}}>
+                                        {t("editBook")}
+                                    </Text>
+                                </TouchableOpacity>
+
                         </View>
                     </TouchableOpacity>
                 </Modal>

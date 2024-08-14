@@ -23,7 +23,7 @@ export const processImage = async (imageUri) => {
             },
         });
 
-        console.log('Server response:', fetchResponse);
+        console.log('Server responded:', fetchResponse.status, fetchResponse.statusText);
 
         if (!fetchResponse.ok) {
             const errorText = await fetchResponse.text();

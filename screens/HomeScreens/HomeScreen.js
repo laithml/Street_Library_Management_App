@@ -117,13 +117,13 @@ const HomeScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={Styles_screens.container}>
-            <View style={Styles_screens.headerContainer}>
+            <View style={[Styles_screens.headerContainer, {marginBottom: SIZES.margin*2.2,height: "10%"} ]}>
                 {/* Header */}
                 <View style={{
                     flex: 1,
                     flexDirection: 'column',
                     paddingHorizontal: SIZES.padding,
-                    margin: SIZES.radius
+                    margin: SIZES.radius,
                 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: SIZES.base }}>
                         {/* Greetings */}
