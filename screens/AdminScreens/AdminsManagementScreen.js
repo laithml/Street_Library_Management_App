@@ -9,7 +9,7 @@ import UserSelectionModal from '../../components/UserSelectionModal';
 import LibrarySelectionModal from '../../components/LibrarySelectionModal';
 import {debounce} from 'lodash';
 import {useTranslation} from 'react-i18next';
-import {useUser} from "../../Context/UserContext";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 const AdminsManagementScreen = ({navigation}) => {
     const {t} = useTranslation();
@@ -21,7 +21,6 @@ const AdminsManagementScreen = ({navigation}) => {
     const [visibleUserModal, setVisibleUserModal] = useState(false);
     const [visibleLibModal, setVisibleLibModal] = useState(false);
     const [users, setUsers] = useState([]);
-    const {currentUser} = useUser();
 
     useEffect(() => {
         const loadLibraries = async () => {
@@ -40,8 +39,7 @@ const AdminsManagementScreen = ({navigation}) => {
         const loadUsers = async () => {
             try {
                 const fetchedUsers = await fetchUsers();
-                const filteredUsers = fetchedUsers.filter(user => user.id !== currentUser.id);
-                setUsers(filteredUsers);
+                setUsers(fetchedUsers);
             } catch (error) {
                 console.error('Failed to fetch users:', error);
             }
@@ -58,8 +56,7 @@ const AdminsManagementScreen = ({navigation}) => {
                 setLoading(true);
                 try {
                     const fetchedAdmins = await fetchAdmins(selectedLibrary.id);
-                    const filteredAdmins = fetchedAdmins.filter(admin => admin.id !== currentUser.id);
-                    setSearchResults(filteredAdmins);
+                    setSearchResults(fetchedAdmins);
                 } catch (error) {
                     console.error('Failed to fetch admins:', error);
                 } finally {
@@ -118,21 +115,29 @@ const AdminsManagementScreen = ({navigation}) => {
     };
 
     const handleRemoveAdmin = async (adminId) => {
-        if (adminId === currentUser.id) {
-            Alert.alert(t('error'), t('cannotRemoveSelf'));
-            return;
-        }
-
         try {
-            await removeAdmin(selectedLibrary.id, adminId);
-            const updatedAdmins = await fetchAdmins(selectedLibrary.id);
-            const filteredAdmins = updatedAdmins.filter(admin => admin.id !== currentUser.id);
-            setSearchResults(filteredAdmins);
+            Alert.alert(
+                t('removeAdmin'),
+                t('removeAdminConfirmation'),
+                [
+                    {
+                        text: t('cancel'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: t('remove'),
+                        onPress: async () => {
+                            await removeAdmin(selectedLibrary.id, adminId);
+                            const updatedAdmins = await fetchAdmins(selectedLibrary.id);
+                            setSearchResults(updatedAdmins);
+                        },
+                    },
+                ]
+            );
         } catch (error) {
             console.error('Failed to remove admin:', error);
         }
     };
-
 
     const clearSelectedLibrary = () => {
         setSelectedLibrary(null);
@@ -226,9 +231,8 @@ const AdminsManagementScreen = ({navigation}) => {
                             <AdminBasic
                                 navigation={navigation}
                                 admin={item}
-                                onRemove={item.id !== currentUser.id ? () => handleRemoveAdmin(item) : null}
+                                onRemove={() => handleRemoveAdmin(item)}
                             />
-
                         )}
                         contentContainerStyle={{paddingBottom: 20}}
                     />

@@ -153,5 +153,8 @@
   "addAdmin": "إضافة مسؤول",
   "adminsList": "قائمة المسؤولين",
   "noAdminsFound": "لم يتم العثور على مسؤولين",
+  "removeAdmin": "إزالة المسؤول",
+  "removeAdminConfirmation": "هل أنت متأكد أنك تريد إزالة هذا المسؤول؟",
+
 
 }

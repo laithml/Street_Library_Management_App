@@ -151,6 +151,8 @@
   "addAdmin": "הוסף מנהל",
   "adminsList": "רשימת מנהלים",
   "noAdminsFound": "לא נמצאו מנהלים",
+  "removeAdmin": "הסר מנהל",
+  "removeAdminConfirmation": "האם אתה בטוח שברצונך להסיר מנהל זה?",
 
 
 

@@ -153,5 +153,8 @@
   "addAdmin": "Add Admin",
   "adminsList": "Admins List",
   "noAdminsFound": "No admins found",
+  "removeAdmin": "Remove Admin",
+  "removeAdminConfirmation": "Are you sure you want to remove this admin?",
+
 
 }
