@@ -150,5 +150,8 @@
   "usersList": "قائمة المستخدمين",
   "searchForUsers": "ابحث عن مستخدمين...",
   "searchForAdmins": "ابحث عن مسؤولين...",
+  "addAdmin": "إضافة مسؤول",
+  "adminsList": "قائمة المسؤولين",
+  "noAdminsFound": "لم يتم العثور على مسؤولين",
 
 }

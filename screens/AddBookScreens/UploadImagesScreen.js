@@ -11,6 +11,7 @@ import LibrarySelectionModal from "../../components/LibrarySelectionModal";
 import { useTranslation } from 'react-i18next';
 import {setCurrentBookIndex} from "../../redux/store";
 import {useDispatch, useSelector} from "react-redux";
+import ImagePickerModal from "../../components/ImagePickerModal";
 
 const UploadImagesScreen = ({ navigation, route }) => {
     const { t } = useTranslation();
@@ -26,6 +27,8 @@ const UploadImagesScreen = ({ navigation, route }) => {
     const books = useSelector((state) => state.books);
     const currentIndex = useSelector((state) => state.currentBookIndex);
     const dispatch = useDispatch();
+    const [isModalVisible, setModalVisible] = useState(false);
+
 
     useEffect(() => {
         const fetchLibrariesData = async () => {
@@ -50,6 +53,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
         if (uri) {
             setImages([...images, uri]);
         }
+        setModalVisible(false);
     };
 
     const takePhoto = async () => {
@@ -57,7 +61,9 @@ const UploadImagesScreen = ({ navigation, route }) => {
         if (uri) {
             setImages([...images, uri]);
         }
+        setModalVisible(false);
     };
+
 
     const handleBackPress = () => {
         navigation.goBack();
@@ -101,6 +107,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
                 addedBy: user.id,
                 addedAt: Timestamp.now(),
                 takenBy: [],
+                isTaken: false,
             };
 
             console.log("Book Data: ", bookData);
@@ -170,15 +177,6 @@ const UploadImagesScreen = ({ navigation, route }) => {
                 <Text style={[Styles_screens.descriptionText, { marginTop: 20 }]}>
                     {t('uploadPhotos')}
                 </Text>
-                <View style={[Styles_screens.buttonsContainerRow, { position: '', paddingBottom: 18 }]}>
-                    <TouchableOpacity style={Styles_screens.buttonR} onPress={pickImage}>
-                        <Text style={Styles_screens.buttonText}>{t('uploadPhoto')}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={Styles_screens.buttonR} onPress={takePhoto}>
-                        <Text style={Styles_screens.buttonText}>{t('takePhoto')}</Text>
-                    </TouchableOpacity>
-                </View>
-
             <View style={Styles_screens.imageUploadSection}>
                 <FlatList
                     horizontal
@@ -196,7 +194,7 @@ const UploadImagesScreen = ({ navigation, route }) => {
                         </View>
                     )}
                     ListHeaderComponent={() => (
-                        <TouchableOpacity onPress={pickImage} style={Styles_screens.addImageButton}>
+                        <TouchableOpacity onPress={()=> setModalVisible(true) } style={Styles_screens.addImageButton}>
                             <FontAwesome name="plus" size={24} />
                         </TouchableOpacity>
                     )}
@@ -206,6 +204,9 @@ const UploadImagesScreen = ({ navigation, route }) => {
 
             {errors.images && <Text style={Styles_screens.error}>{errors.images}</Text>}
             </View>
+
+            <ImagePickerModal isVisible={isModalVisible} onPickImage={pickImage} onTakePhoto={takePhoto} onClose={() => setModalVisible(false)} />
+
 
             <View style={[Styles_screens.buttonsContainerRow]}>
                 <TouchableOpacity style={Styles_screens.buttonR} onPress={handleBackPress}>

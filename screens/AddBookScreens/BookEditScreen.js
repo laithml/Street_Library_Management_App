@@ -80,7 +80,9 @@ const BookEditScreen = ({ route, navigation }) => {
                     <Text style={Styles_screens.headerText}>{t('editBook')}</Text>
                 </View>
                 <View style={{ height: 1.5, backgroundColor: 'grey', width: '100%' }}></View>
-                <ScrollView style={Styles_screens.inputContainer}>
+                <ScrollView
+                    keyboardShouldPersistTaps={'always'}
+                    style={Styles_screens.inputContainer}>
 
                 <View style={styles.imageContainer}>
                     <Image source={{ uri: imageUri }}

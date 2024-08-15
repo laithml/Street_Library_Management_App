@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {SafeAreaView, View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Alert} from 'react-native';
 import {COLORS, FONTS, SIZES} from '../../constants';
 import Styles_screens from "../../constants/Styles";
 import {fetchAdmins, addAdmin, removeAdmin, fetchLibraries, fetchUsers} from "../../actions/db_actions";
@@ -9,7 +9,7 @@ import UserSelectionModal from '../../components/UserSelectionModal';
 import LibrarySelectionModal from '../../components/LibrarySelectionModal';
 import {debounce} from 'lodash';
 import {useTranslation} from 'react-i18next';
-import LanguageSwitcher from "../../components/LanguageSwitcher";
+import {useUser} from "../../Context/UserContext";
 
 const AdminsManagementScreen = ({navigation}) => {
     const {t} = useTranslation();
@@ -21,6 +21,7 @@ const AdminsManagementScreen = ({navigation}) => {
     const [visibleUserModal, setVisibleUserModal] = useState(false);
     const [visibleLibModal, setVisibleLibModal] = useState(false);
     const [users, setUsers] = useState([]);
+    const {currentUser} = useUser();
 
     useEffect(() => {
         const loadLibraries = async () => {
@@ -36,20 +37,19 @@ const AdminsManagementScreen = ({navigation}) => {
     }, []);
 
     useEffect(() => {
-        //fetch the users
-
         const loadUsers = async () => {
             try {
                 const fetchedUsers = await fetchUsers();
-                setUsers(fetchedUsers);
+                const filteredUsers = fetchedUsers.filter(user => user.id !== currentUser.id);
+                setUsers(filteredUsers);
             } catch (error) {
                 console.error('Failed to fetch users:', error);
-
             }
         };
 
         loadUsers();
     }, []);
+
 
 
     useEffect(() => {
@@ -58,7 +58,8 @@ const AdminsManagementScreen = ({navigation}) => {
                 setLoading(true);
                 try {
                     const fetchedAdmins = await fetchAdmins(selectedLibrary.id);
-                    setSearchResults(fetchedAdmins);
+                    const filteredAdmins = fetchedAdmins.filter(admin => admin.id !== currentUser.id);
+                    setSearchResults(filteredAdmins);
                 } catch (error) {
                     console.error('Failed to fetch admins:', error);
                 } finally {
@@ -69,6 +70,7 @@ const AdminsManagementScreen = ({navigation}) => {
 
         loadAdmins();
     }, [selectedLibrary]);
+
 
     const debouncedSearch = debounce(async (query) => {
         if (query.trim() === '' || !selectedLibrary) {
@@ -116,14 +118,21 @@ const AdminsManagementScreen = ({navigation}) => {
     };
 
     const handleRemoveAdmin = async (adminId) => {
+        if (adminId === currentUser.id) {
+            Alert.alert(t('error'), t('cannotRemoveSelf'));
+            return;
+        }
+
         try {
             await removeAdmin(selectedLibrary.id, adminId);
             const updatedAdmins = await fetchAdmins(selectedLibrary.id);
-            setSearchResults(updatedAdmins);
+            const filteredAdmins = updatedAdmins.filter(admin => admin.id !== currentUser.id);
+            setSearchResults(filteredAdmins);
         } catch (error) {
             console.error('Failed to remove admin:', error);
         }
     };
+
 
     const clearSelectedLibrary = () => {
         setSelectedLibrary(null);
@@ -217,8 +226,9 @@ const AdminsManagementScreen = ({navigation}) => {
                             <AdminBasic
                                 navigation={navigation}
                                 admin={item}
-                                onRemove={() => handleRemoveAdmin(item)}
+                                onRemove={item.id !== currentUser.id ? () => handleRemoveAdmin(item) : null}
                             />
+
                         )}
                         contentContainerStyle={{paddingBottom: 20}}
                     />

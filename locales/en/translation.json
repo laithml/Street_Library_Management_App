@@ -150,5 +150,8 @@
   "usersList": "Users List",
   "searchForUsers": "Search for users...",
   "searchForAdmins": "Search for admins...",
+  "addAdmin": "Add Admin",
+  "adminsList": "Admins List",
+  "noAdminsFound": "No admins found",
 
 }

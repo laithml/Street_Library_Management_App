@@ -23,6 +23,7 @@ import LoadingAnimation from "../../components/LoadingAnimation";
 import { useTranslation } from 'react-i18next';
 import { addLibrary } from '../../actions/db_actions';
 import {useUser} from "../../Context/UserContext";
+import ImagePickerModal from "../../components/ImagePickerModal";
 
 const AddLibraryScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -32,6 +33,7 @@ const AddLibraryScreen = ({ navigation }) => {
     const [images, setImages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const {user} = useUser();
+    const [isModalVisible, setModalVisible] = useState(false);
 
     const descRef = useRef(null);
     const locationRef = useRef(null);
@@ -69,6 +71,7 @@ const AddLibraryScreen = ({ navigation }) => {
         if (uri) {
             setImages([...images, uri]);
         }
+        setModalVisible(false);
     };
 
     const takePhoto = async () => {
@@ -76,6 +79,7 @@ const AddLibraryScreen = ({ navigation }) => {
         if (uri) {
             setImages([...images, uri]);
         }
+        setModalVisible(false);
     };
 
     const handleRemoveImage = (uri) => {
@@ -107,10 +111,6 @@ const AddLibraryScreen = ({ navigation }) => {
     }
 
     return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
             <SafeAreaView
                 style={{
                     flex: 1,
@@ -121,6 +121,7 @@ const AddLibraryScreen = ({ navigation }) => {
             >
                 <FlatList
                     data={images}
+                    keyboardShouldPersistTaps={'always'}
                     keyExtractor={(item, index) => index.toString()}
                     ListHeaderComponent={
                         <Header
@@ -143,8 +144,7 @@ const AddLibraryScreen = ({ navigation }) => {
                     )}
                     ListFooterComponent={
                         <ImageUploadSection
-                            onPickImage={pickImage}
-                            onTakePhoto={takePhoto}
+                            modalV={()=>setModalVisible(true)}
                         />
                     }
                 />
@@ -154,8 +154,9 @@ const AddLibraryScreen = ({ navigation }) => {
                     onSubmit={handleSubmit}
                     t={t}
                 />
+                <ImagePickerModal isVisible={isModalVisible} onPickImage={pickImage} onTakePhoto={takePhoto} onClose={() => setModalVisible(false)} />
+
             </SafeAreaView>
-        </KeyboardAvoidingView>
     );
 };
 
@@ -221,6 +222,7 @@ const Header = ({ t, title, setTitle, description, setDescription, descRef, loca
                 </MapView>
             )}
         </View>
+
     </View>
 );
 
@@ -236,24 +238,16 @@ const ImageItem = ({ uri, onRemove }) => (
     </View>
 );
 
-const ImageUploadSection = ({ onPickImage, onTakePhoto }) => (
+const ImageUploadSection = ({modalV}) => (
     <View style={Styles_screens.imageUploadSection}>
-        <TouchableOpacity onPress={onPickImage} style={Styles_screens.addImageButton}>
+        <TouchableOpacity onPress={modalV} style={Styles_screens.addImageButton}>
             <FontAwesome name="plus" size={24} color="#000" />
         </TouchableOpacity>
     </View>
 );
 
-const Buttons = ({ onPickImage, onTakePhoto, onSubmit, t }) => (
+const Buttons = ({  onSubmit, t }) => (
     <View style={Styles_screens.buttonsContainer}>
-        <View style={Styles_screens.buttonsContainerRow}>
-            <TouchableOpacity style={Styles_screens.buttonR} onPress={onPickImage}>
-                <Text style={Styles_screens.buttonText}>{t('uploadPhoto')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={Styles_screens.buttonR} onPress={onTakePhoto}>
-                <Text style={Styles_screens.buttonText}>{t('takePhoto')}</Text>
-            </TouchableOpacity>
-        </View>
         <TouchableOpacity style={Styles_screens.submitButton} onPress={onSubmit}>
             <Text style={Styles_screens.submitButtonText}>{t('addLibrary')}</Text>
         </TouchableOpacity>
